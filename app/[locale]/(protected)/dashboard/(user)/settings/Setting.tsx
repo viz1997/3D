@@ -14,8 +14,7 @@ import {
   isValidFullName,
 } from "@/lib/validations";
 import { Loader2 } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useParams } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -28,7 +27,7 @@ export default function Settings() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const t = useTranslations("Dashboard.User.Settings");
-  const { locale } = useParams();
+  const locale = useLocale();
 
   useEffect(() => {
     setFullName(user?.user_metadata?.full_name || "");

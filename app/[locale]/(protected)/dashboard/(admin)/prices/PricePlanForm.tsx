@@ -35,9 +35,9 @@ import {
   Wand2,
   Zap,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Error from "next/error";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -105,7 +105,7 @@ export function PricePlanForm({ initialData, planId }: PricePlanFormProps) {
   const t = useTranslations("Dashboard.Admin.Prices.PricePlanForm");
 
   const router = useRouter();
-  const { locale } = useParams();
+  const locale = useLocale();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isVerifyingStripe, setIsVerifyingStripe] = useState(false);

@@ -42,8 +42,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PricingPlan } from "@/types/pricing";
-import { useTranslations } from "next-intl";
-import { useParams, useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { DeletePlanDialog } from "./DeletePlanDialog";
 const PAGE_SIZE = 20;
@@ -60,7 +60,7 @@ export function PricesDataTable<TData extends PricingPlan, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const t = useTranslations("Dashboard.Admin.Prices.PricesDataTable");
-  const { locale } = useParams();
+  const locale = useLocale();
 
   const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);

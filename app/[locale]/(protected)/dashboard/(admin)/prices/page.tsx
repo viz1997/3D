@@ -44,7 +44,7 @@ export default async function AdminPricesPage() {
           <p className="text-muted-foreground">{t("description")}</p>
         </div>
         <Button asChild className="gradient-bg text-white">
-          <I18nLink href="/dashboard/prices/new" prefetch={false}>
+          <I18nLink href="/dashboard/prices/new" prefetch={true}>
             <PlusCircle className="mr-2 h-4 w-4" /> {t("createNewPlan")}
           </I18nLink>
         </Button>

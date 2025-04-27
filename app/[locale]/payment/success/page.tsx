@@ -172,13 +172,13 @@ function SuccessContent() {
           asChild
           size="lg"
         >
-          <I18nLink href="/" prefetch={false}>
+          <I18nLink href="/" prefetch={true}>
             <Home className="w-4 h-4" />
             Back to Home <ArrowRight className="w-4 h-4" />
           </I18nLink>
         </Button>
         <Button className="flex-1 gap-2" asChild size="lg">
-          <I18nLink href="/dashboard" prefetch={false}>
+          <I18nLink href="/dashboard" prefetch={true}>
             Go to Dashboard <ArrowRight className="w-4 h-4" />
           </I18nLink>
         </Button>
@@ -215,7 +215,7 @@ function SuccessContent() {
         className="flex flex-col sm:flex-row gap-3 w-full max-w-md"
       >
         <Button className="flex-1 gap-2" asChild>
-          <I18nLink href="/#pricing" prefetch={false}>
+          <I18nLink href="/#pricing" prefetch={true}>
             <CreditCard className="w-4 h-4" /> Return to Home
           </I18nLink>
         </Button>

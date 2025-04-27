@@ -15,7 +15,7 @@ const Header = () => {
         <div className="flex items-center space-x-6 md:space-x-12">
           <I18nLink
             href="/"
-            prefetch={false}
+            prefetch={true}
             className="flex items-center space-x-1 font-bold"
           >
             <span className="gradient-text">{t("title")}</span>

@@ -91,7 +91,7 @@ export default async function Page(props: { searchParams: SearchParams }) {
       <div className="mt-8 text-center">
         <I18nLink
           href="/"
-          prefetch={false}
+          prefetch={true}
           className="inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
         >
           <ArrowLeft className="w-3.5 h-3.5 mr-1" />

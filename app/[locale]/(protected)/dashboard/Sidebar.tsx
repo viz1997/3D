@@ -51,7 +51,7 @@ export function Sidebar({ className, setOpenMobile }: SidebarProps) {
                 asChild
                 onClick={handleLinkClick}
               >
-                <I18nLink href={menu.href} prefetch={false}>
+                <I18nLink href={menu.href} prefetch={true}>
                   <span>{menu.name}</span>
                 </I18nLink>
               </Button>

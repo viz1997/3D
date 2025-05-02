@@ -14,10 +14,12 @@ import {
   RefreshCw,
   XCircle,
 } from "lucide-react";
+import { useLocale } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 
 function SuccessContent() {
+  const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
@@ -45,7 +47,12 @@ function SuccessContent() {
     const verifySession = async () => {
       try {
         const response = await fetch(
-          `/api/payment/verify-success?session_id=${sessionId}`
+          `/api/payment/verify-success?session_id=${sessionId}`,
+          {
+            headers: {
+              "Accept-Language": (locale || "en") as string,
+            },
+          }
         );
         const result = await response.json();
         if (!response.ok) {

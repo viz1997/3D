@@ -23,9 +23,13 @@ const nextConfig = {
   ],
   images: {
     remotePatterns: [
-      {
-        hostname: process.env.R2_PUBLIC_URL?.replace("https://", "") || "",
-      },
+      ...(process.env.R2_PUBLIC_URL
+        ? [
+            {
+              hostname: process.env.R2_PUBLIC_URL.replace("https://", ""),
+            },
+          ]
+        : []),
     ],
   },
   compiler: {

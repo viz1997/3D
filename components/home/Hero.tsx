@@ -37,12 +37,13 @@ export default function Hero() {
               >
                 {t("getStarted")}
               </I18nLink>
-              <I18nLink
+              <a
                 href="https://docs.nexty.dev/docs"
+                target="_blank"
                 className="border border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400 px-8 py-3 rounded-lg font-medium text-center hover:bg-indigo-50 dark:hover:bg-indigo-900/10"
               >
                 {t("viewDocs")}
-              </I18nLink>
+              </a>
             </div>
           </div>
 

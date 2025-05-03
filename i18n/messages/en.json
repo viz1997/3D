@@ -81,7 +81,8 @@
           "links": [
             {
               "label": "Docs",
-              "href": "https://docs.nexty.dev/docs"
+              "href": "https://docs.nexty.dev/docs",
+              "target": "_blank"
             },
             {
               "label": "Roadmap",

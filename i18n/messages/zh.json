@@ -81,7 +81,8 @@
           "links": [
             {
               "label": "文档",
-              "href": "https://docs.nexty.dev/zh/docs"
+              "href": "https://docs.nexty.dev/zh/docs",
+              "target": "_blank"
             },
             {
               "label": "功能路线图",

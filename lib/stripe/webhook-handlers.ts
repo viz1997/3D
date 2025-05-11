@@ -69,7 +69,7 @@ export async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Se
       amount_discount: session.total_details?.amount_discount ? session.total_details.amount_discount / 100 : 0,
       amount_tax: session.total_details?.amount_tax ? session.total_details.amount_tax / 100 : 0,
       amount_total: session.amount_total ? session.amount_total / 100 : 0,
-      currency: session.currency || 'usd',
+      currency: session.currency || process.env.NEXT_PUBLIC_DEFAULT_CURRENCY || 'usd',
       metadata: {
         stripeCheckoutSessionId: session.id,
         ...session.metadata

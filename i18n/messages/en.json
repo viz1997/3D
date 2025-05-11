@@ -566,7 +566,7 @@
         "description": "Manage pricing plans for test and live environments. (Admin only).",
         "createNewPlan": "Create New Plan",
         "PricesDataTable": {
-          "deleteError": "Failed to delete plan (status: {response.status})",
+          "deleteError": "Failed to delete plan (status: {status})",
           "deleteError2": "Failed to delete plan",
           "deleteSuccess": "Plan {title} deleted successfully.",
           "allEnvironments": "All Environments",

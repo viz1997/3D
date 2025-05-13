@@ -8,7 +8,7 @@ import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { BlogList } from "./BlogList";
 
-type Params = { locale: string };
+type Params = Promise<{ locale: string }>;
 
 type MetadataProps = {
   params: Params;

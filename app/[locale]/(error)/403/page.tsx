@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Link as I18nLink, Locale } from "@/i18n/routing";
+import { Link as I18nLink, Locale, routing } from "@/i18n/routing";
 import { constructMetadata } from "@/lib/metadata";
 import { Metadata } from "next";
 import { useTranslations } from "next-intl";
@@ -41,4 +41,8 @@ export default function ForbiddenPage() {
       </Button>
     </div>
   );
+}
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
 }

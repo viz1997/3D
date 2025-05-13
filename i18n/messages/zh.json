@@ -500,10 +500,25 @@
   },
   "Blogs": {
     "title": "博客列表",
-    "description": "博客列表",
+    "description": "分享 Next.js 生态圈和 Nexty.dev 模板动态。",
     "emptyState": {
       "title": "暂无博客文章",
       "description": "我们正在创作精彩内容，敬请期待！"
+    },
+    "loadMorePostsFailed": "加载更多博客失败",
+    "loadMorePosts": "加载更多博客……",
+    "filterPostsFailed": "加载博客失败",
+    "noPostsFoundForThisTag": "暂无此标签的博客文章",
+    "reachedTheEnd": "已加载全部博客文章",
+    "BlogDetail": {
+      "accessRestricted": "访问受限",
+      "unauthorized": "此文章仅对登录用户开放",
+      "premium": "付费内容",
+      "premiumContent": "此文章仅对订阅用户开放",
+      "signIn": "登录",
+      "upgrade": "升级",
+      "backToBlogs": "返回博客列表",
+      "notFound": "文章未找到"
     }
   },
   "About": {

@@ -556,6 +556,8 @@ export async function getPublishedPostBySlugAction({
     return actionResponse.badRequest("Slug is required.");
   }
 
+  const t = await getTranslations({ locale, namespace: 'Blogs' });
+
   const supabaseAdmin = createAdminClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -574,21 +576,21 @@ export async function getPublishedPostBySlugAction({
       .maybeSingle();
 
     if (fetchError) throw fetchError;
-    if (!post) return actionResponse.notFound("Published post not found with the given slug and locale.");
+    if (!post) return actionResponse.notFound(t("BlogDetail.notFound"));
 
     if (post.visibility === 'logged_in' || post.visibility === 'subscribers') {
       const supabase = await createClient();
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        return actionResponse.unauthorized("You must be logged in to view this post.", 'unauthorized');
+        return actionResponse.unauthorized(t("BlogDetail.unauthorized"), 'unauthorized');
       }
 
       if (post.visibility === 'subscribers') {
         // --- TODO: [custom] check user subscription or custom logic ---
         const isSubscriber = await checkUserSubscription(user.id);
         if (!isSubscriber) {
-          return actionResponse.forbidden("You must be a subscriber to view this post.", 'notSubscriber');
+          return actionResponse.forbidden(t('BlogDetail.premiumContent'), 'notSubscriber');
         }
         // --- End: [custom] check user subscription or custom logic
       }

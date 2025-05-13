@@ -500,10 +500,25 @@
   },
   "Blogs": {
     "title": "Blog Posts",
-    "description": "A list of blog posts",
+    "description": "Insights on Next.js ecosystem and Nexty.dev template updates.",
     "emptyState": {
       "title": "No blog posts",
       "description": "We are creating exciting content, please stay tuned!"
+    },
+    "loadMorePostsFailed": "Failed to load more posts",
+    "loadMorePosts": "Loading more posts...",
+    "filterPostsFailed": "Failed to load posts",
+    "noPostsFoundForThisTag": "No posts found with this tag",
+    "reachedTheEnd": "You've reached the end of all posts",
+    "BlogDetail": {
+      "accessRestricted": "Access Restricted",
+      "unauthorized": "This article is only available to logged-in users",
+      "premium": "Premium Content",
+      "premiumContent": "This article is exclusive to subscribers",
+      "signIn": "Sign In",
+      "upgrade": "Upgrade",
+      "backToBlogs": "Back to Blog List",
+      "notFound": "Article Not Found"
     }
   },
   "About": {

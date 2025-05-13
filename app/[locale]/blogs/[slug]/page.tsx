@@ -7,6 +7,7 @@ import { getPostBySlug, getPosts } from "@/lib/getBlogs";
 import { constructMetadata } from "@/lib/metadata";
 import { ArrowRightIcon, LockIcon } from "lucide-react";
 import { Metadata } from "next";
+import { getLocale, getTranslations } from "next-intl/server";
 import { MDXRemote } from "next-mdx-remote-client/rsc";
 import { notFound } from "next/navigation";
 
@@ -51,7 +52,10 @@ export async function generateMetadata({
 }
 
 export default async function BlogPage({ params }: { params: Params }) {
-  const { locale, slug } = await params;
+  const t = await getTranslations("Blogs");
+  const locale = await getLocale();
+
+  const { slug } = await params;
   const {
     post,
     error: errorMessage,
@@ -59,20 +63,19 @@ export default async function BlogPage({ params }: { params: Params }) {
   } = await getPostBySlug(slug, locale);
 
   if (errorCode) {
-    let messageTitle = "Access Restricted";
+    let messageTitle = t("BlogDetail.accessRestricted");
     let messageContent = errorMessage || "An error occurred.";
     let actionText = "";
     const redirectUrl = `/${locale}/blogs/${slug}`;
     let actionLink = `/login?next=${encodeURIComponent(redirectUrl)}`;
 
     if (errorCode === "unauthorized") {
-      messageContent = "This content is only available to logged-in users.";
-      actionText = "Sign In";
+      messageContent = t("BlogDetail.unauthorized");
+      actionText = t("BlogDetail.signIn");
     } else if (errorCode === "notSubscriber") {
-      messageTitle = "Premium Content";
-      messageContent =
-        "This content is exclusively available to our subscribers.";
-      actionText = "Upgrade";
+      messageTitle = t("BlogDetail.premium");
+      messageContent = t("BlogDetail.premiumContent");
+      actionText = t("BlogDetail.upgrade");
       actionLink = `/#pricing`;
     }
 
@@ -98,7 +101,7 @@ export default async function BlogPage({ params }: { params: Params }) {
                     prefetch={false}
                     className="inline-flex items-center justify-center"
                   >
-                    Back to Blogs
+                    {t("BlogDetail.backToBlogs")}
                   </I18nLink>
                 </Button>
                 <Button
@@ -197,8 +200,6 @@ export async function generateStaticParams() {
   const uniqueParams = Array.from(
     new Map(allParams.map((p) => [`${p.locale}-${p.slug}`, p])).values()
   );
-
-  console.log("Generated Static Params:", uniqueParams.slice(0, 10), "...");
-
+  // console.log("Generated Static Params:", uniqueParams.slice(0, 10), "...");
   return uniqueParams;
 }

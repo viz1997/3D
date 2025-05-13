@@ -6,6 +6,7 @@ import { BlogCard } from "@/app/[locale]/blogs/BlogCard";
 import { BlogPost } from "@/types/blog";
 import dayjs from "dayjs";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { toast } from "sonner";
@@ -44,6 +45,8 @@ export function BlogList({
   locale,
   pageSize,
 }: BlogListProps) {
+  const t = useTranslations("Blogs");
+
   const [posts, setPosts] = useState<PublicPost[]>(initialPosts);
   const [pageIndex, setPageIndex] = useState<number>(1);
   const [hasMore, setHasMore] = useState<boolean>(
@@ -75,14 +78,13 @@ export function BlogList({
       setHasMore(posts.length + newPosts.length < newTotal);
     } else {
       console.error("Failed to load more posts:", result.error);
-      toast.error("Failed to load more posts", {
+      toast.error(t("loadMorePostsFailed"), {
         description: result.error,
       });
     }
     setIsLoading(false);
   }, [
     pageIndex,
-    pageSize,
     locale,
     isLoading,
     hasMore,
@@ -122,7 +124,7 @@ export function BlogList({
       setHasMore(result.data.posts.length < (result.data.count ?? 0));
     } else {
       console.error("Failed to filter posts by tag:", result.error);
-      toast.error("Failed to filter posts", {
+      toast.error(t("filterPostsFailed"), {
         description: result.error,
       });
     }
@@ -170,7 +172,7 @@ export function BlogList({
               {isLoading ? (
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
               ) : (
-                <span className="text-gray-500">Loading more...</span>
+                <span className="text-gray-500">{t("loadMorePosts")}</span>
               )}
             </div>
           )}
@@ -178,8 +180,8 @@ export function BlogList({
           {!hasMore && posts.length >= 0 && (
             <p className="text-center text-gray-500 py-8">
               {posts.length === 0
-                ? "No posts found for this tag."
-                : "You've reached the end!"}
+                ? t("noPostsFoundForThisTag")
+                : t("reachedTheEnd")}
             </p>
           )}
         </>

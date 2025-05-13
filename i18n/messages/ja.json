@@ -499,11 +499,26 @@
     ]
   },
   "Blogs": {
-    "title": "ブログ一覧",
-    "description": "ブログ投稿の一覧",
+    "title": "ブログ記事",
+    "description": "Next.jsエコシステムとNexty.devテンプレートの最新情報をお届けします。",
     "emptyState": {
-      "title": "ブログ投稿がありません",
-      "description": "興味深いコンテンツを作成中です。お楽しみに！"
+      "title": "記事がありません",
+      "description": "現在コンテンツを作成中です。もうしばらくお待ちください！"
+    },
+    "loadMorePostsFailed": "記事の読み込みに失敗しました",
+    "loadMorePosts": "記事を読み込み中...",
+    "filterPostsFailed": "記事の読み込みに失敗しました",
+    "noPostsFoundForThisTag": "このタグの記事は見つかりませんでした",
+    "reachedTheEnd": "すべての記事を表示しました",
+    "BlogDetail": {
+      "accessRestricted": "アクセス制限",
+      "unauthorized": "この記事はログインユーザーのみ閲覧できます",
+      "premium": "プレミアムコンテンツ",
+      "premiumContent": "この記事は有料会員限定です",
+      "signIn": "ログイン",
+      "upgrade": "アップグレード",
+      "backToBlogs": "ブログ一覧に戻る",
+      "notFound": "記事が見つかりません"
     }
   },
   "About": {

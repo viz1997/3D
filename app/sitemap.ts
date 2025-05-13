@@ -1,3 +1,4 @@
+import { listPublishedPostsAction } from '@/actions/blogs/posts'
 import { siteConfig } from '@/config/site'
 import { DEFAULT_LOCALE, LOCALES } from '@/i18n/routing'
 import { getPosts } from '@/lib/getBlogs'
@@ -11,13 +12,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static pages
   const staticPages = [
     '',
-    '/blogs',
-    '/about',
+    // '/about',
     '/privacy-policy',
     '/terms-of-service',
   ]
 
-  // Generate multilingual pages
   const pages = LOCALES.flatMap(locale => {
     return staticPages.map(page => ({
       url: `${siteUrl}${locale === DEFAULT_LOCALE ? '' : `/${locale}`}${page}`,
@@ -27,20 +26,52 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   })
 
-  const blogPosts = await Promise.all(
-    LOCALES.map(async (locale) => {
-      const { posts } = await getPosts(locale)
-      return posts.map(post => ({
-        url: `${siteUrl}${locale === DEFAULT_LOCALE ? '' : `/${locale}`}/blogs${post.slug}`,
-        lastModified: post.metadata?.updatedAt || post.published_at,
-        changeFrequency: 'daily' as const,
-        priority: 0.7,
-      }))
-    })
-  ).then(results => results.flat())
+  const allBlogSitemapEntries: MetadataRoute.Sitemap = [];
+
+  for (const locale of LOCALES) {
+    const { posts: localPosts } = await getPosts(locale);
+    localPosts
+      .filter((post) => post.slug && post.status !== "draft")
+      .forEach((post) => {
+        const slugPart = post.slug.replace(/^\//, "").replace(/^blogs\//, "");
+        if (slugPart) {
+          allBlogSitemapEntries.push({
+            url: `${siteUrl}${locale === DEFAULT_LOCALE ? '' : `/${locale}`}/blogs/${slugPart}`,
+            lastModified: post.metadata?.updatedAt || post.published_at || new Date(),
+            changeFrequency: 'daily' as ChangeFrequency,
+            priority: 0.7,
+          });
+        }
+      });
+  }
+
+  for (const locale of LOCALES) {
+    const serverResult = await listPublishedPostsAction({
+      locale: locale,
+      pageSize: 1000,
+      visibility: "public",
+    });
+    if (serverResult.success && serverResult.data?.posts) {
+      serverResult.data.posts.forEach((post) => {
+        const slugPart = post.slug?.replace(/^\//, "").replace(/^blogs\//, "");
+        if (slugPart) {
+          allBlogSitemapEntries.push({
+            url: `${siteUrl}${locale === DEFAULT_LOCALE ? '' : `/${locale}`}/blogs/${slugPart}`,
+            lastModified: post.published_at || new Date(),
+            changeFrequency: 'daily' as ChangeFrequency,
+            priority: 0.7,
+          });
+        }
+      });
+    }
+  }
+
+  const uniqueBlogPostEntries = Array.from(
+    new Map(allBlogSitemapEntries.map((entry) => [entry.url, entry])).values()
+  );
 
   return [
     ...pages,
-    ...blogPosts,
+    ...uniqueBlogPostEntries,
   ]
 }

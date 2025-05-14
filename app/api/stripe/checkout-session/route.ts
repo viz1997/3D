@@ -64,6 +64,13 @@ export async function POST(req: Request) {
       allow_promotion_codes: true,
       success_url: getURL('payment/success?session_id={CHECKOUT_SESSION_ID}'),
       cancel_url: getURL('#pricing'),
+      // payment_method_types: ["wechat_pay", "alipay", "card"],
+      // payment_method_options: {
+      //   wechat_pay: {
+      //     client: "web",
+      //   },
+      //   alipay: {},
+      // },
       metadata: {
         userId: userId,
         planId: plan.id,

@@ -105,7 +105,7 @@ export default function AdminImagesPage() {
           <TabsContent key={cat.prefix} value={cat.prefix} className="mt-0">
             <Suspense
               fallback={
-                <div className="flex items-center justify-center h-64 rounded-md border">
+                <div className="flex items-center justify-center rounded-md border">
                   <Loader2 className="w-8 h-8 animate-spin" />
                 </div>
               }

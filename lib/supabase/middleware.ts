@@ -7,7 +7,6 @@ const ROLE_PROTECTED_ROUTES: Record<string, string[]> = {
   'dashboard/blogs': ['admin'],
   'dashboard/r2-resources': ['admin'],
   'dashboard/prices': ['admin'],
-  'dashboard/showcases': ['admin'],
 } as const;
 
 // TODO:only login user

@@ -493,10 +493,6 @@
         "href": "/dashboard/users"
       },
       {
-        "name": "Showcases",
-        "href": "/dashboard/showcases"
-      },
-      {
         "name": "Blogs",
         "href": "/dashboard/blogs"
       },

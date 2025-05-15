@@ -493,10 +493,6 @@
         "href": "/dashboard/users"
       },
       {
-        "name": "网站管理",
-        "href": "/dashboard/showcases"
-      },
-      {
         "name": "博客管理",
         "href": "/dashboard/blogs"
       },

@@ -5,6 +5,7 @@ import { useRouter } from "@/i18n/routing";
 import { PricingPlan } from "@/types/pricing";
 import { Loader2, MousePointerClick } from "lucide-react";
 import { useLocale } from "next-intl";
+import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -93,14 +94,16 @@ export default function PricingCTA({
         })}
       >
         {plan.button_link ? (
-          <a
+          <Link
             href={plan.button_link}
+            title={localizedPlan.button_text || plan.button_text}
+            prefetch={false}
             rel="noopener noreferrer nofollow"
             target="_blank"
           >
             {localizedPlan.button_text || plan.button_text}
             {plan.is_highlighted && <MousePointerClick className="w-5 h-5" />}
-          </a>
+          </Link>
         ) : (
           <>
             {isLoading ? (

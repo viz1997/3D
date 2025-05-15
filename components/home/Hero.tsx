@@ -42,6 +42,7 @@ export default function Hero() {
               <Link
                 href="https://docs.nexty.dev/docs"
                 target="_blank"
+                title={t("viewDocs")}
                 className="border border-indigo-600 dark:border-indigo-400 text-indigo-600 dark:text-indigo-400 px-8 py-3 rounded-lg font-medium text-center hover:bg-indigo-50 dark:hover:bg-indigo-900/10"
               >
                 {t("viewDocs")}

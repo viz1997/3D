@@ -18,6 +18,7 @@ import { Link as I18nLink } from "@/i18n/routing";
 import { PricingPlan } from "@/types/pricing";
 import { ColumnDef, TableMeta } from "@tanstack/react-table";
 import { ArrowUpDown, ExternalLink, MoreHorizontal } from "lucide-react";
+import Link from "next/link";
 
 interface CustomTableMeta extends TableMeta<PricingPlan> {
   openDeleteDialog: (plan: PricingPlan) => void;
@@ -71,14 +72,15 @@ export const columns: ColumnDef<PricingPlan>[] = [
         <div className="flex items-center space-x-1">
           <code className="text-xs">{priceId as string}</code>
           {stripeLink && (
-            <a
+            <Link
               href={stripeLink}
               target="_blank"
               rel="noopener noreferrer"
               title="View on Stripe Dashboard"
+              prefetch={false}
             >
               <ExternalLink className="h-3 w-3 text-muted-foreground hover:text-primary" />
-            </a>
+            </Link>
           )}
         </div>
       ) : (

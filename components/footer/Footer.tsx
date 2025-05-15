@@ -5,6 +5,7 @@ import { siteConfig } from "@/config/site";
 import { Link as I18nLink } from "@/i18n/routing";
 import { GithubIcon, MailIcon } from "lucide-react";
 import { getMessages, getTranslations } from "next-intl/server";
+import Link from "next/link";
 import { SiBluesky } from "react-icons/si";
 
 type FooterLink = {
@@ -45,8 +46,9 @@ export default async function Footer() {
 
                 <div className="flex items-center gap-2">
                   {siteConfig.socialLinks?.github && (
-                    <a
+                    <Link
                       href={siteConfig.socialLinks.github}
+                      prefetch={false}
                       target="_blank"
                       rel="noreferrer nofollow noopener"
                       aria-label="GitHub"
@@ -54,11 +56,12 @@ export default async function Footer() {
                       className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground"
                     >
                       <GithubIcon className="size-4" aria-hidden="true" />
-                    </a>
+                    </Link>
                   )}
                   {siteConfig.socialLinks?.bluesky && (
-                    <a
+                    <Link
                       href={siteConfig.socialLinks.bluesky}
+                      prefetch={false}
                       target="_blank"
                       rel="noreferrer nofollow noopener"
                       aria-label="Blue Sky"
@@ -66,11 +69,12 @@ export default async function Footer() {
                       className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground"
                     >
                       <SiBluesky className="w-4 h-4" aria-hidden="true" />
-                    </a>
+                    </Link>
                   )}
                   {siteConfig.socialLinks?.twitter && (
-                    <a
+                    <Link
                       href={siteConfig.socialLinks.twitter}
+                      prefetch={false}
                       target="_blank"
                       rel="noreferrer nofollow noopener"
                       aria-label="Twitter"
@@ -78,11 +82,12 @@ export default async function Footer() {
                       className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground"
                     >
                       <TwitterX className="w-4 h-4" aria-hidden="true" />
-                    </a>
+                    </Link>
                   )}
                   {siteConfig.socialLinks?.email && (
-                    <a
+                    <Link
                       href={`mailto:${siteConfig.socialLinks.email}`}
+                      prefetch={false}
                       target="_blank"
                       rel="noreferrer nofollow noopener"
                       aria-label="Email"
@@ -90,7 +95,7 @@ export default async function Footer() {
                       className="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground"
                     >
                       <MailIcon className="w-4 h-4" />
-                    </a>
+                    </Link>
                   )}
                 </div>
 
@@ -118,15 +123,16 @@ export default async function Footer() {
                           {link.label}
                         </I18nLink>
                       ) : (
-                        <a
+                        <Link
                           href={link.href}
                           title={link.label}
+                          prefetch={false}
                           className="hover:text-white transition-colors"
                           target={link.target || ""}
                           rel={link.rel || ""}
                         >
                           {link.label}
-                        </a>
+                        </Link>
                       )}
                     </li>
                   ))}

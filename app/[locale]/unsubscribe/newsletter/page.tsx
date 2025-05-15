@@ -3,6 +3,7 @@ import { Link as I18nLink } from "@/i18n/routing";
 import { ArrowLeft } from "lucide-react";
 
 import { getLocale, getTranslations } from "next-intl/server";
+import Link from "next/link";
 
 type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
 
@@ -54,13 +55,15 @@ export default async function Page(props: { searchParams: SearchParams }) {
           <div className="pt-4 mt-6 border-t dark:border-gray-700 border-gray-200">
             <p className="text-sm dark:text-gray-400 text-gray-500">
               {t("unsubscribe.contactPrefixSuccess")}
-              <a
+              <Link
                 href={`mailto:${process.env.ADMIN_EMAIL}`}
+                title={process.env.ADMIN_EMAIL}
                 className="text-blue-600 dark:text-blue-400 ml-1 hover:underline"
                 target="_blank"
+                prefetch={false}
               >
                 {process.env.ADMIN_EMAIL}
-              </a>
+              </Link>
             </p>
           </div>
         </div>

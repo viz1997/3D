@@ -1,12 +1,15 @@
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export default function BuiltWithButton() {
   return (
-    <a
+    <Link
+      href="https://nexty.dev"
+      title="Built with Nexty.dev"
+      prefetch={false}
       target="_blank"
       rel="noopener noreferrer"
-      href="https://nexty.dev"
       className={cn(
         buttonVariants({ variant: "outline", size: "sm" }),
         "px-4 rounded-md bg-transparent border-gray-500 hover:bg-gray-950 text-white hover:text-gray-100"
@@ -19,7 +22,7 @@ export default function BuiltWithButton() {
       <span className="font-bold text-base-content flex gap-0.5 items-center tracking-tight">
         Nexty.dev
       </span>
-    </a>
+    </Link>
   );
 }
 

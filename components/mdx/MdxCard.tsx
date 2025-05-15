@@ -32,6 +32,7 @@ export function MdxCard({
         <Link
           href={disabled ? "#" : href}
           className="absolute inset-0"
+          title="View"
           prefetch={false}
         >
           <span className="sr-only">View</span>

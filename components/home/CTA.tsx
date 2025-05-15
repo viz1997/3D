@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 
 export default function CTA() {
   const t = useTranslations("Landing.CTA");
@@ -11,12 +12,13 @@ export default function CTA() {
           {t("description")}
         </p>
         <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6">
-          <a
+          <Link
             href="#"
             className="bg-white text-indigo-600 px-8 py-4 rounded-lg font-medium text-center hover:bg-opacity-90 shadow-lg transition-all"
+            prefetch={true}
           >
             {t("button")}
-          </a>
+          </Link>
         </div>
       </div>
     </section>

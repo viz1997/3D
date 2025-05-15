@@ -13,6 +13,7 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import { Copy, Download, MoreHorizontal, Trash2, Video } from "lucide-react";
+import Link from "next/link";
 import { toast } from "sonner";
 
 const getFileType = (key: string): "image" | "video" | "other" => {
@@ -92,15 +93,17 @@ const ActionsCell: React.FC<ActionsCellProps> = ({
         </DropdownMenuItem>
         {r2PublicUrl ? (
           <DropdownMenuItem asChild>
-            <a
+            <Link
               href={`${r2PublicUrl}/${file.key}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center w-full"
+              title="Download"
+              prefetch={false}
             >
               <Download className="mr-2 h-4 w-4" />
               Download
-            </a>
+            </Link>
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem disabled>

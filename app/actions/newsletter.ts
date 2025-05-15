@@ -1,4 +1,6 @@
+'use server';
 import { NewsletterWelcomeEmail } from '@/emails/newsletter-welcome';
+import { actionResponse, ActionResult } from '@/lib/action-response';
 import { normalizeEmail, validateEmail } from '@/lib/email';
 import resend from '@/lib/resend';
 import { checkRateLimit } from '@/lib/upstash';
@@ -27,7 +29,7 @@ async function validateRateLimit(locale: string) {
   }
 }
 
-export async function subscribeToNewsletter(email: string, locale = 'en') {
+export async function subscribeToNewsletter(email: string, locale = 'en'): Promise<ActionResult<{ email: string }>> {
   try {
     await validateRateLimit(locale);
 
@@ -37,11 +39,11 @@ export async function subscribeToNewsletter(email: string, locale = 'en') {
     const { isValid, error } = validateEmail(normalizedEmail);
 
     if (!isValid) {
-      throw new Error(error || t('subscribe.invalidEmail'));
+      return actionResponse.error(error || t('subscribe.invalidEmail'));
     }
 
     if (!resend) {
-      throw new Error('Newsletter service is temporarily unavailable');
+      return actionResponse.error('Newsletter service is temporarily unavailable');
     }
 
     await resend.contacts.create({
@@ -72,14 +74,16 @@ export async function subscribeToNewsletter(email: string, locale = 'en') {
       }
     });
 
-    return { success: true };
+    return actionResponse.success({ email: normalizedEmail });
   } catch (error) {
     console.error('failed to subscribe to newsletter:', error);
-    throw error;
+    const t = await getTranslations({ locale, namespace: 'Footer.Newsletter' });
+    const errorMessage = error instanceof Error ? error.message : t('subscribe.defaultErrorMessage');
+    return actionResponse.error(errorMessage);
   }
 }
 
-export async function unsubscribeFromNewsletter(token: string, locale = 'en') {
+export async function unsubscribeFromNewsletter(token: string, locale = 'en'): Promise<ActionResult<{ email: string }>> {
   try {
     await validateRateLimit(locale);
     const t = await getTranslations({ locale, namespace: 'Footer.Newsletter' });
@@ -89,11 +93,11 @@ export async function unsubscribeFromNewsletter(token: string, locale = 'en') {
     const { isValid, error } = validateEmail(normalizedEmail);
 
     if (!isValid) {
-      throw new Error(error || t('unsubscribe.invalidEmail'));
+      return actionResponse.error(error || t('unsubscribe.invalidEmail'));
     }
 
     if (!resend) {
-      throw new Error('Newsletter service is temporarily unavailable');
+      return actionResponse.error('Newsletter service is temporarily unavailable');
     }
 
     // check if user exists in audience
@@ -101,7 +105,7 @@ export async function unsubscribeFromNewsletter(token: string, locale = 'en') {
     const user = list.data?.data.find((item: any) => item.email === normalizedEmail);
 
     if (!user) {
-      throw new Error(t('unsubscribe.notInNewsletter'));
+      return actionResponse.error(t('unsubscribe.notInNewsletter'));
     }
 
     // remove from audience
@@ -110,9 +114,11 @@ export async function unsubscribeFromNewsletter(token: string, locale = 'en') {
       email: normalizedEmail,
     });
 
-    return { success: true, email: normalizedEmail };
+    return actionResponse.success({ email: normalizedEmail });
   } catch (error) {
     console.error('failed to unsubscribe from newsletter:', error);
-    throw error;
+    const t = await getTranslations({ locale, namespace: 'Footer.Newsletter' });
+    const errorMessage = error instanceof Error ? error.message : t('unsubscribe.defaultErrorMessage');
+    return actionResponse.error(errorMessage);
   }
 }

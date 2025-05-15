@@ -1,5 +1,6 @@
 "use client";
 
+import { subscribeToNewsletter } from "@/app/actions/newsletter";
 import { normalizeEmail, validateEmail } from "@/lib/email";
 import { cn } from "@/lib/utils";
 import { Send } from "lucide-react";
@@ -21,11 +22,13 @@ export function Newsletter() {
     if (!email) return;
 
     const normalizedEmailAddress = normalizeEmail(email);
-    const { isValid, error } = validateEmail(normalizedEmailAddress);
+    const { isValid, error: validationError } = validateEmail(
+      normalizedEmailAddress
+    );
 
     if (!isValid) {
       setSubscribeStatus("error");
-      setErrorMessage(error || t("subscribe.invalidEmail"));
+      setErrorMessage(validationError || t("subscribe.invalidEmail"));
       setTimeout(() => setSubscribeStatus("idle"), 5000);
       return;
     }
@@ -33,18 +36,12 @@ export function Newsletter() {
     try {
       setSubscribeStatus("loading");
 
-      const response = await fetch(`/api/newsletter`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept-Language": currentLocale,
-        },
-        body: JSON.stringify({ email: normalizedEmailAddress }),
-      });
+      const result = await subscribeToNewsletter(
+        normalizedEmailAddress,
+        currentLocale
+      );
 
-      const result = await response.json();
-
-      if (!response.ok || !result.success) {
+      if (!result.success) {
         throw new Error(result.error || t("subscribe.defaultErrorMessage"));
       }
 

@@ -5,7 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
 
-type SearchParams = Promise<{ [key: string]: string | string[] | undefined }>;
+type SearchParams = { [key: string]: string | string[] | undefined };
 
 export default async function Page(props: { searchParams: SearchParams }) {
   const t = await getTranslations("Footer.Newsletter");
@@ -23,9 +23,12 @@ export default async function Page(props: { searchParams: SearchParams }) {
   } else {
     try {
       const result = await unsubscribeFromNewsletter(token, currentLocale);
+
       if (result.success) {
         status = "success";
-        email = result.email;
+        email = result.data?.email || "";
+      } else {
+        errorMessage = result.error || errorMessage;
       }
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : errorMessage;

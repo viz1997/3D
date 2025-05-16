@@ -1,5 +1,6 @@
 "use client";
 
+import { normalizeEmail } from "@/lib/email";
 import { createClient } from "@/lib/supabase/client";
 import { type AuthError, type User } from "@supabase/supabase-js";
 import { redirect, useSearchParams } from "next/navigation";
@@ -135,7 +136,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signInWithEmail = async (email: string) => {
     return await supabase.auth.signInWithOtp({
-      email,
+      email: normalizeEmail(email),
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback?next=${next}`,
       },

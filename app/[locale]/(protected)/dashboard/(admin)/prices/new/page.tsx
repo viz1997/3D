@@ -33,11 +33,12 @@ export async function generateMetadata({
 export default async function NewPricePlanPage({
   searchParams,
 }: {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ duplicatePlanId?: string }>;
 }) {
   const t = await getTranslations("Dashboard.Admin.Prices.CreatePlan");
   let initialDataForForm: PricingPlan | null = null;
-  const duplicatePlanId = searchParams?.duplicatePlanId as string | undefined;
+
+  const { duplicatePlanId } = await searchParams;
 
   if (duplicatePlanId) {
     const planResult = await getPricingPlanById(duplicatePlanId);

@@ -80,6 +80,7 @@ function mapServerPostToBlogPost(serverPost: PublicPostWithContent, locale: stri
     status: serverPost.status ?? "published",
     is_pinned: serverPost.is_pinned ?? false,
     content: serverPost.content ?? '',
+    visibility: serverPost.visibility,
   };
 }
 
@@ -131,11 +132,11 @@ export async function getPostBySlug(
     return {
       post: mapServerPostToBlogPost(serverResult.data.post, locale),
       error: undefined,
-      errorCode: undefined,
+      errorCode: serverResult.customCode,
     };
+  } else if (!serverResult.success) {
+    return { post: null, error: serverResult.error, errorCode: serverResult.customCode };
   } else {
-    const errorMessage = serverResult.error || "Post not found.";
-    const errorCode = serverResult.customCode;
-    return { post: null, error: errorMessage, errorCode: errorCode };
+    return { post: null, error: "Post not found (unexpected server response).", errorCode: undefined };
   }
 }

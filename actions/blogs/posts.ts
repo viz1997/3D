@@ -585,38 +585,46 @@ export async function getPublishedPostBySlugAction({
     if (fetchError) throw fetchError;
     if (!post) return actionResponse.notFound(t("BlogDetail.notFound"));
 
+    const { tags, ...restOfPostBase } = post;
+    const tagNames = (tags && Array.isArray(tags) && tags.length > 0)
+      ? tags.map(tag => tag.name).join(', ')
+      : null;
+
+    let finalContent = restOfPostBase.content ?? '';
+    let restrictionCustomCode: string | undefined = undefined;
+
     if (post.visibility === 'logged_in' || post.visibility === 'subscribers') {
       const supabase = await createClient();
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        return actionResponse.unauthorized(t("BlogDetail.unauthorized"), 'unauthorized');
-      }
-
-      const userIsAdmin = await isAdmin();
-
-      if (!userIsAdmin && post.visibility === 'subscribers') {
-        // --- TODO: [custom] check user subscription or custom logic ---
-        const isSubscriber = await checkUserSubscription(user.id);
-        if (!isSubscriber) {
-          return actionResponse.forbidden(t('BlogDetail.premiumContent'), 'notSubscriber');
+        finalContent = "";
+        restrictionCustomCode = 'unauthorized';
+      } else {
+        const userIsAdmin = await isAdmin();
+        if (!userIsAdmin && post.visibility === 'subscribers') {
+          // --- TODO: [custom] check user subscription or custom logic --- 
+          const isSubscriber = await checkUserSubscription(user.id);
+          if (!isSubscriber) {
+            finalContent = "";
+            restrictionCustomCode = 'notSubscriber';
+          }
+          // --- End: [custom] check user subscription or custom logic
         }
-        // --- End: [custom] check user subscription or custom logic
       }
     }
 
-    const { tags, ...restOfPost } = post;
-    const tagNames = (tags && tags.length > 0)
-      ? tags.map(tag => tag.name).join(', ')
-      : null;
-
-    const postWithProcessedTags: PublicPostWithContent = {
-      ...restOfPost,
-      content: restOfPost.content ?? '',
+    const postResultData: PublicPostWithContent = {
+      ...restOfPostBase,
+      content: finalContent,
       tags: tagNames
     };
 
-    return actionResponse.success({ post: postWithProcessedTags });
+    if (restrictionCustomCode) {
+      return actionResponse.success({ post: postResultData }, restrictionCustomCode);
+    }
+
+    return actionResponse.success({ post: postResultData });
 
   } catch (error) {
     console.error(`Get Published Post By Slug Action Failed for slug ${slug}, locale ${locale}:`, error);

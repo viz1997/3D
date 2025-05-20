@@ -1,10 +1,10 @@
 export type ActionResult<T = any> =
-  | { success: true; data?: T }
+  | { success: true; data?: T, customCode?: string }
   | { success: false; error: string, customCode?: string };
 
 export const actionResponse = {
-  success: <T>(data?: T): ActionResult<T> => {
-    return { success: true, data };
+  success: <T>(data?: T, customCode?: string): ActionResult<T> => {
+    return { success: true, data, customCode };
   },
   error: <T>(message: string, customCode?: string): ActionResult<T> => {
     return { success: false, error: message, customCode };

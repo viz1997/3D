@@ -485,10 +485,6 @@
       {
         "name": "Affiliate",
         "href": "/dashboard/affiliate"
-      },
-      {
-        "name": "Submit Showcase",
-        "href": "/dashboard/submit"
       }
     ],
     "AdminMenus": [

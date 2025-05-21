@@ -485,10 +485,6 @@
       {
         "name": "アフィリエイト",
         "href": "/dashboard/affiliate"
-      },
-      {
-        "name": "サイト掲載申請",
-        "href": "/dashboard/submit"
       }
     ],
     "AdminMenus": [

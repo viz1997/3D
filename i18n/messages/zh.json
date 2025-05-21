@@ -485,10 +485,6 @@
       {
         "name": "联盟计划",
         "href": "/dashboard/affiliate"
-      },
-      {
-        "name": "提交网站",
-        "href": "/dashboard/submit"
       }
     ],
     "AdminMenus": [

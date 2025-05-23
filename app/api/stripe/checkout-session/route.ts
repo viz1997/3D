@@ -62,7 +62,6 @@ export async function POST(req: Request) {
         },
       ],
       mode: mode,
-      allow_promotion_codes: true,
       success_url: getURL('payment/success?session_id={CHECKOUT_SESSION_ID}'),
       cancel_url: getURL('#pricing'),
       // payment_method_types: ["wechat_pay", "alipay", "card"],
@@ -80,6 +79,12 @@ export async function POST(req: Request) {
       },
     };
 
+    if (couponCode) {
+      sessionParams.discounts = [{ coupon: couponCode }];
+    } else {
+      sessionParams.allow_promotion_codes = true;
+    }
+
     if (isSubscription) {
       sessionParams.subscription_data = {
         trial_period_days: plan.trial_period_days ?? undefined,
@@ -90,7 +95,6 @@ export async function POST(req: Request) {
           priceId: priceId,
         },
       };
-      if (couponCode) { sessionParams.discounts = [{ coupon: couponCode }]; }
     } else {
       sessionParams.payment_intent_data = {
         metadata: {
@@ -100,7 +104,6 @@ export async function POST(req: Request) {
           priceId: priceId,
         },
       };
-      if (couponCode) { sessionParams.discounts = [{ coupon: couponCode }]; }
     }
 
     if (!stripe) {

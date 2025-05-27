@@ -156,7 +156,6 @@ export async function getOrCreateStripeCustomer(
   }
 }
 
-
 /**
  * Fetches the latest subscription data from Stripe and updates/creates the corresponding
  * record in the public.orders table to represent the subscription's state.
@@ -305,7 +304,6 @@ export async function sendInvoicePaymentFailedEmail({
 }): Promise<void> {
   if (!process.env.RESEND_API_KEY) {
     console.error('Resend API Key is not configured. Skipping email send.');
-    // Optionally throw an error or handle differently based on severity
     return;
   }
   if (!process.env.ADMIN_EMAIL) {

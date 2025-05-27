@@ -1,10 +1,8 @@
+import { createStripePortalSession } from "@/actions/stripe";
 import CurrentUserBenefitsDisplay from "@/components/layout/CurrentUserBenefitsDisplay";
 import { Button } from "@/components/ui/button";
 import { Link as I18nLink } from "@/i18n/routing";
-import {
-  createStripePortalSession,
-  getUserBenefits,
-} from "@/lib/stripe/actions";
+import { getUserBenefits } from "@/lib/stripe/actions";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 

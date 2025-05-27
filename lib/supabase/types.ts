@@ -447,6 +447,46 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      deduct_credits_priority_one_time: {
+        Args: { p_user_id: string; p_amount_to_deduct: number }
+        Returns: {
+          success: boolean
+          message: string
+          new_one_time_credits_balance: number
+          new_subscription_credits_balance: number
+          new_total_available_credits: number
+        }[]
+      }
+      deduct_credits_priority_subscription: {
+        Args: { p_user_id: string; p_amount_to_deduct: number }
+        Returns: {
+          success: boolean
+          message: string
+          new_one_time_credits_balance: number
+          new_subscription_credits_balance: number
+          new_total_available_credits: number
+        }[]
+      }
+      deduct_one_time_credits: {
+        Args: { p_user_id: string; p_amount_to_deduct: number }
+        Returns: {
+          success: boolean
+          message: string
+          new_one_time_credits_balance: number
+          new_subscription_credits_balance: number
+          new_total_available_credits: number
+        }[]
+      }
+      deduct_subscription_credits: {
+        Args: { p_user_id: string; p_amount_to_deduct: number }
+        Returns: {
+          success: boolean
+          message: string
+          new_one_time_credits_balance: number
+          new_subscription_credits_balance: number
+          new_total_available_credits: number
+        }[]
+      }
       revoke_credits: {
         Args: {
           p_user_id: string

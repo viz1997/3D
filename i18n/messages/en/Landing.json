@@ -1,0 +1,306 @@
+{
+  "Hero": {
+    "title": "A Modern Full-Stack SaaS Template",
+    "titleHighlight": "Full-Stack SaaS",
+    "description": "A production-ready Next.js and Supabase starter template for building modern SaaS applications. Launch your content, AI, or subscription service faster.",
+    "getStarted": "Get Started",
+    "viewDocs": "View Docs",
+    "viewShowcase": "View Showcase"
+  },
+  "Features": {
+    "title": "Complete Feature Suite for Rapid Development",
+    "titleHighlight": "Rapid Development",
+    "description": "Our template includes all essential features for modern SaaS applications, allowing you to focus on building your business logic.",
+    "items": [
+      {
+        "icon": "KeyRound",
+        "title": "Authentication System",
+        "description": "Integrated Supabase authentication with multiple sign-in options including Google, GitHub, and email verification."
+      },
+      {
+        "icon": "CreditCard",
+        "title": "Payment Integration",
+        "description": "Built-in Stripe payment system supporting both one-time payments and subscriptions, perfect for various SaaS pricing models."
+      },
+      {
+        "icon": "Bot",
+        "title": "AI Capabilities",
+        "description": "Seamlessly integrate AI features using AI SDK. Build AI-powered chat and image generation tools with zero AI expertise."
+      },
+      {
+        "icon": "FileText",
+        "title": "Content Management",
+        "description": "Built-in CMS with Markdown support, featuring elegant themes for blogs and documentation. Manage your content effortlessly."
+      },
+      {
+        "icon": "Save",
+        "title": "File Storage",
+        "description": "Robust file storage system for handling uploads and management of images, videos, and audio files with ease."
+      },
+      {
+        "icon": "Globe",
+        "title": "Internationalization",
+        "description": "Built-in i18n support for seamless localization. Expand your global reach and enhance accessibility across markets."
+      },
+      {
+        "icon": "Mail",
+        "title": "Email Newsletter",
+        "description": "Integrated Resend email system for managing subscriptions and sending newsletters to your audience."
+      },
+      {
+        "icon": "ChartNoAxesCombined",
+        "title": "Analytics & Ads",
+        "description": "Support for Google Analytics, Plausible, and AdSense integration. Monitor performance and monetize your platform effectively."
+      },
+      {
+        "icon": "Search",
+        "title": "SEO Optimization",
+        "description": "Implement SEO best practices with meta tags, structured data, sitemaps, and OpenGraph tags to improve search engine rankings."
+      }
+    ]
+  },
+  "TechStack": {
+    "badge": "Tech Stack",
+    "title": "Powered by Modern Technologies",
+    "titleHighlight": "Modern",
+    "description": "A carefully curated stack of modern technologies ensuring your product is stable, scalable, and maintainable",
+    "groups": [
+      {
+        "title": "Frontend Framework",
+        "icon": "Code",
+        "description": "Modern responsive interfaces built with Next.js and React",
+        "color": "blue",
+        "items": [
+          {
+            "name": "Next.js",
+            "description": "React Framework",
+            "logo": "/images/nextjs.svg"
+          },
+          {
+            "name": "TypeScript",
+            "description": "Type Safety",
+            "logo": "/images/typescript.svg"
+          },
+          {
+            "name": "Tailwind CSS",
+            "description": "Utility-First CSS",
+            "logo": "/images/tailwindcss.svg"
+          },
+          {
+            "name": "Shadcn/ui",
+            "description": "Custom Components",
+            "logo": "/images/shadcn.svg"
+          }
+        ]
+      },
+      {
+        "title": "Backend & Database",
+        "icon": "Server",
+        "description": "Secure and reliable data storage with robust authentication",
+        "color": "emerald",
+        "items": [
+          {
+            "name": "Supabase",
+            "description": "PostgreSQL + Auth",
+            "logo": "/images/supabase.svg"
+          },
+          {
+            "name": "Upstash Redis",
+            "description": "Edge Caching",
+            "logo": "/images/upstash.png"
+          },
+          {
+            "name": "Cloudflare",
+            "description": "CDN & Network",
+            "logo": "/images/cloudflare.svg"
+          },
+          {
+            "name": "Vercel",
+            "description": "Deploy Instantly",
+            "logo": "/images/vercel.svg"
+          }
+        ]
+      },
+      {
+        "title": "AI & Integration",
+        "icon": "Sparkles",
+        "description": "AI capabilities and third-party service integration",
+        "color": "violet",
+        "items": [
+          {
+            "name": "AI SDK",
+            "description": "AI Development",
+            "logo": "/images/vercel.svg"
+          },
+          {
+            "name": "Replicate",
+            "description": "Multi-Model AI",
+            "logo": "/images/replicate.svg"
+          },
+          {
+            "name": "Resend",
+            "description": "Email API",
+            "logo": "/images/resend.svg"
+          },
+          {
+            "name": "Stripe",
+            "description": "Secure Payments",
+            "logo": "/images/stripe.svg"
+          }
+        ]
+      }
+    ],
+    "footer": {
+      "title": "All-in-One Full-Stack Solution",
+      "description": "A meticulously selected tech stack providing a solid foundation for your project. From frontend to backend, from database to deployment, everything you need in one place."
+    }
+  },
+  "UseCases": {
+    "title": "One Template, Multiple Solutions",
+    "titleHighlight": "Multiple Solutions",
+    "description": "Nexty is versatile enough to power various web projects - from content sites to AI tools, from free utilities to premium subscription services, all with rapid development and deployment.",
+    "cases": [
+      {
+        "title": "Brand Landing Pages",
+        "description": "Create compelling brand pages that showcase your products and services with impact. Our template allows you to build responsive, optimized landing pages that capture visitors' attention and convert them into potential customers, driving successful brand campaigns.",
+        "tags": [
+          "Responsive Design",
+          "High Conversion",
+          "Animation Effects"
+        ],
+        "image": "/placeholder.webp",
+        "icon": "GalleryVertical",
+        "color": "green"
+      },
+      {
+        "title": "AdSense Content Platforms",
+        "description": "Quickly build SEO-friendly content websites with AdSense integration for passive income generation. With built-in CMS and multilingual support, managing large volumes of content becomes effortless.",
+        "tags": [
+          "CMS",
+          "SEO",
+          "Multilingual",
+          "AdSense"
+        ],
+        "image": "/placeholder.webp",
+        "icon": "FileText",
+        "color": "indigo"
+      },
+      {
+        "title": "Free Utility Websites",
+        "description": "Develop user-friendly tool platforms that deliver efficient experiences. With our template, you can rapidly launch tools that balance great UX with strong SEO, attracting users and increasing traffic to your platform.",
+        "tags": [
+          "High Performance",
+          "Analytics",
+          "Ad Monetization"
+        ],
+        "image": "/placeholder.webp",
+        "icon": "Wrench",
+        "color": "cyan"
+      },
+      {
+        "title": "Premium AI Tools",
+        "description": "Build efficient, powerful AI applications with premium user experiences and seamless payment flows. Our template makes it easy to implement subscription models, attract users, and boost revenue, helping your AI project launch successfully.",
+        "tags": [
+          "AI SDK",
+          "Subscription System",
+          "Usage Quotas",
+          "Paywall"
+        ],
+        "image": "/placeholder.webp",
+        "icon": "Bot",
+        "color": "purple"
+      }
+    ]
+  },
+  "WhyChoose": {
+    "title": "Why Choose Nexty?",
+    "description": "Whether you're a developer or a product manager, Nexty helps you save two weeks of time and resources.",
+    "groups": [
+      {
+        "title": "Perfect for Developers",
+        "icon": "Code",
+        "items": [
+          {
+            "text": "Drastically reduce infrastructure development time so you can focus on core functionality"
+          },
+          {
+            "text": "Clean, well-structured code following industry best practices for seamless scalability"
+          },
+          {
+            "text": "Comprehensive TypeScript definitions to minimize errors and boost development efficiency"
+          },
+          {
+            "text": "Extensive documentation and examples to accelerate your learning curve and avoid common pitfalls"
+          }
+        ]
+      },
+      {
+        "title": "Empowering Product Managers",
+        "icon": "ChartPie",
+        "items": [
+          {
+            "text": "Shorten time-to-market and quickly validate your innovative concepts"
+          },
+          {
+            "text": "Integrated analytics tools provide deep insights into user behavior to optimize product strategy"
+          },
+          {
+            "text": "Superior code architecture allows easy feature additions with AI assistance, even without programming experience"
+          },
+          {
+            "text": "Built-in SEO and performance optimizations to enhance user acquisition efficiency"
+          }
+        ]
+      }
+    ]
+  },
+  "Testimonials": {
+    "title": "Our Customers Rapidly Launched AI Tools & SaaS Products",
+    "titleHighlight": "AI Tools & SaaS Products",
+    "description": "Discover authentic feedback from developers and product managers who accelerated their project development with Nexty."
+  },
+  "FAQ": {
+    "title": "Frequently Asked Questions",
+    "description": "Common questions from developers and product managers",
+    "items": [
+      {
+        "question": "What technical knowledge do I need to use this template?",
+        "answer": "Nexty is an AI-friendly template that caters to all skill levels. If you're new to programming, you can leverage AI-assisted development to implement your requirements. For developers familiar with React and Next.js, you'll find the template particularly intuitive. We provide comprehensive documentation and examples - reviewing these resources first will significantly enhance your development experience."
+      },
+      {
+        "question": "Is technical support included with purchase?",
+        "answer": "Absolutely! Technical support is included with all versions. Pro users receive 24/7 email support, while Enterprise customers benefit from dedicated one-on-one support with our technical team."
+      },
+      {
+        "question": "Does the template include all features shown in the demo?",
+        "answer": "Yes, every feature showcased in our demo is fully implemented and production-ready in the template. If you have specific feature requests, our team is open to discussing potential additions to future releases."
+      },
+      {
+        "question": "Does the template support subscription billing?",
+        "answer": "Yes, Nexty fully supports recurring subscription functionality. You can customize the subscription components and configure pricing tiers according to your business needs."
+      },
+      {
+        "question": "Is multilingual support available?",
+        "answer": "Yes, Nexty comes with built-in internationalization support. The template includes English, Chinese, and Japanese out of the box, and you can easily extend it to support additional languages as needed."
+      },
+      {
+        "question": "How do I manage pricing plans?",
+        "answer": "This is one of Nexty's standout features. You can manage pricing plans directly through the Dashboard, including creating, editing, and removing pricing tiers. The template includes AI-powered translation capabilities, eliminating the need for manual language file configuration."
+      },
+      {
+        "question": "What AI capabilities are built into the template?",
+        "answer": "The template comes with integrated AI image generation and conversational AI features. It's designed to seamlessly integrate with leading AI providers including OpenAI, Claude, Gemini, Grok & DeepSeek, enabling you to easily build AI-powered applications."
+      }
+    ]
+  },
+  "CTA": {
+    "title": "Launch Your Product Fast, and Earn Money Fast",
+    "description": "Stop starting from scratch! Use Nexty templates to focus on your core idea, rapidly build, validate, and start earning.",
+    "button": "Get Template Now"
+  },
+  "Pricing": {
+    "title": "One-Time Payment, Lifetime Updates",
+    "titleHighlight": "Lifetime Updates",
+    "description": "We spent months, so you can launch in just days."
+  }
+}

@@ -4,23 +4,18 @@ import { routing } from './routing';
 export default getRequestConfig(async ({ requestLocale }) => {
   let locale = await requestLocale;
 
-  if (locale?.startsWith('zh')) {
-    locale = 'zh';
-  } else if (locale?.startsWith('ja')) {
-    locale = 'ja';
-  } else {
-    locale = 'en';
+  if (!locale || !routing.locales.includes(locale as any)) {
+    locale = routing.defaultLocale;
   }
 
-  if (!locale || !routing.locales.includes(locale as any)) {
-    return {
-      locale: routing.defaultLocale,
-      messages: (await import(`./messages/${routing.defaultLocale}.json`)).default
-    };
-  }
+  const common = (await import(`./messages/${locale}/common.json`)).default;
 
   return {
     locale,
-    messages: (await import(`./messages/${locale}.json`)).default
+    messages: {
+      Landing: (await import(`./messages/${locale}/Landing.json`)).default,
+      Dashboard: (await import(`./messages/${locale}/Dashboard.json`)).default,
+      ...common
+    }
   };
 });

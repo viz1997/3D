@@ -59,7 +59,7 @@ export function LanguageDetectionAlert() {
 
   if (!showLanguageAlert) return null;
 
-  const messages = require(`@/i18n/messages/${currentLocale}.json`);
+  const messages = require(`@/i18n/messages/${currentLocale}/common.json`);
   const alertMessages = messages.LanguageDetection;
 
   return (

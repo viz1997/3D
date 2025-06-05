@@ -252,8 +252,6 @@ export async function handleInvoicePaid(invoice: Stripe.Invoice) {
       amount_tax: (invoice.total_taxes?.reduce((sum, tax) => sum + tax.amount, 0) ?? 0) / 100,
       amount_total: invoice.amount_paid / 100,
       currency: invoice.currency,
-      period_start: invoice.period_start ? new Date(invoice.period_start * 1000).toISOString() : null,
-      period_end: invoice.period_end ? new Date(invoice.period_end * 1000).toISOString() : null,
       metadata: {
         stripeInvoiceId: invoice.id,
         stripeSubscriptionId: subscriptionId,
@@ -571,8 +569,6 @@ export async function handleRefund(charge: Stripe.Charge) {
     amount_total: -refundAmount,
     currency: charge.currency,
     subscription_provider_id: null,
-    period_start: null,
-    period_end: null,
     metadata: {
       stripeRefundId: refundId,
       stripeChargeId: charge.id,

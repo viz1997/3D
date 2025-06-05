@@ -15,8 +15,6 @@ CREATE TABLE public.orders (
     amount_total numeric NOT NULL,
     currency text NOT NULL,
     subscription_provider_id text NULL,
-    period_start timestamptz NULL,
-    period_end timestamptz NULL,
     metadata jsonb NULL,
     created_at timestamptz NOT NULL DEFAULT now(),
     updated_at timestamptz NOT NULL DEFAULT now()
@@ -38,8 +36,6 @@ COMMENT ON COLUMN public.orders.amount_tax IS 'Tax amount.';
 COMMENT ON COLUMN public.orders.amount_total IS 'Final amount paid/due.';
 COMMENT ON COLUMN public.orders.currency IS 'Currency code (e.g., ''usd'').';
 COMMENT ON COLUMN public.orders.subscription_provider_id IS 'Associated Stripe subscription ID (sub_...) for subscription-related events.';
-COMMENT ON COLUMN public.orders.period_start IS 'Start time of the subscription billing period.';
-COMMENT ON COLUMN public.orders.period_end IS 'End time of the subscription billing period.';
 COMMENT ON COLUMN public.orders.metadata IS 'Stores additional information (e.g., Checkout Session metadata, refund reasons, coupon codes).';
 COMMENT ON COLUMN public.orders.created_at IS 'Timestamp of record creation.';
 COMMENT ON COLUMN public.orders.updated_at IS 'Timestamp of last record update.';

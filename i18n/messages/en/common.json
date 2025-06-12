@@ -182,6 +182,10 @@
       {
         "name": "Subscription",
         "href": "/dashboard/subscription"
+      },
+      {
+        "name": "Credit History",
+        "href": "/dashboard/credit-history"
       }
     ],
     "AdminMenus": [

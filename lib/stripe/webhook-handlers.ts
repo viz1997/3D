@@ -86,12 +86,12 @@ export async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Se
     }
 
     // --- [custom] Upgrade the user's benefits ---
-    upgradeOneTimeCredits(userId, planId);
+    upgradeOneTimeCredits(userId, planId, paymentIntentId);
     // --- End: [custom] Upgrade the user's benefits ---
   }
 }
 
-export async function upgradeOneTimeCredits(userId: string, planId: string) {
+export async function upgradeOneTimeCredits(userId: string, planId: string, paymentIntentId?: string) {
   const supabaseAdmin = createAdminClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -124,10 +124,19 @@ export async function upgradeOneTimeCredits(userId: string, planId: string) {
 
   const creditsToGrant = (planData.benefits_jsonb as any)?.one_time_credits || 0;
 
+  const { data: order } = await supabaseAdmin
+    .from('orders')
+    .select('id')
+    .eq('provider_order_id', paymentIntentId)
+    .single();
+
+  const orderId = order?.id;
+
   if (creditsToGrant && creditsToGrant > 0) {
-    const { error: usageError } = await supabaseAdmin.rpc('upsert_and_increment_one_time_credits', {
+    const { error: usageError } = await supabaseAdmin.rpc('grant_one_time_credits_and_log', {
       p_user_id: userId,
-      p_credits_to_add: creditsToGrant
+      p_credits_to_add: creditsToGrant,
+      p_related_order_id: orderId,
     });
 
     if (usageError) {
@@ -318,10 +327,19 @@ export async function upgradeSubscriptionCredits(userId: string, planId: string,
     } else {
       const creditsToGrant = (planData.benefits_jsonb as any)?.monthly_credits || 0;
 
+      const { data: order } = await supabaseAdmin
+        .from('orders')
+        .select('id')
+        .eq('provider_order_id', invoiceId)
+        .single();
+
+      const orderId = order?.id;
+
       if (creditsToGrant && creditsToGrant > 0) {
-        const { error: usageError } = await supabaseAdmin.rpc('upsert_and_set_subscription_credits', {
+        const { error: usageError } = await supabaseAdmin.rpc('grant_subscription_credits_and_log', {
           p_user_id: userId,
-          p_credits_to_set: creditsToGrant
+          p_credits_to_set: creditsToGrant,
+          p_related_order_id: orderId,
         });
 
         if (usageError) {
@@ -356,12 +374,15 @@ export async function handleSubscriptionUpdate(subscription: Stripe.Subscription
   try {
     await syncSubscriptionData(subscription.id, customerId, subscription.metadata);
 
-    if (isDeleted && userId && planId) {
+    if (!userId || !planId) {
+      console.warn(`Cannot sync subscription ${subscription.id} during update event because userId (${userId}) or planId (${planId}) is missing in metadata.`);
+      return;
+    }
+
+    if (isDeleted) {
       // --- [custom] Revoke the user's benefits (only for one time purchase) ---
       revokeSubscriptionCredits(userId, planId, subscription.id);
       // --- End: [custom] Revoke the user's benefits ---
-    } else {
-      console.warn(`Cannot revoke subscription credits for deleted subscription ${subscription.id} because userId (${userId}) or planId (${planId}) is missing in metadata.`);
     }
   } catch (error) {
     console.error(`Error syncing subscription ${subscription.id} during update event:`, error);
@@ -412,18 +433,18 @@ export async function revokeSubscriptionCredits(userId: string, planId: string, 
     }
 
     if (subscriptionToRevoke >= 0) {
-      const { data: revokeResult, error: revokeError } = await supabaseAdmin.rpc('revoke_credits', {
+      const { error: revokeError } = await supabaseAdmin.rpc('revoke_credits_and_log', {
         p_user_id: userId,
         p_revoke_one_time: 0,
-        p_revoke_subscription: subscriptionToRevoke
+        p_revoke_subscription: subscriptionToRevoke,
+        p_log_type: 'subscription_cancel_revoke',
+        p_notes: `Subscription ${subscriptionId} cancelled.`
       });
 
       if (revokeError) {
-        console.error(`Error calling revoke_credits RPC (subscription) for user ${userId}, subscription ${subscriptionId}:`, revokeError);
-      } else if (revokeResult === true) {
-        console.log(`Successfully revoked subscription credits for user ${userId} related to subscription ${subscriptionId} cancellation.`);
+        console.error(`Error calling revoke_credits_and_log RPC (subscription) for user ${userId}, subscription ${subscriptionId}:`, revokeError);
       } else {
-        console.warn(`revoke_credits RPC (subscription) returned false for user ${userId}, subscription ${subscriptionId}.`);
+        console.log(`Successfully revoked subscription credits for user ${userId} related to subscription ${subscriptionId} cancellation.`);
       }
     } else {
       console.log(`No subscription credits (e.g., monthly_credits >= 0) defined to revoke for plan ${planId} on subscription ${subscriptionId} cancellation.`);
@@ -579,9 +600,11 @@ export async function handleRefund(charge: Stripe.Charge) {
     }
   };
 
-  const { error: insertRefundError } = await supabaseAdmin
+  const { data: refundOrder, error: insertRefundError } = await supabaseAdmin
     .from('orders')
-    .insert(refundData);
+    .insert(refundData)
+    .select('id')
+    .single();
 
   if (insertRefundError) {
     console.error(`Error inserting refund order for refund ${refundId}:`, insertRefundError);
@@ -590,12 +613,12 @@ export async function handleRefund(charge: Stripe.Charge) {
 
   // --- [custom] Revoke the user's benefits (only for one time purchase) ---
   if (originalOrder) {
-    revokeOneTimeCredits(charge, originalOrder, refundId);
+    revokeOneTimeCredits(charge, originalOrder, refundOrder?.id ?? null);
   }
   // --- End: [custom] Revoke the user's benefits ---
 }
 
-export async function revokeOneTimeCredits(charge: Stripe.Charge, originalOrder: Database['public']['Tables']['orders']['Row'], refundId: string) {
+export async function revokeOneTimeCredits(charge: Stripe.Charge, originalOrder: Database['public']['Tables']['orders']['Row'], refundOrderId: string) {
   const supabaseAdmin = createAdminClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -626,7 +649,7 @@ export async function revokeOneTimeCredits(charge: Stripe.Charge, originalOrder:
         .single();
 
       if (planError || !planData) {
-        console.error(`Error fetching plan benefits for planId ${originalOrder.plan_id} during refund ${refundId}:`, planError);
+        console.error(`Error fetching plan benefits for planId ${originalOrder.plan_id} during refund ${refundOrderId}:`, planError);
       } else {
         let oneTimeToRevoke = 0;
         const benefits = planData.benefits_jsonb as any;
@@ -636,33 +659,34 @@ export async function revokeOneTimeCredits(charge: Stripe.Charge, originalOrder:
         }
 
         if (oneTimeToRevoke > 0) {
-          const { data: revokeResult, error: revokeError } = await supabaseAdmin.rpc('revoke_credits', {
+          const { data: revokeResult, error: revokeError } = await supabaseAdmin.rpc('revoke_credits_and_log', {
             p_user_id: originalOrder.user_id,
             p_revoke_one_time: oneTimeToRevoke,
-            p_revoke_subscription: 0
+            p_revoke_subscription: 0,
+            p_log_type: 'refund_revoke',
+            p_notes: `Full refund for order ${originalOrder.id}.`,
+            p_related_order_id: refundOrderId
           });
 
           if (revokeError) {
-            console.error(`Error calling revoke_credits RPC for user ${originalOrder.user_id}, refund ${refundId}:`, revokeError);
-          } else if (revokeResult === true) {
-            console.log(`Successfully revoked credits for user ${originalOrder.user_id} related to refund ${refundId}.`);
+            console.error(`Error calling revoke_credits_and_log RPC for user ${originalOrder.user_id}, refund ${refundOrderId}:`, revokeError);
           } else {
-            console.warn(`revoke_credits RPC returned false for user ${originalOrder.user_id}, refund ${refundId} (possibly due to insufficient balance or other issue).`);
+            console.log(`Successfully revoked credits for user ${originalOrder.user_id} related to refund ${refundOrderId}.`);
           }
         } else {
-          console.log(`No credits defined to revoke for plan ${originalOrder.plan_id}, order type ${originalOrder.order_type} on refund ${refundId}.`);
+          console.log(`No credits defined to revoke for plan ${originalOrder.plan_id}, order type ${originalOrder.order_type} on refund ${refundOrderId}.`);
         }
       }
     } else {
-      console.log(`Refund ${refundId} is not a full refund. Skipping credit revocation. Refunded: ${charge.amount_refunded}, Original Total: ${originalOrder.amount_total * 100}`);
+      console.log(`Refund ${charge.id} is not a full refund. Skipping credit revocation. Refunded: ${charge.amount_refunded}, Original Total: ${originalOrder.amount_total * 100}`);
     }
   } else {
     if (!originalOrder) {
-      console.warn(`Cannot revoke one-time credits for refund ${refundId} because original order was not found.`);
+      console.warn(`Cannot revoke one-time credits for refund ${refundOrderId} because original order was not found.`);
     } else if (originalOrder.order_type !== 'one_time_purchase') {
-      console.log(`Skipping one-time credit revocation for refund ${refundId} as original order type is ${originalOrder.order_type}.`);
+      console.log(`Skipping one-time credit revocation for refund ${refundOrderId} as original order type is ${originalOrder.order_type}.`);
     } else {
-      console.warn(`Cannot revoke one-time credits for refund ${refundId} due to missing user_id or plan_id on original order ${originalOrder.id}.`);
+      console.warn(`Cannot revoke one-time credits for refund ${refundOrderId} due to missing user_id or plan_id on original order ${originalOrder.id}.`);
     }
   }
   // --- End: [custom] Revoke the user's one time purchase benefits ---

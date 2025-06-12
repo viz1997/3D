@@ -182,6 +182,10 @@
       {
         "name": "サブスクリプション",
         "href": "/dashboard/subscription"
+      },
+      {
+        "name": "クレジット履歴",
+        "href": "/dashboard/credit-history"
       }
     ],
     "AdminMenus": [

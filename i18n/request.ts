@@ -15,6 +15,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
     messages: {
       Landing: (await import(`./messages/${locale}/Landing.json`)).default,
       Dashboard: (await import(`./messages/${locale}/Dashboard.json`)).default,
+      CreditHistory: (await import(`./messages/${locale}/CreditHistory.json`)).default,
       ...common
     }
   };

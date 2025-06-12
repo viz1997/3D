@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  DeductCreditsData,
-  deductCreditsPrioritizingSubscription,
-  deductOneTimeCredits,
-  deductSubscriptionCredits,
-  getClientUserBenefits,
-} from "@/actions/usage/deduct";
+import { deductCredits, getClientUserBenefits } from "@/actions/usage/deduct";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,9 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ActionResult } from "@/lib/action-response";
 import { UserBenefits } from "@/lib/stripe/actions";
-import { useLocale } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -28,24 +20,18 @@ const CREDITS_TO_DEDUCT = 10;
 export default function CreditUsageExamplePage() {
   const [benefits, setBenefits] = useState<UserBenefits | null>(null);
   const [isLoadingBenefits, setIsLoadingBenefits] = useState(true);
-  const [isDeducting, setIsDeducting] = useState<string | false>(false);
-  const locale = useLocale();
+  const [isDeducting, setIsDeducting] = useState(false);
 
   const fetchBenefitsAndSetState = useCallback(async () => {
     setIsLoadingBenefits(true);
     try {
       const result = await getClientUserBenefits();
-      if (result.success && result.data) {
-        setBenefits(result.data);
-      } else if (!result.success) {
-        throw new Error(
-          result.error || "Failed to fetch user benefits or user not found."
-        );
-      } else {
-        throw new Error(
-          "Fetched user benefits successfully but no data was returned."
-        );
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to fetch user benefits.");
       }
+
+      setBenefits(result.data || null);
     } catch (error) {
       console.error("Error fetching benefits:", error);
       toast.error(
@@ -61,67 +47,35 @@ export default function CreditUsageExamplePage() {
     fetchBenefitsAndSetState();
   }, [fetchBenefitsAndSetState]);
 
-  const handleDeduction = async (
-    deductionType: "oneTime" | "subscription" | "prioritySub"
-  ) => {
+  const handleDeduction = async () => {
     if (!benefits) {
       toast.error("User benefits not loaded yet.");
       return;
     }
-    setIsDeducting(deductionType);
-
-    let result: ActionResult<DeductCreditsData | null>;
+    setIsDeducting(true);
 
     try {
-      switch (deductionType) {
-        case "oneTime":
-          result = await deductOneTimeCredits(CREDITS_TO_DEDUCT, locale);
-          break;
-        case "subscription":
-          result = await deductSubscriptionCredits(CREDITS_TO_DEDUCT, locale);
-          break;
-        case "prioritySub":
-          result = await deductCreditsPrioritizingSubscription(
-            CREDITS_TO_DEDUCT,
-            locale
-          );
-          break;
-        default:
-          toast.error("Invalid deduction type");
-          setIsDeducting(false);
-          return;
-      }
+      const result = await deductCredits(
+        CREDITS_TO_DEDUCT,
+        `Used feature from example page`
+      );
 
       if (!result.success) {
-        toast.error(result.error || "An unexpected action error occurred.");
-      } else if (result.data?.rpcResult?.success) {
-        toast.success(
-          result.data.rpcResult.message ||
-            `Successfully deducted ${CREDITS_TO_DEDUCT} credits.`
-        );
-      } else if (result.data?.rpcResult) {
-        toast.warning(
-          result.data.rpcResult.message || "Could not deduct credits."
-        );
+        toast.error(result.error || "Could not deduct credits.");
+        await fetchBenefitsAndSetState();
+        return;
       }
 
-      if (result.success && result.data?.updatedBenefits) {
+      if (result.success && result.data) {
+        toast.success(result.data.message || `Successfully deducted credits.`);
         setBenefits(result.data.updatedBenefits);
-      } else if (
-        result.success &&
-        !result.data?.updatedBenefits &&
-        result.data?.rpcResult?.success
-      ) {
-        await fetchBenefitsAndSetState();
-      } else if (!result.success) {
-        await fetchBenefitsAndSetState();
       }
     } catch (error) {
-      console.error(`Error during ${deductionType} deduction call:`, error);
+      console.error(`Error during deduction call:`, error);
       toast.error(
         error instanceof Error
           ? error.message
-          : "An unexpected error occurred during deduction call."
+          : "An unexpected error occurred during deduction."
       );
       await fetchBenefitsAndSetState();
     } finally {
@@ -145,9 +99,9 @@ export default function CreditUsageExamplePage() {
         <CardHeader>
           <CardTitle>Credit Usage Example</CardTitle>
           <CardDescription>
-            This page demonstrates different ways to deduct credits for using a
-            feature. Each button simulates using a feature that costs{" "}
-            {CREDITS_TO_DEDUCT} credits. (Only development mode)
+            This page demonstrates how to deduct credits for using a feature.
+            The button simulates using a feature that costs {CREDITS_TO_DEDUCT}{" "}
+            credits. (Only for development)
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -178,33 +132,15 @@ export default function CreditUsageExamplePage() {
             </p>
           )}
         </CardContent>
-        <CardFooter className="flex flex-col items-start gap-4">
+        <CardFooter>
           <Button
-            onClick={() => handleDeduction("oneTime")}
-            disabled={!!isDeducting || isLoadingBenefits || !benefits}
+            onClick={handleDeduction}
+            disabled={isDeducting || isLoadingBenefits || !benefits}
             className="w-full sm:w-auto"
           >
-            {isDeducting === "oneTime"
+            {isDeducting
               ? "Deducting..."
-              : `Deduct ${CREDITS_TO_DEDUCT} (One-Time Only)`}
-          </Button>
-          <Button
-            onClick={() => handleDeduction("subscription")}
-            disabled={!!isDeducting || isLoadingBenefits || !benefits}
-            className="w-full sm:w-auto"
-          >
-            {isDeducting === "subscription"
-              ? "Deducting..."
-              : `Deduct ${CREDITS_TO_DEDUCT} (Subscription Only)`}
-          </Button>
-          <Button
-            onClick={() => handleDeduction("prioritySub")}
-            disabled={!!isDeducting || isLoadingBenefits || !benefits}
-            className="w-full sm:w-auto"
-          >
-            {isDeducting === "prioritySub"
-              ? "Deducting..."
-              : `Deduct ${CREDITS_TO_DEDUCT} (Prioritize Subscription)`}
+              : `Use Feature & Deduct ${CREDITS_TO_DEDUCT} Credits`}
           </Button>
         </CardFooter>
       </Card>
@@ -215,52 +151,37 @@ export default function CreditUsageExamplePage() {
         </CardHeader>
         <CardContent className="text-sm space-y-2">
           <p>
-            1. <strong>Credit Deduction Logic:</strong>
+            1. <strong>Unified Credit Deduction Logic:</strong>
           </p>
           <ul className="list-disc pl-5 space-y-1">
             <li>
-              &quot;One-Time Only&quot;: Deducts only from one-time credits.
-              Fails if insufficient.
+              The system now uses a single, unified method for deduction:{" "}
+              <code className="bg-gray-200 dark:bg-gray-800">
+                deductCredits(amount, notes)
+              </code>
+              .
             </li>
             <li>
-              &quot;Subscription Only&quot;: Deducts only from subscription
-              credits. Fails if insufficient.
+              This method automatically prioritizes deducting from subscription
+              credits first, then from one-time credits.
             </li>
             <li>
-              &quot;Prioritize Subscription&quot;: Deducts from subscription
-              credits first, then one-time credits if needed.
+              Every deduction is now recorded in the new{" "}
+              <code className="bg-gray-200 dark:bg-gray-800">credit_logs</code>{" "}
+              table.
             </li>
           </ul>
           <p>
-            2. Ensure the Supabase RPC functions (from{" "}
+            2. Ensure the new Supabase RPC functions (from{" "}
             <code className="bg-gray-200 dark:bg-gray-800">
-              data/5、usage(deduct_rpc_demo).sql
+              data/8、credit_logs.sql
             </code>
-            ) are applied to your database with{" "}
-            <strong>SECURITY DEFINER</strong>.
+            ) are applied to your database.
           </p>
           <p>
-            3. After adding/modifying RPC functions, regenerate Supabase types
-            to avoid linter errors in{" "}
-            <code className="bg-gray-200 dark:bg-gray-800">
-              actions/usage/deduct.ts
-            </code>
-            :{" "}
-            <code className="bg-gray-200 dark:bg-gray-800">
-              supabase gen types typescript --project-id YOUR_PROJECT_ID
-              --schema public {" > "} lib/supabase/types.ts
-            </code>
-            .
-          </p>
-          <p>
-            4. This page demonstrates deducting credits after feature use. For
-            this demo,{" "}
-            <code className="bg-gray-200 dark:bg-gray-800">
-              actions/usage/deduct.ts
-            </code>{" "}
-            is called client-side. In a real application, credit deduction
-            should occur server-side after the feature completes, not be
-            initiated by the frontend.
+            3. In a real application, credit deduction should happen on the
+            server-side *after* a feature's successful execution, typically
+            within the API route that provides the feature.
           </p>
         </CardContent>
       </Card>

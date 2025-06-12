@@ -6,35 +6,22 @@ import { createClient } from '@/lib/supabase/server';
 import { Database } from '@/lib/supabase/types';
 import { createClient as createAdminClient } from '@supabase/supabase-js';
 
-export interface DeductCreditsRpcResult {
-  success: boolean;
-  message: string;
-  new_one_time_credits_balance: number;
-  new_subscription_credits_balance: number;
-  new_total_available_credits: number;
-}
-
 export interface DeductCreditsData {
-  rpcResult: DeductCreditsRpcResult;
+  message: string;
   updatedBenefits: UserBenefits | null;
 }
 
-async function callDeductRpc(
-  rpcName:
-    | 'deduct_one_time_credits'
-    | 'deduct_subscription_credits'
-    | 'deduct_credits_priority_subscription'
-    | 'deduct_credits_priority_one_time',
+/**
+ * Unified action for deducting credits from a user's account.
+ * @param amountToDeduct - The amount of credits to deduct (must be a positive number).
+ * @param notes - A description for this deduction, which will be recorded in `credit_logs` (e.g., "AI summary generation").
+ * @returns An `ActionResult` containing the operation result and the updated user benefits.
+ */
+export async function deductCredits(
   amountToDeduct: number,
-  currentLocale: string
+  notes: string,
 ): Promise<ActionResult<DeductCreditsData | null>> {
   const supabase = await createClient();
-
-  const supabaseAdmin = createAdminClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {
@@ -45,69 +32,50 @@ async function callDeductRpc(
     return actionResponse.badRequest('Amount to deduct must be positive.');
   }
 
+  if (!notes) {
+    return actionResponse.badRequest('Deduction notes are required.');
+  }
+
+  const supabaseAdmin = createAdminClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
   try {
-    const { data: rpcResponseData, error: rpcError } = await supabaseAdmin.rpc(rpcName, {
+    const { data: rpcSuccess, error: rpcError } = await supabaseAdmin.rpc('deduct_credits_and_log', {
       p_user_id: user.id,
-      p_amount_to_deduct: amountToDeduct,
+      p_deduct_amount: amountToDeduct,
+      p_notes: notes,
     });
 
     if (rpcError) {
-      console.error(`Error calling ${rpcName} RPC:`, rpcError);
-      return actionResponse.error(`Failed to call ${rpcName} RPC: ${rpcError.message}`);
+      console.error(`Error calling deduct_credits_and_log RPC:`, rpcError);
+      return actionResponse.error(`Failed to deduct credits: ${rpcError.message}`);
     }
 
-    let rpcResultData: DeductCreditsRpcResult | null = null;
-    if (rpcResponseData) {
-      rpcResultData = rpcResponseData[0] as DeductCreditsRpcResult;
-    } else {
-      console.error(`${rpcName} RPC returned no data or unexpected structure:`, rpcResponseData);
-      return actionResponse.error('Credit deduction RPC returned unexpected data.');
+    // return 'false' means insufficient credits
+    if (rpcSuccess === false) {
+      return actionResponse.badRequest('Insufficient credits.');
     }
 
-    let updatedBenefits: UserBenefits | null = null;
-    try {
-      updatedBenefits = await fetchUserBenefitsInternal(user.id);
-    } catch (benefitFetchError) {
-      console.error(`Error fetching benefits after ${rpcName} for user ${user.id}:`, benefitFetchError);
-    }
+    const updatedBenefits = await fetchUserBenefitsInternal(user.id);
 
-    return actionResponse.success<DeductCreditsData>({ rpcResult: rpcResultData, updatedBenefits });
+    return actionResponse.success({
+      message: 'Credits deducted successfully.',
+      updatedBenefits,
+    });
 
   } catch (e: any) {
-    console.error(`Unexpected error in ${rpcName}:`, e);
+    console.error(`Unexpected error in deductCredits:`, e);
     return actionResponse.error(e.message || 'An unexpected server error occurred.');
   }
-}
-
-export async function deductOneTimeCredits(
-  amountToDeduct: number, currentLocale: string
-): Promise<ActionResult<DeductCreditsData | null>> {
-  return callDeductRpc('deduct_one_time_credits', amountToDeduct, currentLocale);
-}
-
-export async function deductSubscriptionCredits(
-  amountToDeduct: number, currentLocale: string
-): Promise<ActionResult<DeductCreditsData | null>> {
-  return callDeductRpc('deduct_subscription_credits', amountToDeduct, currentLocale);
-}
-
-export async function deductCreditsPrioritizingSubscription(
-  amountToDeduct: number, currentLocale: string
-): Promise<ActionResult<DeductCreditsData | null>> {
-  return callDeductRpc('deduct_credits_priority_subscription', amountToDeduct, currentLocale);
-}
-
-export async function deductCreditsPrioritizingOneTime(
-  amountToDeduct: number, currentLocale: string
-): Promise<ActionResult<DeductCreditsData | null>> {
-  return callDeductRpc('deduct_credits_priority_one_time', amountToDeduct, currentLocale);
 }
 
 export async function getClientUserBenefits(): Promise<ActionResult<UserBenefits | null>> {
   const supabase = await createClient();
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) {
-    return actionResponse.unauthorized();
+    return actionResponse.unauthorized('User not authenticated.');
   }
   try {
     const benefits = await fetchUserBenefitsInternal(user.id);
@@ -119,4 +87,4 @@ export async function getClientUserBenefits(): Promise<ActionResult<UserBenefits
     console.error('Error fetching user benefits for client:', error);
     return actionResponse.error(error.message || 'Failed to fetch user benefits.');
   }
-} 
+}

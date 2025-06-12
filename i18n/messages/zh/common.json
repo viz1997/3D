@@ -182,6 +182,10 @@
       {
         "name": "管理订阅",
         "href": "/dashboard/subscription"
+      },
+      {
+        "name": "积分记录",
+        "href": "/dashboard/credit-history"
       }
     ],
     "AdminMenus": [

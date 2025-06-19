@@ -68,9 +68,9 @@ export default function Hero() {
                   <span className="text-pink-400">from</span>{" "}
                   <span className="">&apos;react&apos;</span>;{"\n"}
                   <span className="text-pink-400">import</span>{" "}
-                  <span className="text-blue-400">{"{ useTranslation }"}</span>{" "}
+                  <span className="text-blue-400">{"{ useTranslations }"}</span>{" "}
                   <span className="text-pink-400">from</span>{" "}
-                  <span className="">&apos;next-i18next&apos;</span>;{"\n"}
+                  <span className="">&apos;next-intl&apos;</span>;{"\n"}
                   <span className="text-pink-400">import</span>{" "}
                   <span className="text-blue-400">{"{ useAuth }"}</span>{" "}
                   <span className="text-pink-400">from</span>{" "}
@@ -88,7 +88,7 @@ export default function Hero() {
                   <span className="text-yellow-300">HomePage</span>() {"{"}
                   {"\n  "}
                   <span className="text-pink-400">const</span> {"{ t }"} ={" "}
-                  <span className="text-yellow-300">useTranslation</span>();
+                  <span className="text-yellow-300">useTranslations</span>();
                   {"\n  "}
                   <span className="text-pink-400">const</span> {"{ user }"} ={" "}
                   <span className="text-yellow-300">useAuth</span>();

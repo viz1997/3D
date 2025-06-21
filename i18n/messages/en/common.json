@@ -39,7 +39,7 @@
     ]
   },
   "Footer": {
-    "Copyright": "Copyright © {year} Nexty.dev All rights reserved.",
+    "Copyright": "Copyright © {year} {name} All rights reserved.",
     "PrivacyPolicy": "Privacy Policy",
     "TermsOfService": "Terms of Service",
     "Newsletter": {

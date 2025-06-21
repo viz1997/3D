@@ -39,7 +39,7 @@
     ]
   },
   "Footer": {
-    "Copyright": "版权所有 © {year} Nexty.dev 保留所有权利。",
+    "Copyright": "版权所有 © {year} {name} 保留所有权利。",
     "PrivacyPolicy": "隐私政策",
     "TermsOfService": "条款与条件",
     "Newsletter": {

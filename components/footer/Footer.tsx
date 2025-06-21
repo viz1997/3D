@@ -155,7 +155,10 @@ export default async function Footer() {
 
           <div className="border-t border-gray-800 py-6 flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm">
-              {tFooter("Copyright", { year: new Date().getFullYear() })}
+              {tFooter("Copyright", {
+                year: new Date().getFullYear(),
+                name: siteConfig.name,
+              })}
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <I18nLink

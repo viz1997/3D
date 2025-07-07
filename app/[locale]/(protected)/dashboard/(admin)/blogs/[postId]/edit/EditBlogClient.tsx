@@ -18,7 +18,6 @@ export default function EditBlogClient() {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("DashboardBlogs.Edit");
-  const tCommon = useTranslations("Dashboard.Common");
 
   const params = useParams();
   const { postId } = params;
@@ -94,7 +93,7 @@ export default function EditBlogClient() {
         </h2>
         <p className="text-muted-foreground">{t("postNotFoundDesc")}</p>
         <Button onClick={() => router.push(`/dashboard/blogs`)}>
-          {tCommon("backToList")}
+          {t("backToList")}
         </Button>
       </div>
     );

@@ -44,7 +44,6 @@ export function PricesDataTable<TData extends PricingPlan, TValue>({
   data,
 }: DataTableProps<TData, TValue>) {
   const t = useTranslations("Prices.PricesDataTable");
-  const tCommon = useTranslations("Dashboard.Common");
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

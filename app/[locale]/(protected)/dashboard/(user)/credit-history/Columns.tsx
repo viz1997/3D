@@ -2,6 +2,12 @@
 
 import type { CreditLog } from "@/actions/usage/logs";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { ColumnDef } from "@tanstack/react-table";
 import dayjs from "dayjs";
 
@@ -27,6 +33,12 @@ const formatLogType = (type: string, t: (key: string) => string) => {
       return (
         <Badge variant="destructive">
           {t("type_subscription_cancel_revoke")}
+        </Badge>
+      );
+    case "welcome_bonus":
+      return (
+        <Badge variant="default" className="bg-green-500 hover:bg-green-600">
+          {t("type_welcome_bonus")}
         </Badge>
       );
     default:
@@ -55,7 +67,16 @@ export const getColumns = (
     accessorKey: "notes",
     header: t("header_details"),
     cell: ({ row }) => (
-      <div className="max-w-[200px] truncate">{row.getValue("notes")}</div>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="max-w-[200px] truncate">
+              {row.getValue("notes")}
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>{row.getValue("notes")}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     ),
   },
   {

@@ -59,6 +59,7 @@
     "featuresList": "機能リスト",
     "featuresListDescription": "このプランに含まれる機能を追加します。",
     "included": "含まれる機能",
+    "bold": "太字",
     "addFeature": "機能を追加",
     "highlightThisPlan": "プランを強調表示",
     "highlightThisPlanDescription": "料金ページでこのプランを視覚的に目立たせます。",

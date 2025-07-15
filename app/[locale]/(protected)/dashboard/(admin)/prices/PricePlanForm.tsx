@@ -60,6 +60,7 @@ import { PricingCardPreview } from "./PricingCardPreview";
 const featureSchema = z.object({
   description: z.string().min(1, "Feature description cannot be empty."),
   included: z.boolean().default(true).optional(),
+  bold: z.boolean().default(false).optional(),
 });
 
 const isValidJsonString = (str: string): boolean => {
@@ -156,6 +157,7 @@ export function PricePlanForm({ initialData, planId }: PricePlanFormProps) {
           ? initialData.features.map((f: any) => ({
               description: f?.description ?? "",
               included: typeof f?.included === "boolean" ? f.included : true,
+              bold: typeof f?.bold === "boolean" ? f.bold : false,
             }))
           : [],
       is_highlighted: initialData?.is_highlighted ?? false,
@@ -372,6 +374,7 @@ export function PricePlanForm({ initialData, planId }: PricePlanFormProps) {
           ? currentValues.features.map((f) => ({
               description: f?.description ?? "",
               included: typeof f?.included === "boolean" ? f.included : true,
+              bold: typeof f?.bold === "boolean" ? f.bold : false,
             }))
           : [],
       highlight_text: currentValues.highlight_text || "",
@@ -994,6 +997,24 @@ export function PricePlanForm({ initialData, planId }: PricePlanFormProps) {
                             </FormItem>
                           )}
                         />
+                        <FormField
+                          control={form.control}
+                          name={`features.${index}.bold`}
+                          render={({ field }) => (
+                            <FormItem className="flex items-center space-x-2">
+                              <FormControl>
+                                <Checkbox
+                                  checked={field.value ?? false}
+                                  onCheckedChange={field.onChange}
+                                  disabled={isLoading}
+                                />
+                              </FormControl>
+                              <FormLabel className="text-sm font-normal whitespace-nowrap mt-0">
+                                {t("bold")}
+                              </FormLabel>
+                            </FormItem>
+                          )}
+                        />
                         <Button
                           type="button"
                           variant="ghost"
@@ -1010,7 +1031,7 @@ export function PricePlanForm({ initialData, planId }: PricePlanFormProps) {
                       variant="outline"
                       size="sm"
                       onClick={() =>
-                        append({ description: "", included: true })
+                        append({ description: "", included: true, bold: false })
                       }
                       disabled={isLoading}
                       className="mt-2"

@@ -1,4 +1,5 @@
 import PricingCTA from "@/components/home/PricingCTA";
+import { cn } from "@/lib/utils";
 import { PricingPlan, PricingPlanTranslation } from "@/types/pricing";
 import { Check, X } from "lucide-react";
 
@@ -69,7 +70,7 @@ export function PricingCardDisplay({
       <ul className="space-y-3 mb-6">
         {features?.map(
           (
-            feature: { description: string; included: boolean },
+            feature: { description: string; included: boolean; bold?: boolean },
             index: number
           ) => (
             <li key={index} className="flex items-start">
@@ -78,7 +79,12 @@ export function PricingCardDisplay({
               ) : (
                 <X className="text-red-500 h-5 w-5 mt-1 mr-3 flex-shrink-0 opacity-50" />
               )}
-              <span className={feature.included ? "" : "opacity-50"}>
+              <span
+                className={cn(
+                  feature.included ? "" : "opacity-50",
+                  feature.bold ? "font-bold" : ""
+                )}
+              >
                 {feature.description}
               </span>
             </li>

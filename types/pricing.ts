@@ -2,6 +2,7 @@
 export interface PricingPlanFeature {
   description: string;
   included: boolean;
+  bold?: boolean;
 }
 
 export interface PricingPlanTranslation {

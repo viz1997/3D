@@ -9,7 +9,6 @@ import Header from "@/components/header/Header";
 import { LanguageDetectionAlert } from "@/components/LanguageDetectionAlert";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { BenefitsProvider } from "@/components/providers/BenefitsProvider";
-import DiscordInviteWidget from "@/components/shared/DiscordInviteWidget";
 import { TailwindIndicator } from "@/components/TailwindIndicator";
 import { Toaster } from "@/components/ui/sonner";
 import { siteConfig } from "@/config/site";
@@ -136,7 +135,6 @@ export default async function LocaleLayout({
         <GoogleOneTap />
         <Toaster />
         <TailwindIndicator />
-        <DiscordInviteWidget />
         {process.env.NODE_ENV === "development" ? (
           <></>
         ) : (

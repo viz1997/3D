@@ -5,7 +5,6 @@ import Hero from "@/components/home/Hero";
 import Pricing from "@/components/home/Pricing";
 import Testimonials from "@/components/home/Testimonials";
 import UseCases from "@/components/home/UseCases";
-import WhyChoose from "@/components/home/WhyChoose";
 import { BG1 } from "@/components/shared/BGs";
 import { getMessages } from "next-intl/server";
 
@@ -21,8 +20,6 @@ export default async function HomeComponent() {
       {messages.Landing.Features && <Features />}
 
       {messages.Landing.UseCases && <UseCases />}
-
-      {messages.Landing.WhyChoose && <WhyChoose />}
 
       {messages.Landing.Pricing && <Pricing />}
 

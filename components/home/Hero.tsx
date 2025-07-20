@@ -1,7 +1,6 @@
 import FeatureBadge from "@/components/shared/FeatureBadge";
-import { Button } from "@/components/ui/button";
 import { RainbowButton } from "@/components/ui/rainbow-button";
-import { BookOpen, MousePointerClick } from "lucide-react";
+import { MousePointerClick } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 
@@ -38,19 +37,6 @@ export default function Hero() {
                 {t("getStarted")}
               </Link>
             </RainbowButton>
-            <Button
-              className="h-11 rounded-xl px-8 py-2"
-              variant="outline"
-              asChild
-            >
-              <Link
-                href={t("viewDocsLink") || "#"}
-                className="flex items-center gap-2"
-              >
-                <BookOpen className="w-4 h-4" />
-                {t("viewDocs")}
-              </Link>
-            </Button>
           </div>
         </div>
       </div>

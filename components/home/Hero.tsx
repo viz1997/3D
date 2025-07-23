@@ -1,8 +1,11 @@
 import FeatureBadge from "@/components/shared/FeatureBadge";
+import { Button } from "@/components/ui/button";
 import { RainbowButton } from "@/components/ui/rainbow-button";
+import { siteConfig } from "@/config/site";
 import { MousePointerClick } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { SiDiscord } from "react-icons/si";
 
 export default function Hero() {
   const t = useTranslations("Landing.Hero");
@@ -37,6 +40,26 @@ export default function Hero() {
                 {t("getStarted")}
               </Link>
             </RainbowButton>
+            <Button
+              className="h-11 rounded-xl px-8 py-2 bg-white text-indigo-500 hover:text-indigo-600 border-2 border-indigo-500"
+              variant="outline"
+              asChild
+            >
+              <Link
+                href={
+                  siteConfig.socialLinks?.discord ||
+                  "https://discord.com/invite/R7bUxWKRqZ"
+                }
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+                title="Join Discord"
+                prefetch={false}
+                className="flex items-center gap-2"
+              >
+                <SiDiscord className="w-4 h-4 text-indigo-500" />
+                Join Discord
+              </Link>
+            </Button>
           </div>
         </div>
       </div>

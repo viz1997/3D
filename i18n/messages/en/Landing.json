@@ -7,7 +7,7 @@
     },
     "title": "A Modern Next.js Full Stack SaaS Boilerplate",
     "description": "Our Next.js boilerplate includes authentication, Stripe payments, AI integration, CMS, and everything you need to start earning immediately.",
-    "getStarted": "Get Started Now",
+    "getStarted": "Get Started",
     "getStartedLink": "https://nexty.dev/#pricing",
     "viewDocs": "View Documentation",
     "viewDocsLink": "https://nexty.dev/docs"

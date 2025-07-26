@@ -18,7 +18,7 @@ export default function FeatureBadge({
   className = "",
 }: FeatureBadgeProps) {
   const content = (
-    <div className="rounded-full border px-2 py-1 pr-2 text-center text-sm font-medium hover:bg-muted hover:border-primary/20 group hidden items-center gap-x-2 md:flex transition-all duration-300 ease-in-out">
+    <div className="rounded-full border px-2 py-1 pr-2 text-center text-sm font-medium hover:bg-muted hover:border-primary/20 group items-center gap-x-2 flex transition-all duration-300 ease-in-out">
       {label && (
         <div className="text-white highlight-bg rounded-2xl border px-1.5 py-0.5 text-xs font-semibold tracking-tight">
           {label}

@@ -81,6 +81,7 @@ export function Newsletter() {
               "bg-indigo-600 px-4 py-2 rounded-r-lg hover:bg-indigo-700",
               subscribeStatus === "loading" && "animate-pulse"
             )}
+            aria-label="Subscribe to newsletter"
           >
             <Send className="w-3.5 h-3.5" />
           </button>

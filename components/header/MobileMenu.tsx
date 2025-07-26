@@ -35,7 +35,7 @@ export default function MobileMenu() {
       <LocaleSwitcher />
       <ThemeToggle />
       <DropdownMenu>
-        <DropdownMenuTrigger className="p-2">
+        <DropdownMenuTrigger className="p-2" aria-label="Open menu">
           <Menu className="h-5 w-5" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-64">

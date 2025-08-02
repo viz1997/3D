@@ -6,11 +6,11 @@ CREATE TABLE public.users (
     email text UNIQUE NOT NULL,
     full_name text NULL,
     avatar_url text NULL,
+    role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('admin', 'user')),
     payment_provider text NULL,
     stripe_customer_id text UNIQUE NULL,
     created_at timestamptz NOT NULL DEFAULT now(),
-    updated_at timestamptz NOT NULL,
-    role TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('admin', 'user'))
+    updated_at timestamptz NOT NULL
 );
 
 COMMENT ON TABLE public.users IS 'Stores application-specific user profile data, extending the auth.users table.';

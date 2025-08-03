@@ -4,8 +4,16 @@ import LoginDialog from "@/components/auth/LoginDialog";
 import { normalizeEmail } from "@/lib/email";
 import { createClient } from "@/lib/supabase/client";
 import { type AuthError, type User } from "@supabase/supabase-js";
+import Cookies from "js-cookie";
 import { redirect, useSearchParams } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
+
+const getReferral = () => {
+  if (typeof window === "undefined") {
+    return null;
+  }
+  return Cookies.get("referral_source") || null;
+};
 
 type ExtendedUser = User & {
   role: "admin" | "user";
@@ -127,29 +135,57 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signInWithGoogle = async () => {
+    const redirectUrl = new URL(`${window.location.origin}/auth/callback`);
+
+    const referral = getReferral();
+    redirectUrl.searchParams.set("referral", referral || "direct");
+
+    if (next) {
+      redirectUrl.searchParams.set("next", next);
+    }
     return await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${next}`,
+        redirectTo: redirectUrl.toString(),
       },
     });
   };
 
   const signInWithGithub = async () => {
+    const redirectUrl = new URL(`${window.location.origin}/auth/callback`);
+
+    const referral = getReferral();
+    redirectUrl.searchParams.set("referral", referral || "direct");
+
+    if (next) {
+      redirectUrl.searchParams.set("next", next);
+    }
     return await supabase.auth.signInWithOAuth({
       provider: "github",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${next}`,
+        redirectTo: redirectUrl.toString(),
       },
     });
   };
 
   const signInWithEmail = async (email: string, captchaToken?: string) => {
+    const redirectUrl = new URL(`${window.location.origin}/auth/callback`);
+
+    const referral = getReferral();
+    redirectUrl.searchParams.set("referral", referral || "direct");
+
+    if (next) {
+      redirectUrl.searchParams.set("next", next);
+    }
+
     return await supabase.auth.signInWithOtp({
       email: normalizeEmail(email),
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${next}`,
+        emailRedirectTo: redirectUrl.toString(),
         captchaToken,
+        data: {
+          referral,
+        },
       },
     });
   };

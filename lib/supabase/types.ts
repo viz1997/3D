@@ -447,6 +447,7 @@ export type Database = {
           full_name: string | null
           id: string
           payment_provider: string | null
+          referral: string | null
           role: string
           stripe_customer_id: string | null
           updated_at: string
@@ -459,6 +460,7 @@ export type Database = {
           full_name?: string | null
           id: string
           payment_provider?: string | null
+          referral?: string | null
           role?: string
           stripe_customer_id?: string | null
           updated_at: string
@@ -471,6 +473,7 @@ export type Database = {
           full_name?: string | null
           id?: string
           payment_provider?: string | null
+          referral?: string | null
           role?: string
           stripe_customer_id?: string | null
           updated_at?: string

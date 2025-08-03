@@ -5,15 +5,33 @@ import { routing } from './i18n/routing';
 
 const intlMiddleware = createIntlMiddleware(routing);
 
+const referralParams = ['utm_source', 'ref', 'via', 'aff', 'referral', 'referral_code'];
 
 export async function middleware(request: NextRequest): Promise<NextResponse> {
+  let referralValue: string | null = null;
+
+  for (const param of referralParams) {
+    const value = request.nextUrl.searchParams.get(param);
+    if (value) {
+      referralValue = value;
+      break;
+    }
+  }
+
   const supabaseResponse = await updateSession(request);
 
   if (supabaseResponse.headers.get('location')) {
+    if (referralValue) {
+      supabaseResponse.cookies.set('referral_source', referralValue);
+    }
     return supabaseResponse;
   }
 
   const intlResponse = intlMiddleware(request);
+
+  if (referralValue) {
+    intlResponse.cookies.set('referral_source', referralValue);
+  }
 
   supabaseResponse.cookies.getAll().forEach((cookie) => {
     const { name, value, ...options } = cookie;

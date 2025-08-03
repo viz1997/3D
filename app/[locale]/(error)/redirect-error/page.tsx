@@ -32,9 +32,9 @@ export async function generateMetadata({
 export default async function RedirectErrorPage({
   searchParams,
 }: {
-  searchParams: Promise<{ code?: string }>;
+  searchParams: Promise<{ code?: string; message?: string }>;
 }) {
-  const { code } = await searchParams;
+  const { code, message } = await searchParams;
   const t = await getTranslations("ErrorPage.RedirectError");
   const info = t.raw(code || "unknown");
 
@@ -45,6 +45,7 @@ export default async function RedirectErrorPage({
       <div className="p-8 text-center">
         <h1 className="text-2xl font-bold text-red-600 mb-4">{title}</h1>
         <p className="mb-6">{description}</p>
+        {message && <p className="mb-6">{message}</p>}
         <I18nLink
           href="/"
           title={t("goToHome")}

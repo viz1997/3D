@@ -434,7 +434,7 @@ export function PricePlanForm({ initialData, planId }: PricePlanFormProps) {
       template,
       null,
       2
-    )}. Important: Return ONLY the completed JSON string, without any explanations or surrounding text.`;
+    )}. Important: Return ONLY the completed JSON, without any explanations or surrounding text, Don't provide JSON markers, only the curly braces and their contents.`;
 
     await complete(prompt);
   };

@@ -196,6 +196,11 @@
         "icon": "Users"
       },
       {
+        "name": "订单管理",
+        "href": "/dashboard/orders",
+        "icon": "ShoppingCart"
+      },
+      {
         "name": "定价管理",
         "href": "/dashboard/prices",
         "icon": "DollarSign"

@@ -24,6 +24,7 @@ export default getRequestConfig(async ({ requestLocale }) => {
       Overview: (await import(`./messages/${locale}/Dashboard/Admin/Overview.json`)).default,
       Users: (await import(`./messages/${locale}/Dashboard/Admin/Users.json`)).default,
       DashboardBlogs: (await import(`./messages/${locale}/Dashboard/Admin/Blogs.json`)).default,
+      Orders: (await import(`./messages/${locale}/Dashboard/Admin/Orders.json`)).default,
       R2Files: (await import(`./messages/${locale}/Dashboard/Admin/R2Files.json`)).default,
       Prices: (await import(`./messages/${locale}/Dashboard/Admin/Prices.json`)).default,
 

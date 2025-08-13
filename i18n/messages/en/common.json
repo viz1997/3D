@@ -196,6 +196,11 @@
         "icon": "Users"
       },
       {
+        "name": "Orders",
+        "href": "/dashboard/orders",
+        "icon": "ShoppingCart"
+      },
+      {
         "name": "Prices",
         "href": "/dashboard/prices",
         "icon": "DollarSign"

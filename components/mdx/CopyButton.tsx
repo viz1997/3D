@@ -19,7 +19,11 @@ const CopyButton = ({
 
   return (
     <button className={className} onClick={copy}>
-      {isCopied ? <CopyCheck /> : <Copy />}
+      {isCopied ? (
+        <CopyCheck className="w-4 h-4 text-muted-foreground" />
+      ) : (
+        <Copy className="w-4 h-4 text-muted-foreground" />
+      )}
     </button>
   );
 };

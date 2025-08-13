@@ -5,6 +5,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 const ROLE_PROTECTED_ROUTES: Record<string, string[]> = {
   'dashboard/overview': ['admin'],
   'dashboard/users': ['admin'],
+  'dashboard/orders': ['admin'],
   'dashboard/blogs': ['admin'],
   'dashboard/r2-resources': ['admin'],
   'dashboard/prices': ['admin'],

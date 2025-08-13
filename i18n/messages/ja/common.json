@@ -196,6 +196,11 @@
         "icon": "Users"
       },
       {
+        "name": "注文管理",
+        "href": "/dashboard/orders",
+        "icon": "ShoppingCart"
+      },
+      {
         "name": "料金プラン管理",
         "href": "/dashboard/prices",
         "icon": "DollarSign"

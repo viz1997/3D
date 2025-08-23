@@ -25,7 +25,7 @@ export default function FeatureBadge({
         </div>
       )}
 
-      {text && <div className="px-2 text-sm text-primary">{text}</div>}
+      {text && <div className="px-2 text-sm">{text}</div>}
 
       {href && (
         <div className="pr-3 transition-transform duration-300 group-hover:translate-x-1">

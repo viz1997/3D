@@ -45,6 +45,35 @@ export default async function Pricing() {
     (plan) => plan.payment_type === "one_time"
   );
 
+  // count the number of available plan types
+  const availablePlanTypes = [
+    monthlyPlans.length > 0,
+    annualPlans.length > 0,
+    oneTimePlans.length > 0,
+  ].filter(Boolean).length;
+
+  // dynamically generate the className for the grid columns
+  const getGridColsClass = (count: number) => {
+    switch (count) {
+      case 1:
+        return "grid-cols-1";
+      case 2:
+        return "grid-cols-2";
+      case 3:
+        return "grid-cols-3";
+      default:
+        return "grid-cols-1";
+    }
+  };
+
+  // dynamically set the default value, priority: annual > monthly > one_time
+  const getDefaultValue = () => {
+    if (annualPlans.length > 0) return "annual";
+    if (monthlyPlans.length > 0) return "monthly";
+    if (oneTimePlans.length > 0) return "one_time";
+    return "annual"; // fallback
+  };
+
   const renderPlans = (plans: PricingPlan[]) => {
     return (
       <div
@@ -101,8 +130,12 @@ export default async function Pricing() {
           </p>
         </div>
 
-        <Tabs defaultValue="annual" className="w-full mx-auto">
-          <TabsList className="grid w-fit mx-auto grid-cols-3 h-12 p-1 bg-gray-100 dark:bg-gray-700 rounded-lg">
+        <Tabs defaultValue={getDefaultValue()} className="w-full mx-auto">
+          <TabsList
+            className={`grid w-fit mx-auto ${getGridColsClass(
+              availablePlanTypes
+            )} h-12 p-1 bg-gray-100 dark:bg-gray-700 rounded-lg`}
+          >
             {monthlyPlans.length > 0 && (
               <TabsTrigger
                 value="monthly"

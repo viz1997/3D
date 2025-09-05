@@ -1,34 +1,36 @@
 'use server';
 
+import { db } from '@/db';
+import { pricingPlans } from '@/db/schema';
 import { actionResponse, ActionResult } from '@/lib/action-response';
 import { getErrorMessage } from '@/lib/error-utils';
-import { createClient } from "@/lib/supabase/server";
 import { PricingPlan } from "@/types/pricing";
+import { and, asc, eq } from 'drizzle-orm';
 import 'server-only';
 
 /**
  * Public List
  */
-export async function getPublicPricingPlans(): Promise<ActionResult<PricingPlan[]>> {
-  const supabase = await createClient();
-  const environment = process.env.NODE_ENV === 'production' ? 'live' : 'test';
+export async function getPublicPricingPlans(): Promise<
+  ActionResult<PricingPlan[]>
+> {
+  const environment = process.env.NODE_ENV === 'production' ? 'live' : 'test'
 
   try {
-    const { data: plans, error } = await supabase
-      .from("pricing_plans")
-      .select("*")
-      .eq("environment", environment)
-      .eq("is_active", true)
-      .order("display_order", { ascending: true });
+    const plans = await db
+      .select()
+      .from(pricingPlans)
+      .where(
+        and(
+          eq(pricingPlans.environment, environment),
+          eq(pricingPlans.is_active, true)
+        )
+      )
+      .orderBy(asc(pricingPlans.display_order))
 
-    if (error) {
-      console.error("Error fetching public pricing plans:", error);
-      return actionResponse.error(`Failed to fetch pricing plans: ${error.message}`);
-    }
-
-    return actionResponse.success((plans as unknown as PricingPlan[]) || []);
+    return actionResponse.success((plans as unknown as PricingPlan[]) || [])
   } catch (error) {
-    console.error("Unexpected error in getPublicPricingPlans:", error);
-    return actionResponse.error(getErrorMessage(error));
+    console.error('Unexpected error in getPublicPricingPlans:', error)
+    return actionResponse.error(getErrorMessage(error))
   }
 }

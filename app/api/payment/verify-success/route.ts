@@ -1,8 +1,11 @@
+import { db } from '@/db';
+import { orders as ordersSchema, subscriptions as subscriptionsSchema } from '@/db/schema';
 import { apiResponse } from '@/lib/api-response';
 import { syncSubscriptionData } from '@/lib/stripe/actions';
 import stripe from '@/lib/stripe/stripe';
 import { createClient } from '@/lib/supabase/server';
 import { createClient as createAdminClient } from '@supabase/supabase-js';
+import { and, eq, inArray } from 'drizzle-orm';
 import { NextRequest } from 'next/server';
 import Stripe from 'stripe';
 
@@ -56,13 +59,28 @@ export async function GET(req: NextRequest) {
           console.error(`[Verify API] Error during fallback sync for session ${sessionId}:`, syncError);
         }
 
-        const { data: activeSubscription, error: subCheckError } = await supabaseAdmin
-          .from('subscriptions')
-          .select('id, plan_id, status, metadata')
-          .eq('stripe_subscription_id', subId)
-          .eq('user_id', user.id)
-          .in('status', ['active', 'trialing'])
-          .maybeSingle();
+        let activeSubscription, subCheckError = null;
+        try {
+          const results = await db
+            .select({
+              id: subscriptionsSchema.id,
+              plan_id: subscriptionsSchema.plan_id,
+              status: subscriptionsSchema.status,
+              metadata: subscriptionsSchema.metadata,
+            })
+            .from(subscriptionsSchema)
+            .where(
+              and(
+                eq(subscriptionsSchema.stripe_subscription_id, subId),
+                eq(subscriptionsSchema.user_id, user.id),
+                inArray(subscriptionsSchema.status, ['active', 'trialing'])
+              )
+            )
+            .limit(1);
+          activeSubscription = results[0];
+        } catch (e) {
+          subCheckError = e;
+        }
 
         if (subCheckError) {
           console.error(`[Verify API] DB error checking subscription ${subId}:`, subCheckError);
@@ -77,7 +95,7 @@ export async function GET(req: NextRequest) {
         } else {
           return apiResponse.success({
             subscriptionId: activeSubscription.id,
-            planName: activeSubscription.metadata?.planName,
+            planName: (activeSubscription.metadata as any)?.planName,
             planId: activeSubscription.plan_id,
             status: activeSubscription.status,
             message: 'Subscription verified and active.',
@@ -90,15 +108,28 @@ export async function GET(req: NextRequest) {
 
         const piId = session.payment_intent ? typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent.id : session.id;
 
-        const { data: existingOrder, error: orderCheckError } = await supabaseAdmin
-          .from('orders')
-          .select('id, metadata')
-          .eq('provider', 'stripe')
-          .eq('provider_order_id', piId)
-          .eq('user_id', user.id)
-          .eq('order_type', 'one_time_purchase')
-          .eq('status', 'succeeded')
-          .maybeSingle();
+        let existingOrder, orderCheckError = null;
+        try {
+          const results = await db
+            .select({
+              id: ordersSchema.id,
+              metadata: ordersSchema.metadata,
+            })
+            .from(ordersSchema)
+            .where(
+              and(
+                eq(ordersSchema.provider, 'stripe'),
+                eq(ordersSchema.provider_order_id, piId),
+                eq(ordersSchema.user_id, user.id),
+                eq(ordersSchema.order_type, 'one_time_purchase'),
+                eq(ordersSchema.status, 'succeeded')
+              )
+            )
+            .limit(1);
+          existingOrder = results[0];
+        } catch (e) {
+          orderCheckError = e;
+        }
 
         if (orderCheckError) {
           console.error(`[Verify API] DB error checking order for PI ${piId}:`, orderCheckError);
@@ -114,8 +145,8 @@ export async function GET(req: NextRequest) {
           const message = 'Payment verified and order confirmed.';
           return apiResponse.success({
             orderId: existingOrder.id,
-            planName: existingOrder.metadata?.planName,
-            planId: existingOrder.metadata?.planId,
+            planName: (existingOrder.metadata as any)?.planName,
+            planId: (existingOrder.metadata as any)?.planId,
             message: message
           });
         }

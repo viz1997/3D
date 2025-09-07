@@ -1,4 +1,7 @@
+import { db } from '@/db';
+import { users as usersSchema } from '@/db/schema';
 import { createClient } from '@/lib/supabase/server';
+import { eq } from 'drizzle-orm';
 
 export async function isAdmin(): Promise<boolean> {
   const supabase = await createClient();
@@ -7,10 +10,12 @@ export async function isAdmin(): Promise<boolean> {
   if (error || !user) {
     return false;
   }
-  const { data: userData, error: userError } = await supabase
-    .from('users')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-  return !userError && userData?.role === 'admin';
+  const userDataResults = await db
+    .select({ role: usersSchema.role })
+    .from(usersSchema)
+    .where(eq(usersSchema.id, user.id))
+    .limit(1);
+
+  const userData = userDataResults[0];
+  return !!userData && userData.role === 'admin';
 }

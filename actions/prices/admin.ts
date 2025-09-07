@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/db'
-import { pricingPlans } from '@/db/schema'
+import { pricingPlans as pricingPlansSchema } from '@/db/schema'
 import { DEFAULT_LOCALE } from '@/i18n/routing'
 import { actionResponse, ActionResult } from '@/lib/action-response'
 import { getErrorMessage } from '@/lib/error-utils'
@@ -25,8 +25,8 @@ export async function getAdminPricingPlans(): Promise<
   try {
     const plans = await db
       .select()
-      .from(pricingPlans)
-      .orderBy(asc(pricingPlans.environment), asc(pricingPlans.display_order))
+      .from(pricingPlansSchema)
+      .orderBy(asc(pricingPlansSchema.environment), asc(pricingPlansSchema.display_order))
 
     return actionResponse.success((plans as unknown as PricingPlan[]) || [])
   } catch (error) {
@@ -51,8 +51,8 @@ export async function getPricingPlanById(
   try {
     const result = await db
       .select()
-      .from(pricingPlans)
-      .where(eq(pricingPlans.id, planId))
+      .from(pricingPlansSchema)
+      .where(eq(pricingPlansSchema.id, planId))
       .limit(1)
 
     const plan = result[0]
@@ -122,7 +122,7 @@ export async function createPricingPlanAction({
 
   try {
     const [newPlan] = await db
-      .insert(pricingPlans)
+      .insert(pricingPlansSchema)
       .values({
         environment: planData.environment,
         card_title: planData.card_title,
@@ -241,9 +241,9 @@ export async function updatePricingPlanAction({
     }
 
     const [updatedPlan] = await db
-      .update(pricingPlans)
+      .update(pricingPlansSchema)
       .set(dataToUpdate)
-      .where(eq(pricingPlans.id, id))
+      .where(eq(pricingPlansSchema.id, id))
       .returning()
 
     if (!updatedPlan) {
@@ -287,9 +287,9 @@ export async function deletePricingPlanAction({
 
   try {
     const result = await db
-      .delete(pricingPlans)
-      .where(eq(pricingPlans.id, id))
-      .returning({ id: pricingPlans.id })
+      .delete(pricingPlansSchema)
+      .where(eq(pricingPlansSchema.id, id))
+      .returning({ id: pricingPlansSchema.id })
 
     if (result.length === 0) {
       return actionResponse.notFound(t('deletePlanNotFound', { id }))

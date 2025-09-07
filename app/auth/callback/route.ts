@@ -1,9 +1,12 @@
 import { sendEmail } from '@/actions/resend';
 import { isValidRedirectUrl } from '@/app/auth/utils';
 import { siteConfig } from '@/config/site';
+import { db } from '@/db';
+import { users as usersSchema } from '@/db/schema';
 import { UserWelcomeEmail } from '@/emails/user-welcome';
 import { createClient } from '@/lib/supabase/server';
 import { User, type SupabaseClient } from '@supabase/supabase-js';
+import { eq } from 'drizzle-orm';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -55,14 +58,14 @@ const handleReferral = async (supabase: SupabaseClient<any, "public", any>, refe
       }
     });
 
-    await supabase.rpc(
-      'update_my_profile',
-      {
-        new_full_name: user.user_metadata?.full_name || user.user_metadata?.name || '',
-        new_avatar_url: user.user_metadata?.avatar_url || '',
-        new_referral: referral
-      }
-    );
+    await db
+      .update(usersSchema)
+      .set({
+        full_name: user.user_metadata?.full_name || user.user_metadata?.name || '',
+        avatar_url: user.user_metadata?.avatar_url || '',
+        referral: referral,
+      })
+      .where(eq(usersSchema.id, user.id));
 
     // send a welcome email to the user here
     if (process.env.NEXT_PUBLIC_USER_WELCOME === 'true') {

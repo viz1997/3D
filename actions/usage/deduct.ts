@@ -1,11 +1,14 @@
 'use server';
 
+import { db } from '@/db';
+import {
+  creditLogs as creditLogsSchema,
+  usage as usageSchema,
+} from '@/db/schema';
 import { actionResponse, ActionResult } from '@/lib/action-response';
-import { getUserBenefits as fetchUserBenefitsInternal, UserBenefits } from './benefits';
-
 import { createClient } from '@/lib/supabase/server';
-import { Database } from '@/lib/supabase/types';
-import { createClient as createAdminClient } from '@supabase/supabase-js';
+import { eq } from 'drizzle-orm';
+import { getUserBenefits as fetchUserBenefitsInternal, UserBenefits } from './benefits';
 
 export interface DeductCreditsData {
   message: string;
@@ -37,27 +40,51 @@ export async function deductCredits(
     return actionResponse.badRequest('Deduction notes are required.');
   }
 
-  const supabaseAdmin = createAdminClient<Database>(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-
   try {
-    const { data: rpcSuccess, error: rpcError } = await supabaseAdmin.rpc('deduct_credits_and_log', {
-      p_user_id: user.id,
-      p_deduct_amount: amountToDeduct,
-      p_notes: notes,
+    await db.transaction(async (tx) => {
+      // Lock the user's usage row for the duration of the transaction
+      const usageResults = await tx.select({
+        one_time_credits_balance: usageSchema.one_time_credits_balance,
+        subscription_credits_balance: usageSchema.subscription_credits_balance,
+      })
+        .from(usageSchema)
+        .where(eq(usageSchema.user_id, user.id))
+        .for('update');
+
+      const usage = usageResults[0];
+
+      if (!usage) {
+        throw new Error('INSUFFICIENT_CREDITS');
+      }
+
+      const totalCredits = usage.one_time_credits_balance + usage.subscription_credits_balance;
+      if (totalCredits < amountToDeduct) {
+        throw new Error('INSUFFICIENT_CREDITS');
+      }
+
+      const deductedFromSub = Math.min(usage.subscription_credits_balance, amountToDeduct);
+      const deductedFromOneTime = amountToDeduct - deductedFromSub;
+
+      const newSubBalance = usage.subscription_credits_balance - deductedFromSub;
+      const newOneTimeBalance = usage.one_time_credits_balance - deductedFromOneTime;
+
+      await tx.update(usageSchema)
+        .set({
+          subscription_credits_balance: newSubBalance,
+          one_time_credits_balance: newOneTimeBalance,
+        })
+        .where(eq(usageSchema.user_id, user.id));
+
+      await tx.insert(creditLogsSchema)
+        .values({
+          user_id: user.id,
+          amount: -amountToDeduct,
+          one_time_balance_after: newOneTimeBalance,
+          subscription_balance_after: newSubBalance,
+          type: 'feature_usage',
+          notes: notes,
+        });
     });
-
-    if (rpcError) {
-      console.error(`Error calling deduct_credits_and_log RPC:`, rpcError);
-      return actionResponse.error(`Failed to deduct credits: ${rpcError.message}`);
-    }
-
-    // return 'false' means insufficient credits
-    if (rpcSuccess === false) {
-      return actionResponse.badRequest('Insufficient credits.');
-    }
 
     const updatedBenefits = await fetchUserBenefitsInternal(user.id);
 
@@ -67,6 +94,9 @@ export async function deductCredits(
     });
 
   } catch (e: any) {
+    if (e.message === 'INSUFFICIENT_CREDITS') {
+      return actionResponse.badRequest('Insufficient credits.');
+    }
     console.error(`Unexpected error in deductCredits:`, e);
     return actionResponse.error(e.message || 'An unexpected server error occurred.');
   }

@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/db';
-import { pricingPlans } from '@/db/schema';
+import { pricingPlans as pricingPlansSchema } from '@/db/schema';
 import { actionResponse, ActionResult } from '@/lib/action-response';
 import { getErrorMessage } from '@/lib/error-utils';
 import { PricingPlan } from "@/types/pricing";
@@ -19,14 +19,14 @@ export async function getPublicPricingPlans(): Promise<
   try {
     const plans = await db
       .select()
-      .from(pricingPlans)
+      .from(pricingPlansSchema)
       .where(
         and(
-          eq(pricingPlans.environment, environment),
-          eq(pricingPlans.is_active, true)
+          eq(pricingPlansSchema.environment, environment),
+          eq(pricingPlansSchema.is_active, true)
         )
       )
-      .orderBy(asc(pricingPlans.display_order))
+      .orderBy(asc(pricingPlansSchema.display_order))
 
     return actionResponse.success((plans as unknown as PricingPlan[]) || [])
   } catch (error) {

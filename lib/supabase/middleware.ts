@@ -1,4 +1,7 @@
+import { db } from '@/db';
+import { users as usersSchema } from '@/db/schema';
 import { createServerClient } from '@supabase/ssr';
+import { eq } from 'drizzle-orm';
 import { NextResponse, type NextRequest } from 'next/server';
 
 // TODO:only admin
@@ -69,16 +72,14 @@ export async function updateSession(request: NextRequest) {
     for (const [protectedPath, allowedRoles] of Object.entries(ROLE_PROTECTED_ROUTES)) {
       if (currentPath.includes(protectedPath)) {
 
-        const { data, error } = await supabase
-          .from("users")
-          .select("role")
-          .eq("id", user.id)
-          .limit(1)
-          .maybeSingle();
+        const userRoleResults = await db
+          .select({ role: usersSchema.role })
+          .from(usersSchema)
+          .where(eq(usersSchema.id, user.id))
+          .limit(1);
+        const userRole = userRoleResults[0]?.role || "user";
 
-        const userRole = data?.role || "user";
-
-        if (!allowedRoles.includes(userRole) || error) {
+        if (!allowedRoles.includes(userRole)) {
           const url = request.nextUrl.clone()
           url.pathname = "/403"
           return NextResponse.redirect(url)

@@ -1,9 +1,12 @@
+import { db } from '@/db';
+import { pricingPlans as pricingPlansSchema } from '@/db/schema';
 import { apiResponse } from '@/lib/api-response';
 import { getErrorMessage } from '@/lib/error-utils';
 import { getOrCreateStripeCustomer } from '@/lib/stripe/actions';
 import stripe from '@/lib/stripe/stripe';
 import { createClient } from '@/lib/supabase/server';
 import { getURL } from '@/lib/utils';
+import { eq } from 'drizzle-orm';
 import type { Stripe } from 'stripe';
 
 type RequestData = {
@@ -40,14 +43,23 @@ export async function POST(req: Request) {
   try {
     const customerId = await getOrCreateStripeCustomer(userId);
 
-    const { data: plan, error: planError } = await supabase
-      .from('pricing_plans')
-      .select('id, card_title, payment_type, trial_period_days, benefits_jsonb, stripe_product_id')
-      .eq('stripe_price_id', priceId)
-      .single();
+    const results = await db
+      .select({
+        id: pricingPlansSchema.id,
+        card_title: pricingPlansSchema.card_title,
+        payment_type: pricingPlansSchema.payment_type,
+        trial_period_days: pricingPlansSchema.trial_period_days,
+        benefits_jsonb: pricingPlansSchema.benefits_jsonb,
+        stripe_product_id: pricingPlansSchema.stripe_product_id,
+      })
+      .from(pricingPlansSchema)
+      .where(eq(pricingPlansSchema.stripe_price_id, priceId))
+      .limit(1);
 
-    if (planError || !plan) {
-      console.error(`Plan not found for priceId ${priceId}:`, planError);
+    const plan = results[0];
+
+    if (!plan) {
+      console.error(`Plan not found for priceId ${priceId}`);
       return apiResponse.notFound('Plan not found');
     }
 

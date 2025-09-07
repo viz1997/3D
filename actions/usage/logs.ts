@@ -1,13 +1,13 @@
 'use server';
 
 import { db } from '@/db';
-import { creditLogs } from '@/db/schema';
+import { creditLogs as creditLogsSchema } from '@/db/schema';
 import { actionResponse } from '@/lib/action-response';
 import { getErrorMessage } from '@/lib/error-utils';
 import { createClient } from '@/lib/supabase/server';
 import { count, desc, eq } from 'drizzle-orm';
 
-export type CreditLog = typeof creditLogs.$inferSelect;
+export type CreditLog = typeof creditLogsSchema.$inferSelect;
 
 interface ListCreditLogsParams {
   pageIndex?: number;
@@ -43,19 +43,19 @@ export async function getCreditLogs({
   }
 
   try {
-    const whereClause = eq(creditLogs.user_id, user.id);
+    const whereClause = eq(creditLogsSchema.user_id, user.id);
 
     const logsQuery = db
       .select()
-      .from(creditLogs)
+      .from(creditLogsSchema)
       .where(whereClause)
-      .orderBy(desc(creditLogs.created_at))
+      .orderBy(desc(creditLogsSchema.created_at))
       .offset(pageIndex * pageSize)
       .limit(pageSize);
 
     const totalCountQuery = db
       .select({ value: count() })
-      .from(creditLogs)
+      .from(creditLogsSchema)
       .where(whereClause);
 
     const [data, totalCountResult] = await Promise.all([

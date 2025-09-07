@@ -2,35 +2,38 @@
 
 import { sendEmail } from '@/actions/resend';
 import { siteConfig } from '@/config/site';
+import { db } from '@/db';
+import {
+  pricingPlans as pricingPlansSchema,
+  subscriptions as subscriptionsSchema,
+  users as usersSchema,
+} from '@/db/schema';
 import { CreditUpgradeFailedEmail } from '@/emails/credit-upgrade-failed';
 import { InvoicePaymentFailedEmail } from '@/emails/invoice-payment-failed';
 import { getErrorMessage } from '@/lib/error-utils';
 import stripe from '@/lib/stripe/stripe';
 import { createClient } from '@/lib/supabase/server';
-import { TablesInsert } from '@/lib/supabase/types';
-import { createClient as createAdminClient } from '@supabase/supabase-js';
+import { eq, InferInsertModel } from 'drizzle-orm';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Stripe from 'stripe';
-
-const supabaseAdmin = createAdminClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
 
 export async function getOrCreateStripeCustomer(
   userId: string
 ): Promise<string> {
   const supabase = await createClient();
 
-  const { data: userProfile, error: profileError } = await supabase
-    .from('users')
-    .select('stripe_customer_id, email')
-    .eq('id', userId)
-    .single();
+  const userProfileResults = await db
+    .select({
+      stripe_customer_id: usersSchema.stripe_customer_id,
+      email: usersSchema.email,
+    })
+    .from(usersSchema)
+    .where(eq(usersSchema.id, userId))
+    .limit(1);
+  const userProfile = userProfileResults[0];
 
-  if (profileError) {
-    console.error('Error fetching user profile:', profileError);
+  if (!userProfile) {
     throw new Error(`Could not fetch user profile for ${userId}`);
   }
 
@@ -59,17 +62,18 @@ export async function getOrCreateStripeCustomer(
       },
     });
 
-    const { error: updateError } = await supabaseAdmin
-      .from('users')
-      .update({ stripe_customer_id: customer.id })
-      .eq('id', userId);
-
-    if (updateError) {
+    try {
+      await db
+        .update(usersSchema)
+        .set({ stripe_customer_id: customer.id })
+        .where(eq(usersSchema.id, userId));
+    } catch (updateError) {
       console.error('Error updating user profile with Stripe customer ID:', updateError);
       // cleanup in Stripe if this fails critically
       await stripe.customers.del(customer.id);
       throw new Error(`Failed to update user ${userId} with Stripe customer ID ${customer.id}`);
     }
+
 
     return customer.id;
 
@@ -92,14 +96,15 @@ export async function createStripePortalSession(): Promise<void> {
 
   let portalUrl: string | null = null;
   try {
-    const { data: profile, error: profileError } = await supabase
-      .from('users')
-      .select('stripe_customer_id')
-      .eq('id', user.id)
-      .single();
+    const profileResults = await db
+      .select({ stripe_customer_id: usersSchema.stripe_customer_id })
+      .from(usersSchema)
+      .where(eq(usersSchema.id, user.id))
+      .limit(1);
+    const profile = profileResults[0];
 
-    if (profileError || !profile?.stripe_customer_id) {
-      throw new Error(`Could not find Stripe customer ID: ${profileError?.message || 'No profile found'}`);
+    if (!profile?.stripe_customer_id) {
+      throw new Error(`Could not find Stripe customer ID`);
     }
     const customerId = profile.stripe_customer_id;
 
@@ -193,14 +198,16 @@ export async function syncSubscriptionData(
 
     if (!userId) {
       console.warn(`User ID still missing for sub ${subscriptionId}. Trying DB lookup via customer ID ${customerId}.`);
-      const { data: userProfile, error: profileError } = await supabaseAdmin
-        .from('users')
-        .select('id')
-        .eq('stripe_customer_id', customerId)
-        .single();
+      const userProfileResults = await db
+        .select({ id: usersSchema.id })
+        .from(usersSchema)
+        .where(eq(usersSchema.stripe_customer_id, customerId))
+        .limit(1);
+      const userProfile = userProfileResults[0];
 
-      if (profileError || !userProfile) {
-        console.error(`DB lookup failed for customer ${customerId}:`, profileError);
+
+      if (!userProfile) {
+        console.error(`DB lookup failed for customer ${customerId}:`);
         throw new Error(`Cannot determine Supabase userId for subscription ${subscriptionId}. Critical metadata missing and DB lookup failed.`);
       }
       userId = userProfile.id;
@@ -208,15 +215,14 @@ export async function syncSubscriptionData(
     if (!planId) {
       const priceId = subscription.items.data[0].price.id;
       console.warn(`Plan ID is missing for subscription ${subscriptionId}. Attempting lookup via price ${priceId}.`);
-      const { data: planData, error: planError } = await supabaseAdmin
-        .from('pricing_plans')
-        .select('id')
-        .eq('stripe_price_id', priceId)
-        .maybeSingle();
+      const planDataResults = await db
+        .select({ id: pricingPlansSchema.id })
+        .from(pricingPlansSchema)
+        .where(eq(pricingPlansSchema.stripe_price_id, priceId))
+        .limit(1);
+      const planData = planDataResults[0];
 
-      if (planError) {
-        console.error(`Error looking up plan by price ID ${priceId}:`, planError);
-      } else if (planData) {
+      if (planData) {
         planId = planData.id;
       } else {
         console.error(`FATAL: Cannot determine planId for subscription ${subscriptionId}. Metadata missing and DB lookup by price failed.`);
@@ -226,36 +232,36 @@ export async function syncSubscriptionData(
 
     const priceId = subscription.items.data[0]?.price.id;
 
-    const subscriptionData: TablesInsert<'subscriptions'> = {
+    type SubscriptionInsert = InferInsertModel<typeof subscriptionsSchema>;
+    const subscriptionData: SubscriptionInsert = {
       user_id: userId,
       plan_id: planId,
       stripe_subscription_id: subscription.id,
       stripe_customer_id: typeof subscription.customer === 'string' ? subscription.customer : subscription.customer.id,
       price_id: priceId,
       status: subscription.status,
-      current_period_start: subscription.items.data[0].current_period_start ? new Date(subscription.items.data[0].current_period_start * 1000).toISOString() : null,
-      current_period_end: subscription.items.data[0].current_period_end ? new Date(subscription.items.data[0].current_period_end * 1000).toISOString() : null,
+      current_period_start: subscription.items.data[0].current_period_start ? new Date(subscription.items.data[0].current_period_start * 1000) : null,
+      current_period_end: subscription.items.data[0].current_period_end ? new Date(subscription.items.data[0].current_period_end * 1000) : null,
       cancel_at_period_end: subscription.cancel_at_period_end,
-      canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
-      ended_at: subscription.ended_at ? new Date(subscription.ended_at * 1000).toISOString() : null,
-      trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
-      trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
+      canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000) : null,
+      ended_at: subscription.ended_at ? new Date(subscription.ended_at * 1000) : null,
+      trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000) : null,
+      trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
       metadata: {
         ...subscription.metadata,
         ...(initialMetadata && { checkoutSessionMetadata: initialMetadata })
       },
     };
 
-    const { error: upsertError } = await supabaseAdmin
-      .from('subscriptions')
-      .upsert(subscriptionData, {
-        onConflict: 'stripe_subscription_id',
+    const { stripe_subscription_id, ...updateData } = subscriptionData;
+    await db
+      .insert(subscriptionsSchema)
+      .values(subscriptionData)
+      .onConflictDoUpdate({
+        target: subscriptionsSchema.stripe_subscription_id,
+        set: updateData,
       });
 
-    if (upsertError) {
-      console.error(`Error upserting subscription ${subscriptionId} into subscriptions table:`, upsertError);
-      throw new Error(`Error upserting subscription data: ${upsertError.message}`);
-    }
 
   } catch (error) {
     console.error(`Error in syncSubscriptionData for sub ${subscriptionId}, cust ${customerId}:`, error);
@@ -351,15 +357,16 @@ export async function sendInvoicePaymentFailedEmail({
       return;
     }
 
-    const { data: userData, error: userError } = await supabaseAdmin
-      .from('users')
-      .select('email')
-      .eq('id', userId)
-      .single();
+    const userDataResults = await db
+      .select({ email: usersSchema.email })
+      .from(usersSchema)
+      .where(eq(usersSchema.id, userId))
+      .limit(1);
+    const userData = userDataResults[0];
 
 
-    if (userError || !userData?.email) {
-      console.error(`Error fetching email for user ${userId}:`, userError);
+    if (!userData?.email) {
+      console.error(`Error fetching email for user ${userId}:`);
       return
     }
 
@@ -367,13 +374,14 @@ export async function sendInvoicePaymentFailedEmail({
 
     const planId = subscription.metadata?.planId;
     if (planId) {
-      const { data: planData, error: planError } = await supabaseAdmin
-        .from('pricing_plans')
-        .select('card_title')
-        .eq('id', planId)
-        .single();
+      const planDataResults = await db
+        .select({ card_title: pricingPlansSchema.card_title })
+        .from(pricingPlansSchema)
+        .where(eq(pricingPlansSchema.id, planId))
+        .limit(1);
+      const planData = planDataResults[0];
 
-      if (!planError && planData && planData.card_title) {
+      if (planData && planData.card_title) {
         planName = planData.card_title;
       }
     }

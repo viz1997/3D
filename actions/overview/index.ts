@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/db';
-import { orders, pricingPlans, users } from '@/db/schema';
+import { orders as ordersSchema, pricingPlans as pricingPlansSchema, users as usersSchema } from '@/db/schema';
 import { actionResponse, ActionResult } from '@/lib/action-response';
 import { getErrorMessage } from '@/lib/error-utils';
 import { and, count, eq, gte, inArray, lt, sql } from 'drizzle-orm';
@@ -62,22 +62,22 @@ export const getOverviewStats = async (): Promise<ActionResult<IOverviewStats>> 
     );
 
     // User stats
-    const totalUsersResult = await db.select({ value: count() }).from(users);
+    const totalUsersResult = await db.select({ value: count() }).from(usersSchema);
     const totalUsers = totalUsersResult[0].value;
 
     const todayUsersResult = await db
       .select({ value: count() })
-      .from(users)
-      .where(gte(users.created_at, todayStart));
+      .from(usersSchema)
+      .where(gte(usersSchema.created_at, todayStart));
     const todayUsers = todayUsersResult[0].value;
 
     const yesterdayUsersResult = await db
       .select({ value: count() })
-      .from(users)
+      .from(usersSchema)
       .where(
         and(
-          gte(users.created_at, yesterdayStart),
-          lt(users.created_at, todayStart)
+          gte(usersSchema.created_at, yesterdayStart),
+          lt(usersSchema.created_at, todayStart)
         )
       );
     const yesterdayUsers = yesterdayUsersResult[0].value;
@@ -90,37 +90,37 @@ export const getOverviewStats = async (): Promise<ActionResult<IOverviewStats>> 
       const result = await db
         .select({
           oneTimeCount:
-            sql`COUNT(*) FILTER (WHERE ${orders.order_type} = 'one_time_purchase')`.mapWith(
+            sql`COUNT(*) FILTER (WHERE ${ordersSchema.order_type} = 'one_time_purchase')`.mapWith(
               Number
             ),
           oneTimeRevenue:
-            sql`COALESCE(SUM(${orders.amount_total}) FILTER (WHERE ${orders.order_type} = 'one_time_purchase'), 0)`.mapWith(
+            sql`COALESCE(SUM(${ordersSchema.amount_total}) FILTER (WHERE ${ordersSchema.order_type} = 'one_time_purchase'), 0)`.mapWith(
               Number
             ),
           monthlyCount:
-            sql`COUNT(*) FILTER (WHERE ${orders.order_type} IN ('subscription_initial', 'subscription_renewal') AND ${pricingPlans.recurring_interval} = 'month')`.mapWith(
+            sql`COUNT(*) FILTER (WHERE ${ordersSchema.order_type} IN ('subscription_initial', 'subscription_renewal') AND ${pricingPlansSchema.recurring_interval} = 'month')`.mapWith(
               Number
             ),
           monthlyRevenue:
-            sql`COALESCE(SUM(${orders.amount_total}) FILTER (WHERE ${orders.order_type} IN ('subscription_initial', 'subscription_renewal') AND ${pricingPlans.recurring_interval} = 'month'), 0)`.mapWith(
+            sql`COALESCE(SUM(${ordersSchema.amount_total}) FILTER (WHERE ${ordersSchema.order_type} IN ('subscription_initial', 'subscription_renewal') AND ${pricingPlansSchema.recurring_interval} = 'month'), 0)`.mapWith(
               Number
             ),
           yearlyCount:
-            sql`COUNT(*) FILTER (WHERE ${orders.order_type} IN ('subscription_initial', 'subscription_renewal') AND ${pricingPlans.recurring_interval} = 'year')`.mapWith(
+            sql`COUNT(*) FILTER (WHERE ${ordersSchema.order_type} IN ('subscription_initial', 'subscription_renewal') AND ${pricingPlansSchema.recurring_interval} = 'year')`.mapWith(
               Number
             ),
           yearlyRevenue:
-            sql`COALESCE(SUM(${orders.amount_total}) FILTER (WHERE ${orders.order_type} IN ('subscription_initial', 'subscription_renewal') AND ${pricingPlans.recurring_interval} = 'year'), 0)`.mapWith(
+            sql`COALESCE(SUM(${ordersSchema.amount_total}) FILTER (WHERE ${ordersSchema.order_type} IN ('subscription_initial', 'subscription_renewal') AND ${pricingPlansSchema.recurring_interval} = 'year'), 0)`.mapWith(
               Number
             ),
         })
-        .from(orders)
-        .leftJoin(pricingPlans, eq(orders.plan_id, pricingPlans.id))
+        .from(ordersSchema)
+        .leftJoin(pricingPlansSchema, eq(ordersSchema.plan_id, pricingPlansSchema.id))
         .where(
           and(
-            gte(orders.created_at, startDate),
-            lt(orders.created_at, endDate),
-            inArray(orders.status, ['succeeded', 'active'])
+            gte(ordersSchema.created_at, startDate),
+            lt(ordersSchema.created_at, endDate),
+            inArray(ordersSchema.status, ['succeeded', 'active'])
           )
         )
 
@@ -239,29 +239,29 @@ export const getDailyGrowthStats = async (
         throw new Error('Invalid period specified.');
     }
 
-    const userDateTrunc = sql`date_trunc('day', ${users.created_at})`
+    const userDateTrunc = sql`date_trunc('day', ${usersSchema.created_at})`
 
     const dailyUsers = await db
       .select({
         date: userDateTrunc,
-        count: count(users.id),
+        count: count(usersSchema.id),
       })
-      .from(users)
-      .where(gte(users.created_at, startDate))
+      .from(usersSchema)
+      .where(gte(usersSchema.created_at, startDate))
       .groupBy(userDateTrunc)
 
-    const orderDateTrunc = sql`date_trunc('day', ${orders.created_at})`
+    const orderDateTrunc = sql`date_trunc('day', ${ordersSchema.created_at})`
 
     const dailyOrders = await db
       .select({
         date: orderDateTrunc,
-        count: count(orders.id),
+        count: count(ordersSchema.id),
       })
-      .from(orders)
+      .from(ordersSchema)
       .where(
         and(
-          gte(orders.created_at, startDate),
-          inArray(orders.status, ['succeeded', 'active'])
+          gte(ordersSchema.created_at, startDate),
+          inArray(ordersSchema.status, ['succeeded', 'active'])
         )
       )
       .groupBy(orderDateTrunc)

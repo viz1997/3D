@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from '@/db';
-import { users } from '@/db/schema';
+import { users as usersSchema } from '@/db/schema';
 import { actionResponse } from '@/lib/action-response';
 import { getErrorMessage } from '@/lib/error-utils';
 import { isAdmin } from '@/lib/supabase/isAdmin';
@@ -37,23 +37,23 @@ export async function getUsers({
     if (filter) {
       conditions.push(
         or(
-          ilike(users.email, `%${filter}%`),
-          ilike(users.full_name, `%${filter}%`)
+          ilike(usersSchema.email, `%${filter}%`),
+          ilike(usersSchema.full_name, `%${filter}%`)
         )
       );
     }
 
     const usersQuery = db
       .select()
-      .from(users)
+      .from(usersSchema)
       .where(conditions.length > 0 ? or(...conditions) : undefined)
-      .orderBy(desc(users.created_at))
+      .orderBy(desc(usersSchema.created_at))
       .offset(pageIndex * pageSize)
       .limit(pageSize);
 
     const totalCountQuery = db
       .select({ value: count() })
-      .from(users)
+      .from(usersSchema)
       .where(conditions.length > 0 ? or(...conditions) : undefined);
 
     const [results, totalCountResult] = await Promise.all([

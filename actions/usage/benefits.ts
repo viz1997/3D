@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/db';
-import { subscriptions, usage } from '@/db/schema';
+import { subscriptions as subscriptionsSchema, usage as usageSchema } from '@/db/schema';
 import { actionResponse, ActionResult } from '@/lib/action-response';
 import { createClient } from '@/lib/supabase/server';
 import { createClient as createAdminClient } from '@supabase/supabase-js';
@@ -79,13 +79,13 @@ async function fetchSubscriptionData(
   try {
     const result = await db
       .select({
-        plan_id: subscriptions.plan_id,
-        status: subscriptions.status,
-        current_period_end: subscriptions.current_period_end,
+        plan_id: subscriptionsSchema.plan_id,
+        status: subscriptionsSchema.status,
+        current_period_end: subscriptionsSchema.current_period_end,
       })
-      .from(subscriptions)
-      .where(eq(subscriptions.user_id, userId))
-      .orderBy(desc(subscriptions.created_at))
+      .from(subscriptionsSchema)
+      .where(eq(subscriptionsSchema.user_id, userId))
+      .orderBy(desc(subscriptionsSchema.created_at))
       .limit(1);
 
     if (result.length > 0) {
@@ -122,12 +122,12 @@ export async function getUserBenefits(userId: string): Promise<UserBenefits> {
   try {
     const result = await db
       .select({
-        subscription_credits_balance: usage.subscription_credits_balance,
-        one_time_credits_balance: usage.one_time_credits_balance,
-        balance_jsonb: usage.balance_jsonb,
+        subscription_credits_balance: usageSchema.subscription_credits_balance,
+        one_time_credits_balance: usageSchema.one_time_credits_balance,
+        balance_jsonb: usageSchema.balance_jsonb,
       })
-      .from(usage)
-      .where(eq(usage.user_id, userId));
+      .from(usageSchema)
+      .where(eq(usageSchema.user_id, userId));
 
     const usageData = result.length > 0 ? result[0] : null;
 
@@ -146,83 +146,67 @@ export async function getUserBenefits(userId: string): Promise<UserBenefits> {
     // Handle user subscription data (subscriptions table) and benefits data (usage table)
     // ------------------------------------------
     if (finalUsageData) {
-      let currentBalanceJsonb = finalUsageData.balance_jsonb as any;
-      let currentYearlyDetails = currentBalanceJsonb?.yearly_allocation_details;
-
       // Start of Yearly Subscription Catch-up Logic
-      while (
-        currentYearlyDetails &&
-        currentYearlyDetails.remaining_months &&
-        currentYearlyDetails.remaining_months > 0 &&
-        currentYearlyDetails.next_credit_date &&
-        new Date() >= new Date(currentYearlyDetails.next_credit_date)
-      ) {
-        const creditsToAllocate = currentYearlyDetails.monthly_credits;
-        const yearMonthToAllocate = new Date(
-          currentYearlyDetails.next_credit_date
-        )
-          .toISOString()
-          .slice(0, 7);
+      let shouldContinue = true;
+      while (shouldContinue) {
+        shouldContinue = await db.transaction(async (tx) => {
+          const usageResults = await tx.select()
+            .from(usageSchema)
+            .where(eq(usageSchema.user_id, userId))
+            .for('update');
+          const usage = usageResults[0];
 
-        console.log(
-          `Attempting to allocate credits for user ${userId}, month ${yearMonthToAllocate}, remaining: ${currentYearlyDetails.remaining_months}`
-        );
+          if (!usage) { return false; }
 
-        const { error: rpcError } = await supabaseAdmin.rpc(
-          'allocate_specific_monthly_credit_for_year_plan',
-          {
-            p_user_id: userId,
-            p_monthly_credits: creditsToAllocate,
-            p_current_yyyy_mm: yearMonthToAllocate,
+          finalUsageData = usage as UsageData;
+          const yearlyDetails = (usage.balance_jsonb as any)?.yearly_allocation_details;
+
+          if (!yearlyDetails ||
+            (yearlyDetails.remaining_months || 0) <= 0 ||
+            !yearlyDetails.next_credit_date ||
+            new Date() < new Date(yearlyDetails.next_credit_date)) {
+            return false;
           }
-        );
 
-        if (rpcError) {
-          console.error(
-            `Catch-up: Error calling allocate_specific_monthly_credit_for_year_plan for user ${userId}, month ${yearMonthToAllocate}:`,
-            rpcError
-          );
-          break;
-        } else {
-          console.log(
-            `Catch-up: Successfully allocated or skipped for user ${userId}, month ${yearMonthToAllocate}. Re-fetching usage data.`
-          );
-          const updatedResult = await db
-            .select({
-              subscription_credits_balance: usage.subscription_credits_balance,
-              one_time_credits_balance: usage.one_time_credits_balance,
-              balance_jsonb: usage.balance_jsonb,
+          const yearMonthToAllocate = new Date(yearlyDetails.next_credit_date)
+            .toISOString()
+            .slice(0, 7);
+
+          if (yearlyDetails.last_allocated_month === yearMonthToAllocate) {
+            return false;
+          }
+
+          const creditsToAllocate = yearlyDetails.monthly_credits;
+          const newRemainingMonths = yearlyDetails.remaining_months - 1;
+          const nextCreditDate = new Date(yearlyDetails.next_credit_date);
+          nextCreditDate.setMonth(nextCreditDate.getMonth() + 1);
+
+          const newYearlyDetails = {
+            ...yearlyDetails,
+            remaining_months: newRemainingMonths,
+            next_credit_date: nextCreditDate.toISOString(),
+            last_allocated_month: yearMonthToAllocate,
+          };
+
+          const newBalanceJsonb = {
+            ...(usage.balance_jsonb as any),
+            yearly_allocation_details: newYearlyDetails,
+          };
+
+          await tx.update(usageSchema)
+            .set({
+              subscription_credits_balance: creditsToAllocate,
+              balance_jsonb: newBalanceJsonb,
             })
-            .from(usage)
-            .where(eq(usage.user_id, userId));
+            .where(eq(usageSchema.user_id, userId));
 
-          const updatedUsageData =
-            updatedResult.length > 0 ? updatedResult[0] : null;
-
-          if (!updatedUsageData) {
-            console.warn(
-              `Catch-up: Usage data disappeared for user ${userId} after allocation. Stopping.`
-            );
-            finalUsageData = null;
-            break;
-          }
-
-          finalUsageData = updatedUsageData as UsageData;
-          currentBalanceJsonb = finalUsageData.balance_jsonb as any;
-          currentYearlyDetails =
-            currentBalanceJsonb?.yearly_allocation_details;
-
-          if (!currentYearlyDetails) {
-            console.log(
-              `Catch-up: yearly_allocation_details no longer present for user ${userId} after allocation. Stopping loop.`
-            );
-            break;
-          }
-        }
+          return newRemainingMonths > 0;
+        });
       }
       // End of Yearly Subscription Catch-up Logic
 
       const subscription = await fetchSubscriptionData(userId);
+      const currentYearlyDetails = (finalUsageData.balance_jsonb as any)?.yearly_allocation_details;
 
       return createUserBenefitsFromData(
         finalUsageData,

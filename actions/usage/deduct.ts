@@ -44,11 +44,11 @@ export async function deductCredits(
     await db.transaction(async (tx) => {
       // Lock the user's usage row for the duration of the transaction
       const usageResults = await tx.select({
-        one_time_credits_balance: usageSchema.one_time_credits_balance,
-        subscription_credits_balance: usageSchema.subscription_credits_balance,
+        oneTimeCreditsBalance: usageSchema.oneTimeCreditsBalance,
+        subscriptionCreditsBalance: usageSchema.subscriptionCreditsBalance,
       })
         .from(usageSchema)
-        .where(eq(usageSchema.user_id, user.id))
+        .where(eq(usageSchema.userId, user.id))
         .for('update');
 
       const usage = usageResults[0];
@@ -57,30 +57,30 @@ export async function deductCredits(
         throw new Error('INSUFFICIENT_CREDITS');
       }
 
-      const totalCredits = usage.one_time_credits_balance + usage.subscription_credits_balance;
+      const totalCredits = usage.oneTimeCreditsBalance + usage.subscriptionCreditsBalance;
       if (totalCredits < amountToDeduct) {
         throw new Error('INSUFFICIENT_CREDITS');
       }
 
-      const deductedFromSub = Math.min(usage.subscription_credits_balance, amountToDeduct);
+      const deductedFromSub = Math.min(usage.subscriptionCreditsBalance, amountToDeduct);
       const deductedFromOneTime = amountToDeduct - deductedFromSub;
 
-      const newSubBalance = usage.subscription_credits_balance - deductedFromSub;
-      const newOneTimeBalance = usage.one_time_credits_balance - deductedFromOneTime;
+      const newSubBalance = usage.subscriptionCreditsBalance - deductedFromSub;
+      const newOneTimeBalance = usage.oneTimeCreditsBalance - deductedFromOneTime;
 
       await tx.update(usageSchema)
         .set({
-          subscription_credits_balance: newSubBalance,
-          one_time_credits_balance: newOneTimeBalance,
+          subscriptionCreditsBalance: newSubBalance,
+          oneTimeCreditsBalance: newOneTimeBalance,
         })
-        .where(eq(usageSchema.user_id, user.id));
+        .where(eq(usageSchema.userId, user.id));
 
       await tx.insert(creditLogsSchema)
         .values({
-          user_id: user.id,
+          userId: user.id,
           amount: -amountToDeduct,
-          one_time_balance_after: newOneTimeBalance,
-          subscription_balance_after: newSubBalance,
+          oneTimeBalanceAfter: newOneTimeBalance,
+          subscriptionBalanceAfter: newSubBalance,
           type: 'feature_usage',
           notes: notes,
         });

@@ -31,7 +31,7 @@ export default function Settings() {
   const locale = useLocale();
 
   useEffect(() => {
-    setFullName(user?.user_metadata?.full_name || "");
+    setFullName(user?.user_metadata?.name || "");
   }, [user]);
 
   const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -172,10 +172,10 @@ export default function Settings() {
             <Avatar className="w-20 h-20">
               <AvatarImage
                 src={previewUrl || user?.user_metadata?.avatar_url || undefined}
-                alt={user?.user_metadata?.full_name || "User avatar"}
+                alt={user?.user_metadata?.name || "User avatar"}
               />
               <AvatarFallback>
-                {user?.user_metadata?.full_name?.[0] || "U"}
+                {user?.user_metadata?.name?.[0] || "U"}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 space-y-1">

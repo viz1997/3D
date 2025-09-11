@@ -7,21 +7,22 @@ import { actionResponse } from '@/lib/action-response'
 import { getErrorMessage } from '@/lib/error-utils'
 import { isAdmin } from '@/lib/supabase/isAdmin'
 import { createClient } from '@/lib/supabase/server'
-import type { Database } from '@/lib/supabase/types'
 import { Tag } from '@/types/blog'
 import { and, count, desc, eq, getTableColumns, ilike, inArray, or, sql } from 'drizzle-orm'
 import { getTranslations } from 'next-intl/server'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
-export type PostWithTags = Database['public']['Tables']['posts']['Row'] & {
-  tags: Pick<Tag, 'id' | 'name' | 'created_at'>[]
+export type PostListItem = Omit<typeof postsSchema.$inferSelect, 'content'>
+
+export type PostWithTags = typeof postsSchema.$inferSelect & {
+  tags: Pick<Tag, 'id' | 'name' | 'createdAt'>[]
 }
 
 interface ListPostsParams {
   pageIndex?: number
   pageSize?: number
-  status?: Database['public']['Enums']['post_status']
+  status?: 'draft' | 'published' | 'archived'
   filter?: string
   language?: string
   locale?: string
@@ -76,17 +77,17 @@ export async function listPostsAction({
         title: postsSchema.title,
         slug: postsSchema.slug,
         description: postsSchema.description,
-        featured_image_url: postsSchema.featured_image_url,
-        is_pinned: postsSchema.is_pinned,
+        featuredImageUrl: postsSchema.featuredImageUrl,
+        isPinned: postsSchema.isPinned,
         status: postsSchema.status,
         visibility: postsSchema.visibility,
-        published_at: postsSchema.published_at,
-        created_at: postsSchema.created_at,
-        updated_at: postsSchema.updated_at,
+        publishedAt: postsSchema.publishedAt,
+        createdAt: postsSchema.createdAt,
+        updatedAt: postsSchema.updatedAt,
       })
       .from(postsSchema)
       .where(whereCondition)
-      .orderBy(desc(postsSchema.is_pinned), desc(postsSchema.created_at))
+      .orderBy(desc(postsSchema.isPinned), desc(postsSchema.createdAt))
       .limit(pageSize)
       .offset(pageIndex * pageSize)
 
@@ -102,14 +103,14 @@ export async function listPostsAction({
     if (postIds.length > 0) {
       tagsData = await db
         .select({
-          postId: postTagsSchema.post_id,
+          postId: postTagsSchema.postId,
           tagId: tagsSchema.id,
           tagName: tagsSchema.name,
-          tagCreatedAt: tagsSchema.created_at,
+          tagCreatedAt: tagsSchema.createdAt,
         })
         .from(postTagsSchema)
-        .innerJoin(tagsSchema, eq(postTagsSchema.tag_id, tagsSchema.id))
-        .where(inArray(postTagsSchema.post_id, postIds))
+        .innerJoin(tagsSchema, eq(postTagsSchema.tagId, tagsSchema.id))
+        .where(inArray(postTagsSchema.postId, postIds))
     }
 
     const tagsByPostId = tagsData.reduce((acc, row) => {
@@ -119,7 +120,7 @@ export async function listPostsAction({
       acc[row.postId].push({
         id: row.tagId,
         name: row.tagName,
-        created_at: row.tagCreatedAt,
+        createdAt: row.tagCreatedAt,
       })
       return acc
     }, {} as Record<string, any[]>)
@@ -183,15 +184,15 @@ export async function getPostByIdAction({
       .select({
         id: tagsSchema.id,
         name: tagsSchema.name,
-        created_at: tagsSchema.created_at,
+        createdAt: tagsSchema.createdAt,
       })
       .from(postTagsSchema)
-      .innerJoin(tagsSchema, eq(postTagsSchema.tag_id, tagsSchema.id))
-      .where(eq(postTagsSchema.post_id, postId))
+      .innerJoin(tagsSchema, eq(postTagsSchema.tagId, tagsSchema.id))
+      .where(eq(postTagsSchema.postId, postId))
 
     const postWithTags: PostWithTags = {
-      ...(post as any),
-      tags: tagsData || []
+      ...post,
+      tags: tagsData || [],
     }
 
     return actionResponse.success({ post: postWithTags })
@@ -247,18 +248,18 @@ export async function createPostAction({
 
   const { tags: inputTags, ...postData } = validatedFields.data
   const finalFeaturedImageUrl =
-    postData.featured_image_url === '' ? null : postData.featured_image_url
+    postData.featuredImageUrl === '' ? null : postData.featuredImageUrl
 
   try {
     const newPost = await db
       .insert(postsSchema)
       .values({
         ...postData,
-        author_id: authorId,
-        featured_image_url: finalFeaturedImageUrl,
+        authorId: authorId,
+        featuredImageUrl: finalFeaturedImageUrl,
         content: postData.content || null,
         description: postData.description || null,
-        is_pinned: postData.is_pinned || false,
+        isPinned: postData.isPinned || false,
       })
       .returning({ id: postsSchema.id })
 
@@ -269,8 +270,8 @@ export async function createPostAction({
 
     if (inputTags && inputTags.length > 0) {
       const tagAssociations = inputTags.map((tag) => ({
-        post_id: postId,
-        tag_id: tag.id,
+        postId: postId,
+        tagId: tag.id,
       }))
       await db.insert(postTagsSchema).values(tagAssociations)
     }
@@ -327,9 +328,9 @@ export async function updatePostAction({
     validatedFields.data
 
   const finalFeaturedImageUrl =
-    postUpdateData.featured_image_url === ''
+    postUpdateData.featuredImageUrl === ''
       ? null
-      : postUpdateData.featured_image_url
+      : postUpdateData.featuredImageUrl
 
   try {
     const currentPostData = await db
@@ -351,27 +352,25 @@ export async function updatePostAction({
       .update(postsSchema)
       .set({
         ...postUpdateData,
-        featured_image_url: finalFeaturedImageUrl,
+        featuredImageUrl: finalFeaturedImageUrl,
         content: postUpdateData.content || null,
         description: postUpdateData.description || null,
-        is_pinned: postUpdateData.is_pinned || false,
+        isPinned: postUpdateData.isPinned || false,
       })
       .where(eq(postsSchema.id, postId))
 
-    await db.delete(postTagsSchema).where(eq(postTagsSchema.post_id, postId))
+    await db.delete(postTagsSchema).where(eq(postTagsSchema.postId, postId))
 
     if (inputTags && inputTags.length > 0) {
       const newTagAssociations = inputTags.map((tag) => ({
-        post_id: postId,
-        tag_id: tag.id,
+        postId: postId,
+        tagId: tag.id,
       }))
       await db.insert(postTagsSchema).values(newTagAssociations)
     }
 
     revalidatePath(`/${currentPost.language || ''}/blogs`)
     revalidatePath(`/${currentPost.language || ''}/blogs/${currentPost.slug}`)
-
-
 
     if (postUpdateData.status === 'published') {
       revalidatePath(
@@ -452,18 +451,18 @@ export async function deletePostAction({
  * User-side functionality
  */
 export type PublicPost = Pick<
-  Database['public']['Tables']['posts']['Row'],
+  typeof postsSchema.$inferSelect,
   | 'id'
   | 'language'
   | 'title'
   | 'slug'
   | 'description'
-  | 'featured_image_url'
+  | 'featuredImageUrl'
   | 'status'
   | 'visibility'
-  | 'is_pinned'
-  | 'published_at'
-  | 'created_at'
+  | 'isPinned'
+  | 'publishedAt'
+  | 'createdAt'
 > & {
   tags: string | null
 }
@@ -507,15 +506,15 @@ export async function listPublishedPostsAction({
         db
           .select({
             ...getTableColumns(postsSchema),
-            tag_ids: sql<string[]>`array_agg(${postTagsSchema.tag_id})`.as('tag_ids'),
+            tag_ids: sql<string[]>`array_agg(${postTagsSchema.tagId})`.as('tag_ids'),
             tag_names: sql<string[]>`array_agg(${tagsSchema.name})`.as('tag_names'),
           })
           .from(postsSchema)
           .leftJoin(
             postTagsSchema,
-            eq(postsSchema.id, postTagsSchema.post_id)
+            eq(postsSchema.id, postTagsSchema.postId)
           )
-          .leftJoin(tagsSchema, eq(postTagsSchema.tag_id, tagsSchema.id))
+          .leftJoin(tagsSchema, eq(postTagsSchema.tagId, tagsSchema.id))
           .where(and(...conditions))
           .groupBy(postsSchema.id)
       )
@@ -530,9 +529,9 @@ export async function listPublishedPostsAction({
 
     const paginatedQuery = query
       .orderBy(
-        desc(postsSubquery.is_pinned),
-        desc(postsSubquery.published_at),
-        desc(postsSubquery.created_at)
+        desc(postsSubquery.isPinned),
+        desc(postsSubquery.publishedAt),
+        desc(postsSubquery.createdAt)
       )
       .limit(pageSize)
       .offset(pageIndex * pageSize)
@@ -560,19 +559,19 @@ export async function listPublishedPostsAction({
 }
 
 export type PublicPostWithContent = Pick<
-  Database['public']['Tables']['posts']['Row'],
+  typeof postsSchema.$inferSelect,
   | 'id'
   | 'language'
   | 'title'
   | 'slug'
   | 'description'
   | 'content'
-  | 'featured_image_url'
+  | 'featuredImageUrl'
   | 'status'
   | 'visibility'
-  | 'is_pinned'
-  | 'published_at'
-  | 'created_at'
+  | 'isPinned'
+  | 'publishedAt'
+  | 'createdAt'
 > & {
   tags: string | null
 }
@@ -622,8 +621,8 @@ export async function getPublishedPostBySlugAction({
     const tagsData = await db
       .select({ name: tagsSchema.name })
       .from(postTagsSchema)
-      .innerJoin(tagsSchema, eq(postTagsSchema.tag_id, tagsSchema.id))
-      .where(eq(postTagsSchema.post_id, post.id))
+      .innerJoin(tagsSchema, eq(postTagsSchema.tagId, tagsSchema.id))
+      .where(eq(postTagsSchema.postId, post.id))
 
     const tagNames = tagsData.map((t) => t.name).join(', ') || null
 
@@ -654,7 +653,7 @@ export async function getPublishedPostBySlugAction({
     }
 
     const postResultData: PublicPostWithContent = {
-      ...(post as any),
+      ...post,
       content: finalContent,
       tags: tagNames,
     }
@@ -685,11 +684,11 @@ async function checkUserSubscription(userId: string): Promise<boolean> {
     const data = await db
       .select({
         status: subscriptionsSchema.status,
-        current_period_end: subscriptionsSchema.current_period_end,
+        currentPeriodEnd: subscriptionsSchema.currentPeriodEnd,
       })
       .from(subscriptionsSchema)
-      .where(eq(subscriptionsSchema.user_id, userId))
-      .orderBy(desc(subscriptionsSchema.created_at))
+      .where(eq(subscriptionsSchema.userId, userId))
+      .orderBy(desc(subscriptionsSchema.createdAt))
       .limit(1)
 
     if (!data || data.length === 0) {
@@ -701,8 +700,8 @@ async function checkUserSubscription(userId: string): Promise<boolean> {
       latestSubscription.status === 'active' ||
       latestSubscription.status === 'trialing'
     const isWithinPeriod =
-      latestSubscription.current_period_end &&
-      new Date(latestSubscription.current_period_end) > new Date()
+      latestSubscription.currentPeriodEnd &&
+      new Date(latestSubscription.currentPeriodEnd) > new Date()
 
     return !!(isActive && isWithinPeriod)
 

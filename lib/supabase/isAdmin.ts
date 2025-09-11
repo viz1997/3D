@@ -1,5 +1,5 @@
 import { db } from '@/db';
-import { users as usersSchema } from '@/db/schema';
+import { user as userSchema } from '@/db/schema';
 import { createClient } from '@/lib/supabase/server';
 import { eq } from 'drizzle-orm';
 
@@ -11,9 +11,9 @@ export async function isAdmin(): Promise<boolean> {
     return false;
   }
   const userDataResults = await db
-    .select({ role: usersSchema.role })
-    .from(usersSchema)
-    .where(eq(usersSchema.id, user.id))
+    .select({ role: userSchema.role })
+    .from(userSchema)
+    .where(eq(userSchema.id, user.id))
     .limit(1);
 
   const userData = userDataResults[0];

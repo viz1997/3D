@@ -123,7 +123,7 @@ export function OrdersDataTable<TData, TValue>({
           pageSize: pagination.pageSize,
           filter: debouncedGlobalFilter,
           provider: provider || undefined,
-          order_type: orderType || undefined,
+          orderType: orderType || undefined,
           status: status || undefined,
         });
         if (result.success) {

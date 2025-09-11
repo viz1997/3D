@@ -53,7 +53,7 @@ export async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Se
       .from(ordersSchema)
       .where(and(
         eq(ordersSchema.provider, 'stripe'),
-        eq(ordersSchema.provider_order_id, paymentIntentId)
+        eq(ordersSchema.providerOrderId, paymentIntentId)
       ))
       .limit(1);
 
@@ -62,17 +62,17 @@ export async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Se
     }
 
     const orderData: InferInsertModel<typeof ordersSchema> = {
-      user_id: userId,
+      userId: userId,
       provider: 'stripe',
-      provider_order_id: paymentIntentId,
+      providerOrderId: paymentIntentId,
       status: 'succeeded',
-      order_type: 'one_time_purchase',
-      plan_id: planId,
-      price_id: priceId,
-      amount_subtotal: session.amount_subtotal ? (session.amount_subtotal / 100).toString() : null,
-      amount_discount: session.total_details?.amount_discount ? (session.total_details.amount_discount / 100).toString() : '0',
-      amount_tax: session.total_details?.amount_tax ? (session.total_details.amount_tax / 100).toString() : '0',
-      amount_total: session.amount_total ? (session.amount_total / 100).toString() : '0',
+      orderType: 'one_time_purchase',
+      planId: planId,
+      priceId: priceId,
+      amountSubtotal: session.amount_subtotal ? (session.amount_subtotal / 100).toString() : null,
+      amountDiscount: session.total_details?.amount_discount ? (session.total_details.amount_discount / 100).toString() : '0',
+      amountTax: session.total_details?.amount_tax ? (session.total_details.amount_tax / 100).toString() : '0',
+      amountTotal: session.amount_total ? (session.amount_total / 100).toString() : '0',
       currency: session.currency || process.env.NEXT_PUBLIC_DEFAULT_CURRENCY || 'usd',
       metadata: {
         stripeCheckoutSessionId: session.id,
@@ -109,19 +109,19 @@ export async function upgradeOneTimeCredits(userId: string, planId: string, orde
   // --- TODO: [custom] Upgrade the user's benefits ---
   /**
    * Complete the user's benefit upgrade based on your business logic.
-   * We recommend defining benefits in the `benefits_jsonb` field within your pricing plans (accessible in the dashboard at /dashboard/prices). This code upgrades the user's benefits based on those defined benefits.
-   * The following code provides an example using `one_time_credits`.  Modify the code below according to your specific business logic if you need to upgrade other benefits.
+   * We recommend defining benefits in the `benefitsJsonb` field within your pricing plans (accessible in the dashboard at /dashboard/prices). This code upgrades the user's benefits based on those defined benefits.
+   * The following code provides an example using `oneTimeCredits`.  Modify the code below according to your specific business logic if you need to upgrade other benefits.
    * 
    * 根据你的业务逻辑，为用户完成权益升级。
-   * 我们建议在定价方案的 `benefits_jsonb` 字段中（可在仪表板的 /dashboard/prices 访问）定义权益。此代码会根据定义的权益，为用户完成权益升级。
-   * 以下代码以 `one_time_credits` 为例。如果你需要升级其他权益，请根据你的具体业务逻辑修改以下代码。
+   * 我们建议在定价方案的 `benefitsJsonb` 字段中（可在仪表板的 /dashboard/prices 访问）定义权益。此代码会根据定义的权益，为用户完成权益升级。
+   * 以下代码以 `oneTimeCredits` 为例。如果你需要升级其他权益，请根据你的具体业务逻辑修改以下代码。
    * 
    * お客様のビジネスロジックに基づいて、ユーザーの特典アップグレードを完了させてください。
-   * 特典は、料金プランの `benefits_jsonb` フィールド（ダッシュボードの /dashboard/prices でアクセス可能）で定義することをお勧めします。このコードは、定義された特典に基づいて、ユーザーの特典をアップグレードします。
-   * 以下のコードは、`one_time_credits` を使用した例です。他の特典をアップグレードする必要がある場合は、お客様のビジネスロジックに従って、以下のコードを修正してください。
+   * 特典は、料金プランの `benefitsJsonb` フィールド（ダッシュボードの /dashboard/prices でアクセス可能）で定義することをお勧めします。このコードは、定義された特典に基づいて、ユーザーの特典をアップグレードします。
+   * 以下のコードは、`oneTimeCredits` を使用した例です。他の特典をアップグレードする必要がある場合は、お客様のビジネスロジックに従って、以下のコードを修正してください。
    */
   const planDataResults = await db
-    .select({ benefits_jsonb: pricingPlansSchema.benefits_jsonb })
+    .select({ benefitsJsonb: pricingPlansSchema.benefitsJsonb })
     .from(pricingPlansSchema)
     .where(eq(pricingPlansSchema.id, planId))
     .limit(1);
@@ -132,7 +132,7 @@ export async function upgradeOneTimeCredits(userId: string, planId: string, orde
     throw new Error(`Could not fetch plan benefits for ${planId}`);
   }
 
-  const creditsToGrant = (planData.benefits_jsonb as any)?.one_time_credits || 0;
+  const creditsToGrant = (planData.benefitsJsonb as any)?.oneTimeCredits || 0;
 
   if (creditsToGrant && creditsToGrant > 0) {
     let attempts = 0;
@@ -146,18 +146,18 @@ export async function upgradeOneTimeCredits(userId: string, planId: string, orde
           const updatedUsage = await tx
             .insert(usageSchema)
             .values({
-              user_id: userId,
-              one_time_credits_balance: creditsToGrant,
+              userId: userId,
+              oneTimeCreditsBalance: creditsToGrant,
             })
             .onConflictDoUpdate({
-              target: usageSchema.user_id,
+              target: usageSchema.userId,
               set: {
-                one_time_credits_balance: sql`${usageSchema.one_time_credits_balance} + ${creditsToGrant}`,
+                oneTimeCreditsBalance: sql`${usageSchema.oneTimeCreditsBalance} + ${creditsToGrant}`,
               },
             })
             .returning({
-              one_time_balance_after: usageSchema.one_time_credits_balance,
-              subscription_balance_after: usageSchema.subscription_credits_balance,
+              oneTimeBalanceAfter: usageSchema.oneTimeCreditsBalance,
+              subscriptionBalanceAfter: usageSchema.subscriptionCreditsBalance,
             });
 
           const balances = updatedUsage[0];
@@ -166,20 +166,20 @@ export async function upgradeOneTimeCredits(userId: string, planId: string, orde
           }
 
           await tx.insert(creditLogsSchema).values({
-            user_id: userId,
+            userId: userId,
             amount: creditsToGrant,
-            one_time_balance_after: balances.one_time_balance_after,
-            subscription_balance_after: balances.subscription_balance_after,
+            oneTimeBalanceAfter: balances.oneTimeBalanceAfter,
+            subscriptionBalanceAfter: balances.subscriptionBalanceAfter,
             type: 'one_time_purchase',
             notes: 'One-time credit purchase',
-            related_order_id: orderId,
+            relatedOrderId: orderId,
           });
         });
         console.log(`Successfully granted one-time credits for user ${userId} on attempt ${attempts}.`);
         return; // Success, exit the function
       } catch (error) {
         lastError = error;
-        console.warn(`Attempt ${attempts} failed for grant_one_time_credits_and_log for user ${userId}. Retrying in ${attempts}s...`, (lastError as Error).message);
+        console.warn(`Attempt ${attempts} failed for grant one-time credits and log for user ${userId}. Retrying in ${attempts}s...`, (lastError as Error).message);
         if (attempts < maxAttempts) {
           await new Promise(resolve => setTimeout(resolve, attempts * 1000));
         }
@@ -187,7 +187,7 @@ export async function upgradeOneTimeCredits(userId: string, planId: string, orde
     }
 
     if (lastError) {
-      console.error(`Error updating usage (one-time credits, user_id: ${userId}, creditsToGrant: ${creditsToGrant}) after ${maxAttempts} attempts:`, lastError);
+      console.error(`Error updating usage (one-time credits, userId: ${userId}, creditsToGrant: ${creditsToGrant}) after ${maxAttempts} attempts:`, lastError);
       throw lastError;
     }
   } else {
@@ -225,7 +225,7 @@ export async function handleInvoicePaid(invoice: Stripe.Invoice) {
     .from(ordersSchema)
     .where(and(
       eq(ordersSchema.provider, 'stripe'),
-      eq(ordersSchema.provider_order_id, invoiceId)
+      eq(ordersSchema.providerOrderId, invoiceId)
     ))
     .limit(1);
 
@@ -266,7 +266,7 @@ export async function handleInvoicePaid(invoice: Stripe.Invoice) {
         const planDataResults = await db
           .select({ id: pricingPlansSchema.id })
           .from(pricingPlansSchema)
-          .where(eq(pricingPlansSchema.stripe_price_id, priceId))
+          .where(eq(pricingPlansSchema.stripePriceId, priceId))
           .limit(1);
         planId = planDataResults[0]?.id ?? null;
       }
@@ -288,19 +288,19 @@ export async function handleInvoicePaid(invoice: Stripe.Invoice) {
 
     const orderType = invoice.billing_reason === 'subscription_create' ? 'subscription_initial' : 'subscription_renewal';
     const orderData: InferInsertModel<typeof ordersSchema> = {
-      user_id: userId,
+      userId: userId,
       provider: 'stripe',
-      provider_order_id: invoiceId,
-      subscription_provider_id: subscriptionId,
+      providerOrderId: invoiceId,
+      subscriptionProviderId: subscriptionId,
       status: 'succeeded',
-      order_type: orderType,
-      plan_id: planId,
-      price_id: priceId,
-      product_id: productId,
-      amount_subtotal: (invoice.subtotal / 100).toString(),
-      amount_discount: ((invoice.total_discount_amounts?.reduce((sum, disc) => sum + disc.amount, 0) ?? 0) / 100).toString(),
-      amount_tax: ((invoice.total_taxes?.reduce((sum, tax) => sum + tax.amount, 0) ?? 0) / 100).toString(),
-      amount_total: (invoice.amount_paid / 100).toString(),
+      orderType: orderType,
+      planId: planId,
+      priceId: priceId,
+      productId: productId,
+      amountSubtotal: (invoice.subtotal / 100).toString(),
+      amountDiscount: ((invoice.total_discount_amounts?.reduce((sum, disc) => sum + disc.amount, 0) ?? 0) / 100).toString(),
+      amountTax: ((invoice.total_taxes?.reduce((sum, tax) => sum + tax.amount, 0) ?? 0) / 100).toString(),
+      amountTotal: (invoice.amount_paid / 100).toString(),
       currency: invoice.currency,
       metadata: {
         stripeInvoiceId: invoice.id,
@@ -349,22 +349,22 @@ export async function upgradeSubscriptionCredits(userId: string, planId: string,
   // --- TODO: [custom] Upgrade the user's benefits ---
   /**
    * Complete the user's benefit upgrade based on your business logic.
-   * We recommend defining benefits in the `benefits_jsonb` field within your pricing plans (accessible in the dashboard at /dashboard/prices). This code upgrades the user's benefits based on those defined benefits.
-   * The following code provides an example using `monthly_credits`.  Modify the code below according to your specific business logic if you need to upgrade other benefits.
+   * We recommend defining benefits in the `benefitsJsonb` field within your pricing plans (accessible in the dashboard at /dashboard/prices). This code upgrades the user's benefits based on those defined benefits.
+   * The following code provides an example using `monthlyCredits`.  Modify the code below according to your specific business logic if you need to upgrade other benefits.
    * 
    * 根据你的业务逻辑，为用户完成权益升级。
-   * 我们建议在定价方案的 `benefits_jsonb` 字段中（可在仪表板的 /dashboard/prices 访问）定义权益。此代码会根据定义的权益，为用户完成权益升级。
-   * 以下代码以 `monthly_credits` 为例。如果你需要升级其他权益，请根据你的具体业务逻辑修改以下代码。
+   * 我们建议在定价方案的 `benefitsJsonb` 字段中（可在仪表板的 /dashboard/prices 访问）定义权益。此代码会根据定义的权益，为用户完成权益升级。
+   * 以下代码以 `monthlyCredits` 为例。如果你需要升级其他权益，请根据你的具体业务逻辑修改以下代码。
    * 
    * お客様のビジネスロジックに基づいて、ユーザーの特典アップグレードを完了させてください。
-   * 特典は、料金プランの `benefits_jsonb` フィールド（ダッシュボードの /dashboard/prices でアクセス可能）で定義することをお勧めします。このコードは、定義された特典に基づいて、ユーザーの特典をアップグレードします。
-   * 以下のコードは、`monthly_credits` を使用した例です。他の特典をアップグレードする必要がある場合は、お客様のビジネスロジックに従って、以下のコードを修正してください。
+   * 特典は、料金プランの `benefitsJsonb` フィールド（ダッシュボードの /dashboard/prices でアクセス可能）で定義することをお勧めします。このコードは、定義された特典に基づいて、ユーザーの特典をアップグレードします。
+   * 以下のコードは、`monthlyCredits` を使用した例です。他の特典をアップグレードする必要がある場合は、お客様のビジネスロジックに従って、以下のコードを修正してください。
    */
   try {
     const planDataResults = await db
       .select({
-        recurring_interval: pricingPlansSchema.recurring_interval,
-        benefits_jsonb: pricingPlansSchema.benefits_jsonb
+        recurringInterval: pricingPlansSchema.recurringInterval,
+        benefitsJsonb: pricingPlansSchema.benefitsJsonb
       })
       .from(pricingPlansSchema)
       .where(eq(pricingPlansSchema.id, planId))
@@ -375,10 +375,10 @@ export async function upgradeSubscriptionCredits(userId: string, planId: string,
       console.error(`Error fetching plan benefits for planId ${planId} during order ${orderId} processing`);
       throw new Error(`Could not fetch plan benefits for ${planId}`);
     } else {
-      const benefits = planData.benefits_jsonb as any;
-      const recurringInterval = planData.recurring_interval;
+      const benefits = planData.benefitsJsonb as any;
+      const recurringInterval = planData.recurringInterval;
 
-      const creditsToGrant = benefits?.monthly_credits || 0;
+      const creditsToGrant = benefits?.monthlyCredits || 0;
 
       if (recurringInterval === 'month' && creditsToGrant) {
         let attempts = 0;
@@ -390,41 +390,41 @@ export async function upgradeSubscriptionCredits(userId: string, planId: string,
           try {
             await db.transaction(async (tx) => {
               const monthlyDetails = {
-                monthly_allocation_details: {
-                  monthly_credits: creditsToGrant,
+                monthlyAllocationDetails: {
+                  monthlyCredits: creditsToGrant,
                 }
               };
 
               const updatedUsage = await tx
                 .insert(usageSchema)
                 .values({
-                  user_id: userId,
-                  subscription_credits_balance: creditsToGrant,
-                  balance_jsonb: monthlyDetails,
+                  userId: userId,
+                  subscriptionCreditsBalance: creditsToGrant,
+                  balanceJsonb: monthlyDetails,
                 })
                 .onConflictDoUpdate({
-                  target: usageSchema.user_id,
+                  target: usageSchema.userId,
                   set: {
-                    subscription_credits_balance: creditsToGrant,
-                    balance_jsonb: sql`coalesce(${usageSchema.balance_jsonb}, '{}'::jsonb) - 'monthly_allocation_details' || ${JSON.stringify(monthlyDetails)}::jsonb`,
+                    subscriptionCreditsBalance: creditsToGrant,
+                    balanceJsonb: sql`coalesce(${usageSchema.balanceJsonb}, '{}'::jsonb) - 'monthlyAllocationDetails' || ${JSON.stringify(monthlyDetails)}::jsonb`,
                   },
                 })
                 .returning({
-                  one_time_balance_after: usageSchema.one_time_credits_balance,
-                  subscription_balance_after: usageSchema.subscription_credits_balance,
+                  oneTimeBalanceAfter: usageSchema.oneTimeCreditsBalance,
+                  subscriptionBalanceAfter: usageSchema.subscriptionCreditsBalance,
                 });
 
               const balances = updatedUsage[0];
               if (!balances) { throw new Error('Failed to update usage for monthly subscription'); }
 
               await tx.insert(creditLogsSchema).values({
-                user_id: userId,
+                userId: userId,
                 amount: creditsToGrant,
-                one_time_balance_after: balances.one_time_balance_after,
-                subscription_balance_after: balances.subscription_balance_after,
+                oneTimeBalanceAfter: balances.oneTimeBalanceAfter,
+                subscriptionBalanceAfter: balances.subscriptionBalanceAfter,
                 type: 'subscription_grant',
                 notes: 'Subscription credits granted/reset',
-                related_order_id: orderId,
+                relatedOrderId: orderId,
               });
             });
             console.log(`Successfully granted subscription credits for user ${userId} on attempt ${attempts}.`);
@@ -432,7 +432,7 @@ export async function upgradeSubscriptionCredits(userId: string, planId: string,
             break;
           } catch (error) {
             lastError = error;
-            console.warn(`Attempt ${attempts} failed for grant_subscription_credits_and_log for user ${userId}. Retrying in ${attempts}s...`, (lastError as Error).message);
+            console.warn(`Attempt ${attempts} failed for grant subscription credits and log for user ${userId}. Retrying in ${attempts}s...`, (lastError as Error).message);
             if (attempts < maxAttempts) {
               await new Promise(resolve => setTimeout(resolve, attempts * 1000));
             }
@@ -446,7 +446,7 @@ export async function upgradeSubscriptionCredits(userId: string, planId: string,
         return
       }
 
-      if (recurringInterval === 'year' && benefits?.total_months && benefits?.monthly_credits) {
+      if (recurringInterval === 'year' && benefits?.totalMonths && benefits?.monthlyCredits) {
         let attempts = 0;
         const maxAttempts = 3;
         let lastError: any = null;
@@ -459,44 +459,44 @@ export async function upgradeSubscriptionCredits(userId: string, planId: string,
               const nextCreditDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, startDate.getDate());
 
               const yearlyDetails = {
-                yearly_allocation_details: {
-                  remaining_months: benefits.total_months - 1,
-                  next_credit_date: nextCreditDate,
-                  monthly_credits: benefits.monthly_credits,
-                  last_allocated_month: `${startDate.getFullYear()}-${(startDate.getMonth() + 1).toString().padStart(2, '0')}`,
+                yearlyAllocationDetails: {
+                  remainingMonths: benefits.totalMonths - 1,
+                  nextCreditDate: nextCreditDate,
+                  monthlyCredits: benefits.monthlyCredits,
+                  lastAllocatedMonth: `${startDate.getFullYear()}-${(startDate.getMonth() + 1).toString().padStart(2, '0')}`,
                 }
               };
 
               const updatedUsage = await tx
                 .insert(usageSchema)
                 .values({
-                  user_id: userId,
-                  subscription_credits_balance: benefits.monthly_credits,
-                  balance_jsonb: yearlyDetails,
+                  userId: userId,
+                  subscriptionCreditsBalance: benefits.monthlyCredits,
+                  balanceJsonb: yearlyDetails,
                 })
                 .onConflictDoUpdate({
-                  target: usageSchema.user_id,
+                  target: usageSchema.userId,
                   set: {
-                    subscription_credits_balance: benefits.monthly_credits,
-                    balance_jsonb: sql`coalesce(${usageSchema.balance_jsonb}, '{}'::jsonb) - 'yearly_allocation_details' || ${JSON.stringify(yearlyDetails)}::jsonb`,
+                    subscriptionCreditsBalance: benefits.monthlyCredits,
+                    balanceJsonb: sql`coalesce(${usageSchema.balanceJsonb}, '{}'::jsonb) - 'yearlyAllocationDetails' || ${JSON.stringify(yearlyDetails)}::jsonb`,
                   }
                 })
                 .returning({
-                  one_time_balance_after: usageSchema.one_time_credits_balance,
-                  subscription_balance_after: usageSchema.subscription_credits_balance,
+                  oneTimeBalanceAfter: usageSchema.oneTimeCreditsBalance,
+                  subscriptionBalanceAfter: usageSchema.subscriptionCreditsBalance,
                 });
 
               const balances = updatedUsage[0];
               if (!balances) { throw new Error('Failed to update usage for yearly subscription'); }
 
               await tx.insert(creditLogsSchema).values({
-                user_id: userId,
-                amount: benefits.monthly_credits,
-                one_time_balance_after: balances.one_time_balance_after,
-                subscription_balance_after: balances.subscription_balance_after,
+                userId: userId,
+                amount: benefits.monthlyCredits,
+                oneTimeBalanceAfter: balances.oneTimeBalanceAfter,
+                subscriptionBalanceAfter: balances.subscriptionBalanceAfter,
                 type: 'subscription_grant',
                 notes: 'Yearly plan initial credits granted',
-                related_order_id: orderId,
+                relatedOrderId: orderId,
               });
             });
             console.log(`Successfully initialized yearly allocation for user ${userId} on attempt ${attempts}.`);
@@ -504,7 +504,7 @@ export async function upgradeSubscriptionCredits(userId: string, planId: string,
             break;
           } catch (error) {
             lastError = error;
-            console.warn(`Attempt ${attempts} failed for initialize_or_reset_yearly_allocation for user ${userId}. Retrying in ${attempts}s...`, (lastError as Error).message);
+            console.warn(`Attempt ${attempts} failed for initialize or reset yearly allocation for user ${userId}. Retrying in ${attempts}s...`, (lastError as Error).message);
             if (attempts < maxAttempts) {
               await new Promise(resolve => setTimeout(resolve, attempts * 1000));
             }
@@ -570,7 +570,7 @@ export async function revokeSubscriptionCredits(userId: string, planId: string, 
    */
   try {
     const planDataResults = await db
-      .select({ recurring_interval: pricingPlansSchema.recurring_interval })
+      .select({ recurringInterval: pricingPlansSchema.recurringInterval })
       .from(pricingPlansSchema)
       .where(eq(pricingPlansSchema.id, planId))
       .limit(1);
@@ -582,14 +582,14 @@ export async function revokeSubscriptionCredits(userId: string, planId: string, 
     }
 
     let subscriptionToRevoke = 0;
-    const recurringInterval = planData.recurring_interval;
+    const recurringInterval = planData.recurringInterval;
     let clearYearly = false;
     let clearMonthly = false;
 
     const usageDataResults = await db
-      .select({ balance_jsonb: usageSchema.balance_jsonb })
+      .select({ balanceJsonb: usageSchema.balanceJsonb })
       .from(usageSchema)
-      .where(eq(usageSchema.user_id, userId))
+      .where(eq(usageSchema.userId, userId))
       .limit(1);
     const usageData = usageDataResults[0];
 
@@ -599,55 +599,55 @@ export async function revokeSubscriptionCredits(userId: string, planId: string, 
     }
 
     if (recurringInterval === 'year') {
-      const yearlyDetails = (usageData.balance_jsonb as any)?.yearly_allocation_details;
-      subscriptionToRevoke = yearlyDetails?.monthly_credits
+      const yearlyDetails = (usageData.balanceJsonb as any)?.yearlyAllocationDetails;
+      subscriptionToRevoke = yearlyDetails?.monthlyCredits
       clearYearly = true;
     } else if (recurringInterval === 'month') {
-      const monthlyDetails = (usageData.balance_jsonb as any)?.monthly_allocation_details;
-      subscriptionToRevoke = monthlyDetails?.monthly_credits
+      const monthlyDetails = (usageData.balanceJsonb as any)?.monthlyAllocationDetails;
+      subscriptionToRevoke = monthlyDetails?.monthlyCredits
       clearMonthly = true;
     }
 
     if (subscriptionToRevoke) {
       try {
         await db.transaction(async (tx) => {
-          const usageResults = await tx.select().from(usageSchema).where(eq(usageSchema.user_id, userId)).for('update');
+          const usageResults = await tx.select().from(usageSchema).where(eq(usageSchema.userId, userId)).for('update');
           const usage = usageResults[0];
 
           if (!usage) { return; }
 
-          const newSubBalance = Math.max(0, usage.subscription_credits_balance - subscriptionToRevoke);
-          const amountRevoked = usage.subscription_credits_balance - newSubBalance;
-          let newBalanceJsonb = usage.balance_jsonb as any;
+          const newSubBalance = Math.max(0, usage.subscriptionCreditsBalance - subscriptionToRevoke);
+          const amountRevoked = usage.subscriptionCreditsBalance - newSubBalance;
+          let newBalanceJsonb = usage.balanceJsonb as any;
           if (clearYearly) {
-            delete newBalanceJsonb?.yearly_allocation_details;
+            delete newBalanceJsonb?.yearlyAllocationDetails;
           }
           if (clearMonthly) {
-            delete newBalanceJsonb?.monthly_allocation_details;
+            delete newBalanceJsonb?.monthlyAllocationDetails;
           }
 
           if (amountRevoked > 0) {
             await tx.update(usageSchema)
               .set({
-                subscription_credits_balance: newSubBalance,
-                balance_jsonb: newBalanceJsonb,
+                subscriptionCreditsBalance: newSubBalance,
+                balanceJsonb: newBalanceJsonb,
               })
-              .where(eq(usageSchema.user_id, userId));
+              .where(eq(usageSchema.userId, userId));
 
             await tx.insert(creditLogsSchema).values({
-              user_id: userId,
+              userId: userId,
               amount: -amountRevoked,
-              one_time_balance_after: usage.one_time_credits_balance,
-              subscription_balance_after: newSubBalance,
+              oneTimeBalanceAfter: usage.oneTimeCreditsBalance,
+              subscriptionBalanceAfter: newSubBalance,
               type: 'subscription_cancel_revoke',
               notes: `Subscription ${subscriptionId} cancelled/ended.`,
-              related_order_id: null,
+              relatedOrderId: null,
             });
           }
         });
         console.log(`Successfully revoked subscription credits for user ${userId} related to subscription ${subscriptionId} cancellation.`);
       } catch (revokeError) {
-        console.error(`Error calling revoke_credits_and_log RPC (subscription) for user ${userId}, subscription ${subscriptionId}:`, revokeError);
+        console.error(`Error calling revoke credits and log (subscription) for user ${userId}, subscription ${subscriptionId}:`, revokeError);
       }
     }
   } catch (error) {
@@ -724,8 +724,8 @@ export async function handleRefund(charge: Stripe.Charge) {
     .from(ordersSchema)
     .where(and(
       eq(ordersSchema.provider, 'stripe'),
-      eq(ordersSchema.provider_order_id, refundId),
-      eq(ordersSchema.order_type, 'refund')
+      eq(ordersSchema.providerOrderId, refundId),
+      eq(ordersSchema.orderType, 'refund')
     ))
     .limit(1);
 
@@ -738,8 +738,8 @@ export async function handleRefund(charge: Stripe.Charge) {
     .from(ordersSchema)
     .where(and(
       eq(ordersSchema.provider, 'stripe'),
-      eq(ordersSchema.provider_order_id, paymentIntentId),
-      inArray(ordersSchema.order_type, ['one_time_purchase', 'subscription_initial', 'subscription_renewal'])
+      eq(ordersSchema.providerOrderId, paymentIntentId),
+      inArray(ordersSchema.orderType, ['one_time_purchase', 'subscription_initial', 'subscription_renewal'])
     ))
     .limit(1);
   const originalOrder = originalOrderResults[0];
@@ -767,20 +767,20 @@ export async function handleRefund(charge: Stripe.Charge) {
 
   const refundAmount = charge.amount_refunded / 100;
   const refundData: InferInsertModel<typeof ordersSchema> = {
-    user_id: originalOrder?.user_id ?? userId,
+    userId: originalOrder?.userId ?? userId,
     provider: 'stripe',
-    provider_order_id: refundId,
+    providerOrderId: refundId,
     status: 'succeeded',
-    order_type: 'refund',
-    plan_id: originalOrder?.plan_id ?? null,
-    price_id: null,
-    product_id: null,
-    amount_subtotal: null,
-    amount_discount: null,
-    amount_tax: null,
-    amount_total: (-refundAmount).toString(),
+    orderType: 'refund',
+    planId: originalOrder?.planId ?? null,
+    priceId: null,
+    productId: null,
+    amountSubtotal: null,
+    amountDiscount: null,
+    amountTax: null,
+    amountTotal: (-refundAmount).toString(),
     currency: charge.currency,
-    subscription_provider_id: null,
+    subscriptionProviderId: null,
     metadata: {
       stripeRefundId: refundId,
       stripeChargeId: charge.id,
@@ -812,83 +812,83 @@ export async function revokeOneTimeCredits(charge: Stripe.Charge, originalOrder:
   // --- TODO: [custom] Revoke the user's one time purchase benefits ---
   /**
    * Complete the user's benefit revoke based on your business logic.
-   * We recommend defining benefits in the `benefits_jsonb` field within your pricing plans (accessible in the dashboard at /dashboard/prices). This code revokes the user's benefits based on those defined benefits.
-   * The following code provides examples using `one_time_credits`.  If you need to revoke other benefits, please modify the code below based on your specific business logic.
+   * We recommend defining benefits in the `benefitsJsonb` field within your pricing plans (accessible in the dashboard at /dashboard/prices). This code revokes the user's benefits based on those defined benefits.
+   * The following code provides examples using `oneTimeCredits`.  If you need to revoke other benefits, please modify the code below based on your specific business logic.
    * 
    * 根据你的业务逻辑，取消退款用户的付费权益。
-   * 我们建议在定价方案的 `benefits_jsonb` 字段中（可在仪表板的 /dashboard/prices 访问）定义权益。此代码会根据定义的权益，取消退款用户的付费权益。
-   * 以下代码以 `one_time_credits` 为例。如果你需要取消其他权益，请根据你的具体业务逻辑修改以下代码。
+   * 我们建议在定价方案的 `benefitsJsonb` 字段中（可在仪表板的 /dashboard/prices 访问）定义权益。此代码会根据定义的权益，取消退款用户的付费权益。
+   * 以下代码以 `oneTimeCredits` 为例。如果你需要取消其他权益，请根据你的具体业务逻辑修改以下代码。
    * 
    * お客様のビジネスロジックに基づいて、ユーザーの特典を取消してください。
-   * 特典は、料金プランの `benefits_jsonb` フィールド（ダッシュボードの /dashboard/prices でアクセス可能）で定義することをお勧めします。このコードは、定義された特典に基づいて、ユーザーの特典を取消します。
-   * 以下のコードは、`one_time_credits` を使用した例です。他の特典を取消する必要がある場合は、お客様のビジネスロジックに従って、以下のコードを修正してください。
+   * 特典は、料金プランの `benefitsJsonb` フィールド（ダッシュボードの /dashboard/prices でアクセス可能）で定義することをお勧めします。このコードは、定義された特典に基づいて、ユーザーの特典を取消します。
+   * 以下のコードは、`oneTimeCredits` を使用した例です。他の特典を取消する必要がある場合は、お客様のビジネスロジックに従って、以下のコードを修正してください。
    */
-  if (originalOrder && originalOrder.user_id && originalOrder.plan_id) {
-    const isFullRefund = Math.abs(charge.amount_refunded) === Math.round(parseFloat(originalOrder.amount_total!) * 100);
+  if (originalOrder && originalOrder.userId && originalOrder.planId) {
+    const isFullRefund = Math.abs(charge.amount_refunded) === Math.round(parseFloat(originalOrder.amountTotal!) * 100);
 
     if (isFullRefund) {
       const planDataResults = await db
-        .select({ benefits_jsonb: pricingPlansSchema.benefits_jsonb })
+        .select({ benefitsJsonb: pricingPlansSchema.benefitsJsonb })
         .from(pricingPlansSchema)
-        .where(eq(pricingPlansSchema.id, originalOrder.plan_id))
+        .where(eq(pricingPlansSchema.id, originalOrder.planId))
         .limit(1);
       const planData = planDataResults[0];
 
       if (!planData) {
-        console.error(`Error fetching plan benefits for planId ${originalOrder.plan_id} during refund ${refundOrderId}:`);
+        console.error(`Error fetching plan benefits for planId ${originalOrder.planId} during refund ${refundOrderId}:`);
       } else {
         let oneTimeToRevoke = 0;
-        const benefits = planData.benefits_jsonb as any;
+        const benefits = planData.benefitsJsonb as any;
 
-        if (benefits?.one_time_credits > 0) {
-          oneTimeToRevoke = benefits.one_time_credits;
+        if (benefits?.oneTimeCredits > 0) {
+          oneTimeToRevoke = benefits.oneTimeCredits;
         }
 
         if (oneTimeToRevoke > 0) {
           try {
             await db.transaction(async (tx) => {
-              const usageResults = await tx.select().from(usageSchema).where(eq(usageSchema.user_id, originalOrder.user_id)).for('update');
+              const usageResults = await tx.select().from(usageSchema).where(eq(usageSchema.userId, originalOrder.userId)).for('update');
               const usage = usageResults[0];
 
               if (!usage) { return; }
 
-              const newOneTimeBalance = Math.max(0, usage.one_time_credits_balance - oneTimeToRevoke);
-              const amountRevoked = usage.one_time_credits_balance - newOneTimeBalance;
+              const newOneTimeBalance = Math.max(0, usage.oneTimeCreditsBalance - oneTimeToRevoke);
+              const amountRevoked = usage.oneTimeCreditsBalance - newOneTimeBalance;
 
               if (amountRevoked > 0) {
                 await tx.update(usageSchema)
-                  .set({ one_time_credits_balance: newOneTimeBalance })
-                  .where(eq(usageSchema.user_id, originalOrder.user_id));
+                  .set({ oneTimeCreditsBalance: newOneTimeBalance })
+                  .where(eq(usageSchema.userId, originalOrder.userId));
 
                 await tx.insert(creditLogsSchema).values({
-                  user_id: originalOrder.user_id,
+                  userId: originalOrder.userId,
                   amount: -amountRevoked,
-                  one_time_balance_after: newOneTimeBalance,
-                  subscription_balance_after: usage.subscription_credits_balance,
+                  oneTimeBalanceAfter: newOneTimeBalance,
+                  subscriptionBalanceAfter: usage.subscriptionCreditsBalance,
                   type: 'refund_revoke',
                   notes: `Full refund for order ${originalOrder.id}.`,
-                  related_order_id: refundOrderId,
+                  relatedOrderId: refundOrderId,
                 });
               }
             });
-            console.log(`Successfully revoked credits for user ${originalOrder.user_id} related to refund ${refundOrderId}.`);
+            console.log(`Successfully revoked credits for user ${originalOrder.userId} related to refund ${refundOrderId}.`);
           } catch (revokeError) {
-            console.error(`Error calling revoke_credits_and_log RPC for user ${originalOrder.user_id}, refund ${refundOrderId}:`, revokeError);
+            console.error(`Error calling revoke credits and log for user ${originalOrder.userId}, refund ${refundOrderId}:`, revokeError);
           }
         } else {
-          console.log(`No credits defined to revoke for plan ${originalOrder.plan_id}, order type ${originalOrder.order_type} on refund ${refundOrderId}.`);
+          console.log(`No credits defined to revoke for plan ${originalOrder.planId}, order type ${originalOrder.orderType} on refund ${refundOrderId}.`);
         }
       }
     } else {
-      console.log(`Refund ${charge.id} is not a full refund. Skipping credit revocation. Refunded: ${charge.amount_refunded}, Original Total: ${parseFloat(originalOrder.amount_total!) * 100}`);
+      console.log(`Refund ${charge.id} is not a full refund. Skipping credit revocation. Refunded: ${charge.amount_refunded}, Original Total: ${parseFloat(originalOrder.amountTotal!) * 100}`);
     }
   } else {
     if (!originalOrder) {
       console.warn(`Cannot revoke one-time credits for refund ${refundOrderId} because original order was not found.`);
-    } else if (originalOrder.order_type !== 'one_time_purchase') {
-      console.log(`Skipping one-time credit revocation for refund ${refundOrderId} as original order type is ${originalOrder.order_type}.`);
+    } else if (originalOrder.orderType !== 'one_time_purchase') {
+      console.log(`Skipping one-time credit revocation for refund ${refundOrderId} as original order type is ${originalOrder.orderType}.`);
     } else {
-      console.warn(`Cannot revoke one-time credits for refund ${refundOrderId} due to missing user_id or plan_id on original order ${originalOrder.id}.`);
+      console.warn(`Cannot revoke one-time credits for refund ${refundOrderId} due to missing userId or planId on original order ${originalOrder.id}.`);
     }
   }
   // --- End: [custom] Revoke the user's one time purchase benefits ---

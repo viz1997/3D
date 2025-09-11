@@ -2,13 +2,14 @@ import { db } from "@/db";
 import { pricingPlans as pricingPlansSchema } from "@/db/schema";
 import { constructMetadata } from "@/lib/metadata";
 import { isAdmin } from "@/lib/supabase/isAdmin";
-import { PricingPlan } from "@/types/pricing";
 import { eq } from "drizzle-orm";
 import { Metadata } from "next";
 import { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 import { PricePlanForm } from "../../PricePlanForm";
+
+type PricingPlan = typeof pricingPlansSchema.$inferSelect;
 
 async function getPricingPlanById(id: string): Promise<PricingPlan | null> {
   try {
@@ -57,7 +58,7 @@ export async function generateMetadata({
     page: "PricesEdit",
     title: t("title"),
     description: t("description", {
-      title: plan.card_title,
+      title: plan.cardTitle,
       environment: plan.environment,
     }),
     locale: locale as Locale,
@@ -92,7 +93,7 @@ export default async function EditPricePlanPage({
         <h1 className="text-2xl font-semibold">{t("title")}</h1>
         <p className="text-muted-foreground">
           {t("description", {
-            title: plan.card_title,
+            title: plan.cardTitle,
             environment: plan.environment,
           })}
         </p>

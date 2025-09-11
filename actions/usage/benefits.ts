@@ -4,13 +4,7 @@ import { db } from '@/db';
 import { subscriptions as subscriptionsSchema, usage as usageSchema } from '@/db/schema';
 import { actionResponse, ActionResult } from '@/lib/action-response';
 import { createClient } from '@/lib/supabase/server';
-import { createClient as createAdminClient } from '@supabase/supabase-js';
 import { desc, eq } from 'drizzle-orm';
-
-const supabaseAdmin = createAdminClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
 
 export interface UserBenefits {
   activePlanId: string | null;
@@ -24,15 +18,15 @@ export interface UserBenefits {
 }
 
 interface UsageData {
-  subscription_credits_balance: number | null;
-  one_time_credits_balance: number | null;
-  balance_jsonb: any;
+  subscriptionCreditsBalance: number | null;
+  oneTimeCreditsBalance: number | null;
+  balanceJsonb: any;
 }
 
 interface SubscriptionData {
-  plan_id: string;
+  planId: string;
   status: string;
-  current_period_end: string | null;
+  currentPeriodEnd: string | null;
 }
 
 const defaultUserBenefits: UserBenefits = {
@@ -50,20 +44,20 @@ function createUserBenefitsFromData(
   subscription: SubscriptionData | null,
   currentYearlyDetails: any | null = null
 ): UserBenefits {
-  const subCredits = (usageData?.subscription_credits_balance ?? 0) as number;
-  const oneTimeCredits = (usageData?.one_time_credits_balance ?? 0) as number;
+  const subCredits = (usageData?.subscriptionCreditsBalance ?? 0) as number;
+  const oneTimeCredits = (usageData?.oneTimeCreditsBalance ?? 0) as number;
   const totalCredits = subCredits + oneTimeCredits;
 
-  const currentPeriodEnd = subscription?.current_period_end ?? null;
-  const nextCreditDate = currentYearlyDetails?.next_credit_date ?? null;
+  const currentPeriodEnd = subscription?.currentPeriodEnd ?? null;
+  const nextCreditDate = currentYearlyDetails?.nextCreditDate ?? null;
 
   let finalStatus = subscription?.status ?? null;
-  if (finalStatus && subscription?.current_period_end && new Date(subscription.current_period_end) < new Date()) {
+  if (finalStatus && subscription?.currentPeriodEnd && new Date(subscription.currentPeriodEnd) < new Date()) {
     finalStatus = 'inactive_period_ended';
   }
 
   return {
-    activePlanId: (finalStatus === 'active' || finalStatus === 'trialing') ? subscription?.plan_id ?? null : null,
+    activePlanId: (finalStatus === 'active' || finalStatus === 'trialing') ? subscription?.planId ?? null : null,
     subscriptionStatus: finalStatus,
     currentPeriodEnd,
     nextCreditDate,
@@ -79,21 +73,21 @@ async function fetchSubscriptionData(
   try {
     const result = await db
       .select({
-        plan_id: subscriptionsSchema.plan_id,
+        planId: subscriptionsSchema.planId,
         status: subscriptionsSchema.status,
-        current_period_end: subscriptionsSchema.current_period_end,
+        currentPeriodEnd: subscriptionsSchema.currentPeriodEnd,
       })
       .from(subscriptionsSchema)
-      .where(eq(subscriptionsSchema.user_id, userId))
-      .orderBy(desc(subscriptionsSchema.created_at))
+      .where(eq(subscriptionsSchema.userId, userId))
+      .orderBy(desc(subscriptionsSchema.createdAt))
       .limit(1);
 
     if (result.length > 0) {
       const sub = result[0];
       return {
         ...sub,
-        current_period_end: sub.current_period_end
-          ? new Date(sub.current_period_end).toISOString()
+        currentPeriodEnd: sub.currentPeriodEnd
+          ? new Date(sub.currentPeriodEnd).toISOString()
           : null,
       };
     }
@@ -122,12 +116,12 @@ export async function getUserBenefits(userId: string): Promise<UserBenefits> {
   try {
     const result = await db
       .select({
-        subscription_credits_balance: usageSchema.subscription_credits_balance,
-        one_time_credits_balance: usageSchema.one_time_credits_balance,
-        balance_jsonb: usageSchema.balance_jsonb,
+        subscriptionCreditsBalance: usageSchema.subscriptionCreditsBalance,
+        oneTimeCreditsBalance: usageSchema.oneTimeCreditsBalance,
+        balanceJsonb: usageSchema.balanceJsonb,
       })
       .from(usageSchema)
-      .where(eq(usageSchema.user_id, userId));
+      .where(eq(usageSchema.userId, userId));
 
     const usageData = result.length > 0 ? result[0] : null;
 
@@ -152,53 +146,53 @@ export async function getUserBenefits(userId: string): Promise<UserBenefits> {
         shouldContinue = await db.transaction(async (tx) => {
           const usageResults = await tx.select()
             .from(usageSchema)
-            .where(eq(usageSchema.user_id, userId))
+            .where(eq(usageSchema.userId, userId))
             .for('update');
           const usage = usageResults[0];
 
           if (!usage) { return false; }
 
           finalUsageData = usage as UsageData;
-          const yearlyDetails = (usage.balance_jsonb as any)?.yearly_allocation_details;
+          const yearlyDetails = (usage.balanceJsonb as any)?.yearlyAllocationDetails;
 
           if (!yearlyDetails ||
-            (yearlyDetails.remaining_months || 0) <= 0 ||
-            !yearlyDetails.next_credit_date ||
-            new Date() < new Date(yearlyDetails.next_credit_date)) {
+            (yearlyDetails.remainingMonths || 0) <= 0 ||
+            !yearlyDetails.nextCreditDate ||
+            new Date() < new Date(yearlyDetails.nextCreditDate)) {
             return false;
           }
 
-          const yearMonthToAllocate = new Date(yearlyDetails.next_credit_date)
+          const yearMonthToAllocate = new Date(yearlyDetails.nextCreditDate)
             .toISOString()
             .slice(0, 7);
 
-          if (yearlyDetails.last_allocated_month === yearMonthToAllocate) {
+          if (yearlyDetails.lastAllocatedMonth === yearMonthToAllocate) {
             return false;
           }
 
-          const creditsToAllocate = yearlyDetails.monthly_credits;
-          const newRemainingMonths = yearlyDetails.remaining_months - 1;
-          const nextCreditDate = new Date(yearlyDetails.next_credit_date);
+          const creditsToAllocate = yearlyDetails.monthlyCredits;
+          const newRemainingMonths = yearlyDetails.remainingMonths - 1;
+          const nextCreditDate = new Date(yearlyDetails.nextCreditDate);
           nextCreditDate.setMonth(nextCreditDate.getMonth() + 1);
 
           const newYearlyDetails = {
             ...yearlyDetails,
-            remaining_months: newRemainingMonths,
-            next_credit_date: nextCreditDate.toISOString(),
-            last_allocated_month: yearMonthToAllocate,
+            remainingMonths: newRemainingMonths,
+            nextCreditDate: nextCreditDate.toISOString(),
+            lastAllocatedMonth: yearMonthToAllocate,
           };
 
           const newBalanceJsonb = {
-            ...(usage.balance_jsonb as any),
-            yearly_allocation_details: newYearlyDetails,
+            ...(usage.balanceJsonb as any),
+            yearlyAllocationDetails: newYearlyDetails,
           };
 
           await tx.update(usageSchema)
             .set({
-              subscription_credits_balance: creditsToAllocate,
-              balance_jsonb: newBalanceJsonb,
+              subscriptionCreditsBalance: creditsToAllocate,
+              balanceJsonb: newBalanceJsonb,
             })
-            .where(eq(usageSchema.user_id, userId));
+            .where(eq(usageSchema.userId, userId));
 
           return newRemainingMonths > 0;
         });
@@ -206,7 +200,7 @@ export async function getUserBenefits(userId: string): Promise<UserBenefits> {
       // End of Yearly Subscription Catch-up Logic
 
       const subscription = await fetchSubscriptionData(userId);
-      const currentYearlyDetails = (finalUsageData.balance_jsonb as any)?.yearly_allocation_details;
+      const currentYearlyDetails = (finalUsageData.balanceJsonb as any)?.yearlyAllocationDetails;
 
       return createUserBenefitsFromData(
         finalUsageData,

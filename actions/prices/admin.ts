@@ -7,10 +7,11 @@ import { actionResponse, ActionResult } from '@/lib/action-response'
 import { getErrorMessage } from '@/lib/error-utils'
 import { isAdmin } from '@/lib/supabase/isAdmin'
 import { Json } from '@/lib/supabase/types'
-import { PricingPlan } from '@/types/pricing'
 import { asc, eq } from 'drizzle-orm'
 import { getTranslations } from 'next-intl/server'
 import 'server-only'
+
+type PricingPlan = typeof pricingPlansSchema.$inferSelect
 
 /**
  * Admin List
@@ -26,7 +27,7 @@ export async function getAdminPricingPlans(): Promise<
     const plans = await db
       .select()
       .from(pricingPlansSchema)
-      .orderBy(asc(pricingPlansSchema.environment), asc(pricingPlansSchema.display_order))
+      .orderBy(asc(pricingPlansSchema.environment), asc(pricingPlansSchema.displayOrder))
 
     return actionResponse.success((plans as unknown as PricingPlan[]) || [])
   } catch (error) {
@@ -75,7 +76,7 @@ export async function getPricingPlanById(
  * Admin Create
  */
 interface CreatePricingPlanParams {
-  planData: Partial<Omit<PricingPlan, 'id' | 'created_at' | 'updated_at'>>
+  planData: Partial<Omit<PricingPlan, 'id' | 'createdAt' | 'updatedAt'>>
   locale?: string
 }
 
@@ -92,14 +93,14 @@ export async function createPricingPlanAction({
     namespace: 'Prices.API',
   })
 
-  if (!planData.environment || !planData.card_title) {
+  if (!planData.environment || !planData.cardTitle) {
     return actionResponse.badRequest(t('missingRequiredFields'))
   }
 
-  if (planData.lang_jsonb && typeof planData.lang_jsonb !== 'object') {
+  if (planData.langJsonb && typeof planData.langJsonb !== 'object') {
     try {
-      if (typeof planData.lang_jsonb === 'string') {
-        planData.lang_jsonb = JSON.parse(planData.lang_jsonb as string)
+      if (typeof planData.langJsonb === 'string') {
+        planData.langJsonb = JSON.parse(planData.langJsonb as string)
       } else {
         return actionResponse.badRequest(t('invalidLangJsonbFormat'))
       }
@@ -108,10 +109,10 @@ export async function createPricingPlanAction({
     }
   }
 
-  if (planData.benefits_jsonb && typeof planData.benefits_jsonb !== 'object') {
+  if (planData.benefitsJsonb && typeof planData.benefitsJsonb !== 'object') {
     try {
-      if (typeof planData.benefits_jsonb === 'string') {
-        planData.benefits_jsonb = JSON.parse(planData.benefits_jsonb as string)
+      if (typeof planData.benefitsJsonb === 'string') {
+        planData.benefitsJsonb = JSON.parse(planData.benefitsJsonb as string)
       } else {
         return actionResponse.badRequest(t('invalidBenefitsJsonFormat'))
       }
@@ -125,29 +126,29 @@ export async function createPricingPlanAction({
       .insert(pricingPlansSchema)
       .values({
         environment: planData.environment,
-        card_title: planData.card_title,
-        card_description: planData.card_description,
-        stripe_price_id: planData.stripe_price_id,
-        stripe_product_id: planData.stripe_product_id,
-        stripe_coupon_id: planData.stripe_coupon_id,
-        enable_manual_input_coupon:
-          planData.enable_manual_input_coupon ?? false,
-        payment_type: planData.payment_type,
-        recurring_interval: planData.recurring_interval,
+        cardTitle: planData.cardTitle,
+        cardDescription: planData.cardDescription,
+        stripePriceId: planData.stripePriceId,
+        stripeProductId: planData.stripeProductId,
+        stripeCouponId: planData.stripeCouponId,
+        enableManualInputCoupon:
+          planData.enableManualInputCoupon ?? false,
+        paymentType: planData.paymentType,
+        recurringInterval: planData.recurringInterval,
         price: planData.price?.toString(),
         currency: planData.currency,
-        display_price: planData.display_price,
-        original_price: planData.original_price,
-        price_suffix: planData.price_suffix,
-        is_highlighted: planData.is_highlighted ?? false,
-        highlight_text: planData.highlight_text,
-        button_text: planData.button_text,
-        button_link: planData.button_link,
-        display_order: planData.display_order ?? 0,
-        is_active: planData.is_active ?? true,
+        displayPrice: planData.displayPrice,
+        originalPrice: planData.originalPrice,
+        priceSuffix: planData.priceSuffix,
+        isHighlighted: planData.isHighlighted ?? false,
+        highlightText: planData.highlightText,
+        buttonText: planData.buttonText,
+        buttonLink: planData.buttonLink,
+        displayOrder: planData.displayOrder ?? 0,
+        isActive: planData.isActive ?? true,
         features: (planData.features || []) as unknown as Json,
-        lang_jsonb: (planData.lang_jsonb || {}) as unknown as Json,
-        benefits_jsonb: (planData.benefits_jsonb || {}) as unknown as Json,
+        langJsonb: (planData.langJsonb || {}) as unknown as Json,
+        benefitsJsonb: (planData.benefitsJsonb || {}) as unknown as Json,
       })
       .returning()
 
@@ -190,38 +191,38 @@ export async function updatePricingPlanAction({
     return actionResponse.badRequest(t('missingPlanId'))
   }
 
-  if (planData.lang_jsonb && typeof planData.lang_jsonb === 'string') {
+  if (planData.langJsonb && typeof planData.langJsonb === 'string') {
     try {
-      planData.lang_jsonb = JSON.parse(planData.lang_jsonb as string)
+      planData.langJsonb = JSON.parse(planData.langJsonb as string)
     } catch (e) {
       return actionResponse.badRequest(t('invalidJsonFormatInLangJsonbString'))
     }
   } else if (
-    planData.lang_jsonb &&
-    typeof planData.lang_jsonb !== 'object' &&
-    planData.lang_jsonb !== null
+    planData.langJsonb &&
+    typeof planData.langJsonb !== 'object' &&
+    planData.langJsonb !== null
   ) {
     return actionResponse.badRequest(t('invalidLangJsonbFormat'))
   }
 
-  if (planData.benefits_jsonb && typeof planData.benefits_jsonb === 'string') {
+  if (planData.benefitsJsonb && typeof planData.benefitsJsonb === 'string') {
     try {
-      planData.benefits_jsonb = JSON.parse(planData.benefits_jsonb as string)
+      planData.benefitsJsonb = JSON.parse(planData.benefitsJsonb as string)
     } catch (e) {
       return actionResponse.badRequest(t('invalidJsonFormatInBenefitsString'))
     }
   } else if (
-    planData.benefits_jsonb &&
-    typeof planData.benefits_jsonb !== 'object' &&
-    planData.benefits_jsonb !== null
+    planData.benefitsJsonb &&
+    typeof planData.benefitsJsonb !== 'object' &&
+    planData.benefitsJsonb !== null
   ) {
     return actionResponse.badRequest(t('invalidBenefitsJsonFormat'))
   }
 
   try {
     delete planData.id
-    delete planData.created_at
-    delete planData.updated_at
+    delete planData.createdAt
+    delete planData.updatedAt
 
     const dataToUpdate: { [key: string]: any } = { ...planData }
 
@@ -232,12 +233,12 @@ export async function updatePricingPlanAction({
     if (planData.features !== undefined) {
       dataToUpdate.features = (planData.features || []) as unknown as Json
     }
-    if (planData.lang_jsonb !== undefined) {
-      dataToUpdate.lang_jsonb = (planData.lang_jsonb || {}) as unknown as Json
+    if (planData.langJsonb !== undefined) {
+      dataToUpdate.langJsonb = (planData.langJsonb || {}) as unknown as Json
     }
-    if (planData.benefits_jsonb !== undefined) {
-      dataToUpdate.benefits_jsonb =
-        (planData.benefits_jsonb || {}) as unknown as Json
+    if (planData.benefitsJsonb !== undefined) {
+      dataToUpdate.benefitsJsonb =
+        (planData.benefitsJsonb || {}) as unknown as Json
     }
 
     const [updatedPlan] = await db

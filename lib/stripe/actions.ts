@@ -6,7 +6,7 @@ import { db } from '@/db';
 import {
   pricingPlans as pricingPlansSchema,
   subscriptions as subscriptionsSchema,
-  users as usersSchema,
+  user as userSchema,
 } from '@/db/schema';
 import { CreditUpgradeFailedEmail } from '@/emails/credit-upgrade-failed';
 import { InvoicePaymentFailedEmail } from '@/emails/invoice-payment-failed';
@@ -25,11 +25,11 @@ export async function getOrCreateStripeCustomer(
 
   const userProfileResults = await db
     .select({
-      stripe_customer_id: usersSchema.stripe_customer_id,
-      email: usersSchema.email,
+      stripeCustomerId: userSchema.stripeCustomerId,
+      email: userSchema.email,
     })
-    .from(usersSchema)
-    .where(eq(usersSchema.id, userId))
+    .from(userSchema)
+    .where(eq(userSchema.id, userId))
     .limit(1);
   const userProfile = userProfileResults[0];
 
@@ -42,10 +42,10 @@ export async function getOrCreateStripeCustomer(
     throw new Error(`Stripe is not initialized. Please check your environment variables.`);
   }
 
-  if (userProfile?.stripe_customer_id) {
-    const customer = await stripe.customers.retrieve(userProfile.stripe_customer_id);
+  if (userProfile?.stripeCustomerId) {
+    const customer = await stripe.customers.retrieve(userProfile.stripeCustomerId);
     if (customer && !customer.deleted) {
-      return userProfile.stripe_customer_id;
+      return userProfile.stripeCustomerId;
     }
   }
 
@@ -64,9 +64,9 @@ export async function getOrCreateStripeCustomer(
 
     try {
       await db
-        .update(usersSchema)
-        .set({ stripe_customer_id: customer.id })
-        .where(eq(usersSchema.id, userId));
+        .update(userSchema)
+        .set({ stripeCustomerId: customer.id })
+        .where(eq(userSchema.id, userId));
     } catch (updateError) {
       console.error('Error updating user profile with Stripe customer ID:', updateError);
       // cleanup in Stripe if this fails critically
@@ -97,16 +97,16 @@ export async function createStripePortalSession(): Promise<void> {
   let portalUrl: string | null = null;
   try {
     const profileResults = await db
-      .select({ stripe_customer_id: usersSchema.stripe_customer_id })
-      .from(usersSchema)
-      .where(eq(usersSchema.id, user.id))
+      .select({ stripeCustomerId: userSchema.stripeCustomerId })
+      .from(userSchema)
+      .where(eq(userSchema.id, user.id))
       .limit(1);
     const profile = profileResults[0];
 
-    if (!profile?.stripe_customer_id) {
+    if (!profile?.stripeCustomerId) {
       throw new Error(`Could not find Stripe customer ID`);
     }
-    const customerId = profile.stripe_customer_id;
+    const customerId = profile.stripeCustomerId;
 
     const headersList = await headers();
     const domain = headersList.get('x-forwarded-host') || headersList.get('host') || process.env.NEXT_PUBLIC_SITE_URL?.replace(/^https?:\/\//, '');
@@ -199,9 +199,9 @@ export async function syncSubscriptionData(
     if (!userId) {
       console.warn(`User ID still missing for sub ${subscriptionId}. Trying DB lookup via customer ID ${customerId}.`);
       const userProfileResults = await db
-        .select({ id: usersSchema.id })
-        .from(usersSchema)
-        .where(eq(usersSchema.stripe_customer_id, customerId))
+        .select({ id: userSchema.id })
+        .from(userSchema)
+        .where(eq(userSchema.stripeCustomerId, customerId))
         .limit(1);
       const userProfile = userProfileResults[0];
 
@@ -218,7 +218,7 @@ export async function syncSubscriptionData(
       const planDataResults = await db
         .select({ id: pricingPlansSchema.id })
         .from(pricingPlansSchema)
-        .where(eq(pricingPlansSchema.stripe_price_id, priceId))
+        .where(eq(pricingPlansSchema.stripePriceId, priceId))
         .limit(1);
       const planData = planDataResults[0];
 
@@ -234,31 +234,31 @@ export async function syncSubscriptionData(
 
     type SubscriptionInsert = InferInsertModel<typeof subscriptionsSchema>;
     const subscriptionData: SubscriptionInsert = {
-      user_id: userId,
-      plan_id: planId,
-      stripe_subscription_id: subscription.id,
-      stripe_customer_id: typeof subscription.customer === 'string' ? subscription.customer : subscription.customer.id,
-      price_id: priceId,
+      userId: userId,
+      planId: planId,
+      stripeSubscriptionId: subscription.id,
+      stripeCustomerId: typeof subscription.customer === 'string' ? subscription.customer : subscription.customer.id,
+      priceId: priceId,
       status: subscription.status,
-      current_period_start: subscription.items.data[0].current_period_start ? new Date(subscription.items.data[0].current_period_start * 1000) : null,
-      current_period_end: subscription.items.data[0].current_period_end ? new Date(subscription.items.data[0].current_period_end * 1000) : null,
-      cancel_at_period_end: subscription.cancel_at_period_end,
-      canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000) : null,
-      ended_at: subscription.ended_at ? new Date(subscription.ended_at * 1000) : null,
-      trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000) : null,
-      trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
+      currentPeriodStart: subscription.items.data[0].current_period_start ? new Date(subscription.items.data[0].current_period_start * 1000) : null,
+      currentPeriodEnd: subscription.items.data[0].current_period_end ? new Date(subscription.items.data[0].current_period_end * 1000) : null,
+      cancelAtPeriodEnd: subscription.cancel_at_period_end,
+      canceledAt: subscription.canceled_at ? new Date(subscription.canceled_at * 1000) : null,
+      endedAt: subscription.ended_at ? new Date(subscription.ended_at * 1000) : null,
+      trialStart: subscription.trial_start ? new Date(subscription.trial_start * 1000) : null,
+      trialEnd: subscription.trial_end ? new Date(subscription.trial_end * 1000) : null,
       metadata: {
         ...subscription.metadata,
         ...(initialMetadata && { checkoutSessionMetadata: initialMetadata })
       },
     };
 
-    const { stripe_subscription_id, ...updateData } = subscriptionData;
+    const { stripeSubscriptionId, ...updateData } = subscriptionData;
     await db
       .insert(subscriptionsSchema)
       .values(subscriptionData)
       .onConflictDoUpdate({
-        target: subscriptionsSchema.stripe_subscription_id,
+        target: subscriptionsSchema.stripeSubscriptionId,
         set: updateData,
       });
 
@@ -358,9 +358,9 @@ export async function sendInvoicePaymentFailedEmail({
     }
 
     const userDataResults = await db
-      .select({ email: usersSchema.email })
-      .from(usersSchema)
-      .where(eq(usersSchema.id, userId))
+      .select({ email: userSchema.email })
+      .from(userSchema)
+      .where(eq(userSchema.id, userId))
       .limit(1);
     const userData = userDataResults[0];
 
@@ -375,14 +375,14 @@ export async function sendInvoicePaymentFailedEmail({
     const planId = subscription.metadata?.planId;
     if (planId) {
       const planDataResults = await db
-        .select({ card_title: pricingPlansSchema.card_title })
+        .select({ cardTitle: pricingPlansSchema.cardTitle })
         .from(pricingPlansSchema)
         .where(eq(pricingPlansSchema.id, planId))
         .limit(1);
       const planData = planDataResults[0];
 
-      if (planData && planData.card_title) {
-        planName = planData.card_title;
+      if (planData && planData.cardTitle) {
+        planName = planData.cardTitle;
       }
     }
 

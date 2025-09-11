@@ -6,8 +6,9 @@ import { Locale } from '@/i18n/routing'
 import { actionResponse } from '@/lib/action-response'
 import { getErrorMessage } from '@/lib/error-utils'
 import { isAdmin } from '@/lib/supabase/isAdmin'
-import { Tag } from '@/types/blog'
 import { and, asc, eq, ilike, not } from 'drizzle-orm'
+
+export type Tag = typeof tagsSchema.$inferSelect
 
 interface ListTagsResponse {
   success: boolean
@@ -95,7 +96,7 @@ export async function createTagAction({
     }
 
 
-    return actionResponse.success({ tag: newTag[0] as Tag })
+    return actionResponse.success({ tag: newTag[0] })
   } catch (error) {
     console.error('Create tag action failed:', error)
     const errorMessage = getErrorMessage(error)

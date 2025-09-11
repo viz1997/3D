@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { users as usersSchema } from "@/db/schema";
+import { user as userSchema } from "@/db/schema";
 import { DEFAULT_LOCALE } from "@/i18n/routing";
 import { actionResponse } from "@/lib/action-response";
 import {
@@ -106,12 +106,12 @@ export async function updateUserSettingsAction({
 
     try {
       await db
-        .update(usersSchema)
+        .update(userSchema)
         .set({
-          full_name: fullName.trim(),
-          avatar_url: avatarUrl || authUser.user_metadata?.avatar_url || null,
+          name: fullName.trim(),
+          image: avatarUrl || authUser.user_metadata?.avatar_url || null,
         })
-        .where(eq(usersSchema.id, authUser.id));
+        .where(eq(userSchema.id, authUser.id));
     } catch (updateUserError) {
       console.error("Update user profile error:", updateUserError);
       return actionResponse.error(t("toast.errorUpdateUserProfile"));

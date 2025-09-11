@@ -4,9 +4,10 @@ import { db } from '@/db';
 import { pricingPlans as pricingPlansSchema } from '@/db/schema';
 import { actionResponse, ActionResult } from '@/lib/action-response';
 import { getErrorMessage } from '@/lib/error-utils';
-import { PricingPlan } from "@/types/pricing";
 import { and, asc, eq } from 'drizzle-orm';
 import 'server-only';
+
+type PricingPlan = typeof pricingPlansSchema.$inferSelect
 
 /**
  * Public List
@@ -23,10 +24,10 @@ export async function getPublicPricingPlans(): Promise<
       .where(
         and(
           eq(pricingPlansSchema.environment, environment),
-          eq(pricingPlansSchema.is_active, true)
+          eq(pricingPlansSchema.isActive, true)
         )
       )
-      .orderBy(asc(pricingPlansSchema.display_order))
+      .orderBy(asc(pricingPlansSchema.displayOrder))
 
     return actionResponse.success((plans as unknown as PricingPlan[]) || [])
   } catch (error) {

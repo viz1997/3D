@@ -43,13 +43,13 @@ export async function getCreditLogs({
   }
 
   try {
-    const whereClause = eq(creditLogsSchema.user_id, user.id);
+    const whereClause = eq(creditLogsSchema.userId, user.id);
 
     const logsQuery = db
       .select()
       .from(creditLogsSchema)
       .where(whereClause)
-      .orderBy(desc(creditLogsSchema.created_at))
+      .orderBy(desc(creditLogsSchema.createdAt))
       .offset(pageIndex * pageSize)
       .limit(pageSize);
 

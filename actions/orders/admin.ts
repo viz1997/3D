@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/db';
-import { orders as ordersSchema, users as usersSchema } from '@/db/schema';
+import { orders as ordersSchema, user as userSchema } from '@/db/schema';
 import { ActionResult, actionResponse } from '@/lib/action-response';
 import { getErrorMessage } from '@/lib/error-utils';
 import { isAdmin } from '@/lib/supabase/isAdmin';
@@ -14,7 +14,7 @@ const FilterSchema = z.object({
   pageSize: z.coerce.number().default(10),
   filter: z.string().optional(),
   provider: z.string().optional(),
-  order_type: z.string().optional(),
+  orderType: z.string().optional(),
   status: z.string().optional(),
 });
 
@@ -30,15 +30,15 @@ export async function getOrders(
     return actionResponse.forbidden('Admin privileges required.');
   }
   try {
-    const { pageIndex, pageSize, filter, provider, order_type, status } =
+    const { pageIndex, pageSize, filter, provider, orderType, status } =
       FilterSchema.parse(params);
 
     const conditions = [];
     if (provider) {
       conditions.push(eq(ordersSchema.provider, provider));
     }
-    if (order_type) {
-      conditions.push(eq(ordersSchema.order_type, order_type));
+    if (orderType) {
+      conditions.push(eq(ordersSchema.orderType, orderType));
     }
     if (status) {
       conditions.push(eq(ordersSchema.status, status));
@@ -46,8 +46,8 @@ export async function getOrders(
     if (filter) {
       conditions.push(
         or(
-          ilike(usersSchema.email, `%${filter}%`),
-          ilike(ordersSchema.provider_order_id, `%${filter}%`)
+          ilike(userSchema.email, `%${filter}%`),
+          ilike(ordersSchema.providerOrderId, `%${filter}%`)
         )
       );
     }
@@ -57,19 +57,19 @@ export async function getOrders(
     const ordersQuery = db
       .select({
         order: ordersSchema,
-        user: { email: usersSchema.email, full_name: usersSchema.full_name },
+        user: { email: userSchema.email, name: userSchema.name },
       })
       .from(ordersSchema)
-      .leftJoin(usersSchema, eq(ordersSchema.user_id, usersSchema.id))
+      .leftJoin(userSchema, eq(ordersSchema.userId, userSchema.id))
       .where(whereClause)
-      .orderBy(desc(ordersSchema.created_at))
+      .orderBy(desc(ordersSchema.createdAt))
       .offset(pageIndex * pageSize)
       .limit(pageSize);
 
     const totalCountQuery = db
       .select({ value: count() })
       .from(ordersSchema)
-      .leftJoin(usersSchema, eq(ordersSchema.user_id, usersSchema.id))
+      .leftJoin(userSchema, eq(ordersSchema.userId, userSchema.id))
       .where(whereClause);
 
     const [results, totalCountResult] = await Promise.all([

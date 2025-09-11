@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/db';
-import { orders as ordersSchema, pricingPlans as pricingPlansSchema, users as usersSchema } from '@/db/schema';
+import { orders as ordersSchema, pricingPlans as pricingPlansSchema, user as userSchema } from '@/db/schema';
 import { actionResponse, ActionResult } from '@/lib/action-response';
 import { getErrorMessage } from '@/lib/error-utils';
 import { and, count, eq, gte, inArray, lt, sql } from 'drizzle-orm';
@@ -32,9 +32,9 @@ export interface IOverviewStats {
 }
 
 export interface IDailyGrowthStats {
-  report_date: string;
-  new_users_count: number;
-  new_orders_count: number;
+  reportDate: string;
+  newUsersCount: number;
+  newOrdersCount: number;
 }
 
 function calculateGrowthRate(today: number, yesterday: number): number {
@@ -62,22 +62,22 @@ export const getOverviewStats = async (): Promise<ActionResult<IOverviewStats>> 
     );
 
     // User stats
-    const totalUsersResult = await db.select({ value: count() }).from(usersSchema);
+    const totalUsersResult = await db.select({ value: count() }).from(userSchema);
     const totalUsers = totalUsersResult[0].value;
 
     const todayUsersResult = await db
       .select({ value: count() })
-      .from(usersSchema)
-      .where(gte(usersSchema.created_at, todayStart));
+      .from(userSchema)
+      .where(gte(userSchema.createdAt, todayStart));
     const todayUsers = todayUsersResult[0].value;
 
     const yesterdayUsersResult = await db
       .select({ value: count() })
-      .from(usersSchema)
+      .from(userSchema)
       .where(
         and(
-          gte(usersSchema.created_at, yesterdayStart),
-          lt(usersSchema.created_at, todayStart)
+          gte(userSchema.createdAt, yesterdayStart),
+          lt(userSchema.createdAt, todayStart)
         )
       );
     const yesterdayUsers = yesterdayUsersResult[0].value;
@@ -90,36 +90,36 @@ export const getOverviewStats = async (): Promise<ActionResult<IOverviewStats>> 
       const result = await db
         .select({
           oneTimeCount:
-            sql`COUNT(*) FILTER (WHERE ${ordersSchema.order_type} = 'one_time_purchase')`.mapWith(
+            sql`COUNT(*) FILTER (WHERE ${ordersSchema.orderType} = 'one_time_purchase')`.mapWith(
               Number
             ),
           oneTimeRevenue:
-            sql`COALESCE(SUM(${ordersSchema.amount_total}) FILTER (WHERE ${ordersSchema.order_type} = 'one_time_purchase'), 0)`.mapWith(
+            sql`COALESCE(SUM(${ordersSchema.amountTotal}) FILTER (WHERE ${ordersSchema.orderType} = 'one_time_purchase'), 0)`.mapWith(
               Number
             ),
           monthlyCount:
-            sql`COUNT(*) FILTER (WHERE ${ordersSchema.order_type} IN ('subscription_initial', 'subscription_renewal') AND ${pricingPlansSchema.recurring_interval} = 'month')`.mapWith(
+            sql`COUNT(*) FILTER (WHERE ${ordersSchema.orderType} IN ('subscription_initial', 'subscription_renewal') AND ${pricingPlansSchema.recurringInterval} = 'month')`.mapWith(
               Number
             ),
           monthlyRevenue:
-            sql`COALESCE(SUM(${ordersSchema.amount_total}) FILTER (WHERE ${ordersSchema.order_type} IN ('subscription_initial', 'subscription_renewal') AND ${pricingPlansSchema.recurring_interval} = 'month'), 0)`.mapWith(
+            sql`COALESCE(SUM(${ordersSchema.amountTotal}) FILTER (WHERE ${ordersSchema.orderType} IN ('subscription_initial', 'subscription_renewal') AND ${pricingPlansSchema.recurringInterval} = 'month'), 0)`.mapWith(
               Number
             ),
           yearlyCount:
-            sql`COUNT(*) FILTER (WHERE ${ordersSchema.order_type} IN ('subscription_initial', 'subscription_renewal') AND ${pricingPlansSchema.recurring_interval} = 'year')`.mapWith(
+            sql`COUNT(*) FILTER (WHERE ${ordersSchema.orderType} IN ('subscription_initial', 'subscription_renewal') AND ${pricingPlansSchema.recurringInterval} = 'year')`.mapWith(
               Number
             ),
           yearlyRevenue:
-            sql`COALESCE(SUM(${ordersSchema.amount_total}) FILTER (WHERE ${ordersSchema.order_type} IN ('subscription_initial', 'subscription_renewal') AND ${pricingPlansSchema.recurring_interval} = 'year'), 0)`.mapWith(
+            sql`COALESCE(SUM(${ordersSchema.amountTotal}) FILTER (WHERE ${ordersSchema.orderType} IN ('subscription_initial', 'subscription_renewal') AND ${pricingPlansSchema.recurringInterval} = 'year'), 0)`.mapWith(
               Number
             ),
         })
         .from(ordersSchema)
-        .leftJoin(pricingPlansSchema, eq(ordersSchema.plan_id, pricingPlansSchema.id))
+        .leftJoin(pricingPlansSchema, eq(ordersSchema.planId, pricingPlansSchema.id))
         .where(
           and(
-            gte(ordersSchema.created_at, startDate),
-            lt(ordersSchema.created_at, endDate),
+            gte(ordersSchema.createdAt, startDate),
+            lt(ordersSchema.createdAt, endDate),
             inArray(ordersSchema.status, ['succeeded', 'active'])
           )
         )
@@ -239,18 +239,18 @@ export const getDailyGrowthStats = async (
         throw new Error('Invalid period specified.');
     }
 
-    const userDateTrunc = sql`date_trunc('day', ${usersSchema.created_at})`
+    const userDateTrunc = sql`date_trunc('day', ${userSchema.createdAt})`
 
     const dailyUsers = await db
       .select({
         date: userDateTrunc,
-        count: count(usersSchema.id),
+        count: count(userSchema.id),
       })
-      .from(usersSchema)
-      .where(gte(usersSchema.created_at, startDate))
+      .from(userSchema)
+      .where(gte(userSchema.createdAt, startDate))
       .groupBy(userDateTrunc)
 
-    const orderDateTrunc = sql`date_trunc('day', ${ordersSchema.created_at})`
+    const orderDateTrunc = sql`date_trunc('day', ${ordersSchema.createdAt})`
 
     const dailyOrders = await db
       .select({
@@ -260,7 +260,7 @@ export const getDailyGrowthStats = async (
       .from(ordersSchema)
       .where(
         and(
-          gte(ordersSchema.created_at, startDate),
+          gte(ordersSchema.createdAt, startDate),
           inArray(ordersSchema.status, ['succeeded', 'active'])
         )
       )
@@ -294,9 +294,9 @@ export const getDailyGrowthStats = async (
     while (currentDate <= now) {
       const dateStr = currentDate.toISOString().split('T')[0];
       result.push({
-        report_date: dateStr,
-        new_users_count: dailyUsersMap.get(dateStr) || 0,
-        new_orders_count: dailyOrdersMap.get(dateStr) || 0,
+        reportDate: dateStr,
+        newUsersCount: dailyUsersMap.get(dateStr) || 0,
+        newOrdersCount: dailyOrdersMap.get(dateStr) || 0,
       });
       currentDate.setDate(currentDate.getDate() + 1);
     }

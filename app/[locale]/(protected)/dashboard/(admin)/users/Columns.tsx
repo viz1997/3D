@@ -9,23 +9,25 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { UserType } from "@/types/admin/users";
+import { user as userSchema } from "@/db/schema";
 import { ColumnDef } from "@tanstack/react-table";
 import dayjs from "dayjs";
 import { MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
 
+type UserType = typeof userSchema.$inferSelect;
+
 export const columns: ColumnDef<UserType>[] = [
   {
-    accessorKey: "avatar_url",
+    accessorKey: "image",
     header: "Avatar",
     cell: ({ row }) => {
-      const avatarUrl = row.original.avatar_url;
-      const fullName = row.original.full_name || row.original.email;
+      const image = row.original.image;
+      const name = row.original.name || row.original.email;
       return (
         <Avatar>
-          <AvatarImage src={avatarUrl || undefined} alt={fullName} />
-          <AvatarFallback>{fullName[0].toUpperCase()}</AvatarFallback>
+          <AvatarImage src={image || undefined} alt={name} />
+          <AvatarFallback>{name[0].toUpperCase()}</AvatarFallback>
         </Avatar>
       );
     },
@@ -46,9 +48,9 @@ export const columns: ColumnDef<UserType>[] = [
     ),
   },
   {
-    accessorKey: "full_name",
-    header: "Full Name",
-    cell: ({ row }) => row.original.full_name || "-",
+    accessorKey: "name",
+    header: "Name",
+    cell: ({ row }) => row.original.name || "-",
   },
   {
     accessorKey: "role",
@@ -64,25 +66,24 @@ export const columns: ColumnDef<UserType>[] = [
     ),
   },
   {
-    accessorKey: "stripe_customer_id",
+    accessorKey: "stripeCustomerId",
     header: "Stripe Customer ID",
     cell: ({ row }) => (
       <span
         className="cursor-pointer"
         onClick={() => {
-          navigator.clipboard.writeText(row.original.stripe_customer_id || "");
+          navigator.clipboard.writeText(row.original.stripeCustomerId || "");
           toast.success("Copied to clipboard");
         }}
       >
-        {row.original.stripe_customer_id || "-"}
+        {row.original.stripeCustomerId || "-"}
       </span>
     ),
   },
   {
-    accessorKey: "created_at",
+    accessorKey: "createdAt",
     header: "Joined",
-    cell: ({ row }) =>
-      dayjs(row.original.created_at).format("YYYY-MM-DD HH:mm"),
+    cell: ({ row }) => dayjs(row.original.createdAt).format("YYYY-MM-DD HH:mm"),
   },
   {
     id: "actions",
@@ -112,7 +113,7 @@ export const columns: ColumnDef<UserType>[] = [
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() =>
-                navigator.clipboard.writeText(user.stripe_customer_id || "")
+                navigator.clipboard.writeText(user.stripeCustomerId || "")
               }
             >
               Copy Stripe Customer ID

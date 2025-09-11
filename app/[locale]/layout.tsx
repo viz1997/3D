@@ -3,7 +3,6 @@ import GoogleAdsense from "@/app/GoogleAdsense";
 import GoogleAnalytics from "@/app/GoogleAnalytics";
 import PlausibleAnalytics from "@/app/PlausibleAnalytics";
 import ToltScript from "@/app/ToltScript";
-import GoogleOneTap from "@/components/auth/GoogleOneTap";
 import { LanguageDetectionAlert } from "@/components/LanguageDetectionAlert";
 import { AuthProvider } from "@/components/providers/AuthProvider";
 import { TailwindIndicator } from "@/components/TailwindIndicator";
@@ -107,7 +106,6 @@ export default async function LocaleLayout({
             </ThemeProvider>
           </AuthProvider>
         </NextIntlClientProvider>
-        <GoogleOneTap />
         <Toaster />
         <TailwindIndicator />
         {process.env.NODE_ENV === "development" ? (

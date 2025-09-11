@@ -4,17 +4,12 @@ import { apiResponse } from '@/lib/api-response';
 import { syncSubscriptionData } from '@/lib/stripe/actions';
 import stripe from '@/lib/stripe/stripe';
 import { createClient } from '@/lib/supabase/server';
-import { createClient as createAdminClient } from '@supabase/supabase-js';
 import { and, eq, inArray } from 'drizzle-orm';
 import { NextRequest } from 'next/server';
 import Stripe from 'stripe';
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient();
-  const supabaseAdmin = createAdminClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
 
   const { data: { user }, error: userError } = await supabase.auth.getUser();
   if (userError || !user) {
@@ -64,15 +59,15 @@ export async function GET(req: NextRequest) {
           const results = await db
             .select({
               id: subscriptionsSchema.id,
-              plan_id: subscriptionsSchema.plan_id,
+              planId: subscriptionsSchema.planId,
               status: subscriptionsSchema.status,
               metadata: subscriptionsSchema.metadata,
             })
             .from(subscriptionsSchema)
             .where(
               and(
-                eq(subscriptionsSchema.stripe_subscription_id, subId),
-                eq(subscriptionsSchema.user_id, user.id),
+                eq(subscriptionsSchema.stripeSubscriptionId, subId),
+                eq(subscriptionsSchema.userId, user.id),
                 inArray(subscriptionsSchema.status, ['active', 'trialing'])
               )
             )
@@ -96,7 +91,7 @@ export async function GET(req: NextRequest) {
           return apiResponse.success({
             subscriptionId: activeSubscription.id,
             planName: (activeSubscription.metadata as any)?.planName,
-            planId: activeSubscription.plan_id,
+            planId: activeSubscription.planId,
             status: activeSubscription.status,
             message: 'Subscription verified and active.',
           });
@@ -119,9 +114,9 @@ export async function GET(req: NextRequest) {
             .where(
               and(
                 eq(ordersSchema.provider, 'stripe'),
-                eq(ordersSchema.provider_order_id, piId),
-                eq(ordersSchema.user_id, user.id),
-                eq(ordersSchema.order_type, 'one_time_purchase'),
+                eq(ordersSchema.providerOrderId, piId),
+                eq(ordersSchema.userId, user.id),
+                eq(ordersSchema.orderType, 'one_time_purchase'),
                 eq(ordersSchema.status, 'succeeded')
               )
             )

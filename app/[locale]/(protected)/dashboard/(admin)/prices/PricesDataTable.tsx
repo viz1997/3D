@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PricingPlan } from "@/types/pricing";
+import { pricingPlans as pricingPlansSchema } from "@/db/schema";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -33,6 +33,8 @@ import {
 import { useTranslations } from "next-intl";
 import * as React from "react";
 import { columns } from "./Columns";
+
+type PricingPlan = typeof pricingPlansSchema.$inferSelect;
 
 const PAGE_SIZE = 20;
 
@@ -76,7 +78,7 @@ export function PricesDataTable<TData extends PricingPlan, TValue>({
       },
       sorting: [
         { id: "environment", desc: false },
-        { id: "display_order", desc: false },
+        { id: "displayOrder", desc: false },
       ],
     },
   });
@@ -87,10 +89,10 @@ export function PricesDataTable<TData extends PricingPlan, TValue>({
         <Input
           placeholder="Filter by title..."
           value={
-            (table.getColumn("card_title")?.getFilterValue() as string) ?? ""
+            (table.getColumn("cardTitle")?.getFilterValue() as string) ?? ""
           }
           onChange={(event) =>
-            table.getColumn("card_title")?.setFilterValue(event.target.value)
+            table.getColumn("cardTitle")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />

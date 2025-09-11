@@ -46,14 +46,14 @@ export async function POST(req: Request) {
     const results = await db
       .select({
         id: pricingPlansSchema.id,
-        card_title: pricingPlansSchema.card_title,
-        payment_type: pricingPlansSchema.payment_type,
-        trial_period_days: pricingPlansSchema.trial_period_days,
-        benefits_jsonb: pricingPlansSchema.benefits_jsonb,
-        stripe_product_id: pricingPlansSchema.stripe_product_id,
+        cardTitle: pricingPlansSchema.cardTitle,
+        paymentType: pricingPlansSchema.paymentType,
+        trialPeriodDays: pricingPlansSchema.trialPeriodDays,
+        benefitsJsonb: pricingPlansSchema.benefitsJsonb,
+        stripeProductId: pricingPlansSchema.stripeProductId,
       })
       .from(pricingPlansSchema)
-      .where(eq(pricingPlansSchema.stripe_price_id, priceId))
+      .where(eq(pricingPlansSchema.stripePriceId, priceId))
       .limit(1);
 
     const plan = results[0];
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
       return apiResponse.notFound('Plan not found');
     }
 
-    const isSubscription = plan.payment_type === 'recurring';
+    const isSubscription = plan.paymentType === 'recurring';
     const mode = isSubscription ? 'subscription' : 'payment';
 
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
@@ -87,7 +87,7 @@ export async function POST(req: Request) {
       metadata: {
         userId: userId,
         planId: plan.id,
-        planName: plan.card_title,
+        planName: plan.cardTitle,
         priceId: priceId,
         ...(referral && { tolt_referral: referral }),
       },
@@ -101,11 +101,11 @@ export async function POST(req: Request) {
 
     if (isSubscription) {
       sessionParams.subscription_data = {
-        trial_period_days: plan.trial_period_days ?? undefined,
+        trial_period_days: plan.trialPeriodDays ?? undefined,
         metadata: {
           userId: userId,
           planId: plan.id,
-          planName: plan.card_title,
+          planName: plan.cardTitle,
           priceId: priceId,
         },
       };
@@ -114,7 +114,7 @@ export async function POST(req: Request) {
         metadata: {
           userId: userId,
           planId: plan.id,
-          planName: plan.card_title,
+          planName: plan.cardTitle,
           priceId: priceId,
         },
       };

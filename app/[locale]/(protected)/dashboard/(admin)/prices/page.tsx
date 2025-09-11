@@ -1,12 +1,14 @@
 import { getAdminPricingPlans } from "@/actions/prices/admin";
 import { Button } from "@/components/ui/button";
+import { pricingPlans as pricingPlansSchema } from "@/db/schema";
 import { Link as I18nLink, Locale } from "@/i18n/routing";
 import { constructMetadata } from "@/lib/metadata";
-import { PricingPlan } from "@/types/pricing";
 import { PlusCircle } from "lucide-react";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { PricesDataTable } from "./PricesDataTable";
+
+type PricingPlan = typeof pricingPlansSchema.$inferSelect;
 
 type Params = Promise<{ locale: string }>;
 

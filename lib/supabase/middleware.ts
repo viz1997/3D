@@ -1,5 +1,5 @@
 import { db } from '@/db';
-import { users as usersSchema } from '@/db/schema';
+import { user as userSchema } from '@/db/schema';
 import { createServerClient } from '@supabase/ssr';
 import { eq } from 'drizzle-orm';
 import { NextResponse, type NextRequest } from 'next/server';
@@ -73,9 +73,9 @@ export async function updateSession(request: NextRequest) {
       if (currentPath.includes(protectedPath)) {
 
         const userRoleResults = await db
-          .select({ role: usersSchema.role })
-          .from(usersSchema)
-          .where(eq(usersSchema.id, user.id))
+          .select({ role: userSchema.role })
+          .from(userSchema)
+          .where(eq(userSchema.id, user.id))
           .limit(1);
         const userRole = userRoleResults[0]?.role || "user";
 

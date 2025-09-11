@@ -1,12 +1,13 @@
 "use server";
 
 import { db } from '@/db';
-import { users as usersSchema } from '@/db/schema';
+import { user as userSchema } from '@/db/schema';
 import { actionResponse } from '@/lib/action-response';
 import { getErrorMessage } from '@/lib/error-utils';
 import { isAdmin } from '@/lib/supabase/isAdmin';
-import { UserType } from '@/types/admin/users';
 import { count, desc, ilike, or } from 'drizzle-orm';
+
+type UserType = typeof userSchema.$inferSelect;
 
 export interface GetUsersResult {
   success: boolean;
@@ -37,23 +38,23 @@ export async function getUsers({
     if (filter) {
       conditions.push(
         or(
-          ilike(usersSchema.email, `%${filter}%`),
-          ilike(usersSchema.full_name, `%${filter}%`)
+          ilike(userSchema.email, `%${filter}%`),
+          ilike(userSchema.name, `%${filter}%`)
         )
       );
     }
 
     const usersQuery = db
       .select()
-      .from(usersSchema)
+      .from(userSchema)
       .where(conditions.length > 0 ? or(...conditions) : undefined)
-      .orderBy(desc(usersSchema.created_at))
+      .orderBy(desc(userSchema.createdAt))
       .offset(pageIndex * pageSize)
       .limit(pageSize);
 
     const totalCountQuery = db
       .select({ value: count() })
-      .from(usersSchema)
+      .from(userSchema)
       .where(conditions.length > 0 ? or(...conditions) : undefined);
 
     const [results, totalCountResult] = await Promise.all([

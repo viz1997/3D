@@ -69,7 +69,7 @@ export default function MobileMenu() {
           ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <div className="flex  justify-between">
+        <div className="flex items-center justify-between px-1">
           <LocaleSwitcher />
           <ThemeToggle />
         </div>

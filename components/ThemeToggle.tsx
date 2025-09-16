@@ -20,12 +20,12 @@ export function ThemeToggle() {
     <>
       {theme === "light" ? (
         <Sun
-          className="h-4 w-4 cursor-pointer"
+          className="h-5 w-5 cursor-pointer"
           onClick={() => setTheme("dark")}
         />
       ) : (
         <Moon
-          className="h-4 w-4 cursor-pointer"
+          className="h-5 w-5 cursor-pointer"
           onClick={() => setTheme("light")}
         />
       )}

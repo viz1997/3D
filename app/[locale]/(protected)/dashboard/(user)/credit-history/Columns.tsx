@@ -87,7 +87,7 @@ export const getColumns = (
       const formatted = amount > 0 ? `+${amount}` : amount.toString();
       return (
         <div
-          className={`text-right font-medium ${
+          className={`font-medium ${
             amount > 0 ? "text-green-600" : "text-destructive"
           }`}
         >
@@ -100,7 +100,7 @@ export const getColumns = (
     accessorKey: "oneTimeBalanceAfter",
     header: "One-Time Balance After",
     cell: ({ row }) => (
-      <div className="text-right text-muted-foreground">
+      <div className="text-muted-foreground">
         {row.getValue("oneTimeBalanceAfter")}
       </div>
     ),
@@ -109,7 +109,7 @@ export const getColumns = (
     accessorKey: "subscriptionBalanceAfter",
     header: "Subscription Balance After",
     cell: ({ row }) => (
-      <div className="text-right text-muted-foreground">
+      <div className="text-muted-foreground">
         {row.getValue("subscriptionBalanceAfter")}
       </div>
     ),

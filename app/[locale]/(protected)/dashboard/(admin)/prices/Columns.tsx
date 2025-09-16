@@ -102,11 +102,7 @@ export const columns: ColumnDef<PricingPlan>[] = [
     accessorKey: "price",
     header: "Price",
     cell: ({ row }) => {
-      return (
-        <div className="text-right font-medium">
-          {row.original.displayPrice}
-        </div>
-      );
+      return <div className="font-medium">{row.original.displayPrice}</div>;
     },
     enableSorting: true,
   },

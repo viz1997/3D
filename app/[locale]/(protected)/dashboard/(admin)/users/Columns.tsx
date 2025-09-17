@@ -168,6 +168,59 @@ const UnbanUserDialog = ({
   );
 };
 
+const ActionsCell = ({ user }: { user: UserType }) => {
+  const [openBan, setOpenBan] = useState(false);
+  const [openUnban, setOpenUnban] = useState(false);
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuItem
+            onClick={() => {
+              navigator.clipboard.writeText(user.id);
+              toast.success("Copied to clipboard");
+            }}
+          >
+            Copy user ID
+          </DropdownMenuItem>
+          {user.banned ? (
+            <DropdownMenuItem onClick={() => setOpenUnban(true)}>
+              Unban user
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem
+              onClick={() => {
+                if (user.role === "admin") {
+                  toast.error("Cannot ban admin users");
+                  return;
+                }
+                setOpenBan(true);
+              }}
+            >
+              Ban user
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <BanUserDialog open={openBan} onOpenChange={setOpenBan} user={user} />
+      <UnbanUserDialog
+        open={openUnban}
+        onOpenChange={setOpenUnban}
+        user={user}
+      />
+    </>
+  );
+};
+
 export const columns: ColumnDef<UserType>[] = [
   {
     accessorKey: "image",
@@ -277,58 +330,6 @@ export const columns: ColumnDef<UserType>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => {
-      const user = row.original;
-      const [openBan, setOpenBan] = useState(false);
-      const [openUnban, setOpenUnban] = useState(false);
-
-      return (
-        <>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => {
-                  navigator.clipboard.writeText(user.id);
-                  toast.success("Copied to clipboard");
-                }}
-              >
-                Copy user ID
-              </DropdownMenuItem>
-              {user.banned ? (
-                <DropdownMenuItem onClick={() => setOpenUnban(true)}>
-                  Unban user
-                </DropdownMenuItem>
-              ) : (
-                <DropdownMenuItem
-                  onClick={() => {
-                    if (user.role === "admin") {
-                      toast.error("Cannot ban admin users");
-                      return;
-                    }
-                    setOpenBan(true);
-                  }}
-                >
-                  Ban user
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <BanUserDialog open={openBan} onOpenChange={setOpenBan} user={user} />
-          <UnbanUserDialog
-            open={openUnban}
-            onOpenChange={setOpenUnban}
-            user={user}
-          />
-        </>
-      );
-    },
+    cell: ({ row }) => <ActionsCell user={row.original} />,
   },
 ];

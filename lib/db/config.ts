@@ -119,12 +119,12 @@ export function createDatabase(config: DBConfig) {
   const connectionConfig = createDatabaseConfig(config);
   const client = postgres(config.connectionString, connectionConfig);
 
-  console.log(`🚀 Database initialized:`);
-  console.log(`   Platform: ${detectPlatform()}`);
-  console.log(`   Database: ${detectDatabase(config.connectionString)}`);
-  console.log(`   Max connections: ${connectionConfig.max}`);
-  console.log(`   Prepare statements: ${connectionConfig.prepare}`);
-  console.log(`   SSL: ${connectionConfig.ssl}`);
+  // console.log(`🚀 Database initialized:`);
+  // console.log(`   Platform: ${detectPlatform()}`);
+  // console.log(`   Database: ${detectDatabase(config.connectionString)}`);
+  // console.log(`   Max connections: ${connectionConfig.max}`);
+  // console.log(`   Prepare statements: ${connectionConfig.prepare}`);
+  // console.log(`   SSL: ${connectionConfig.ssl}`);
 
   return drizzle(client);
 }

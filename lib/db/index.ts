@@ -1,8 +1,12 @@
 import { createDatabase } from './config';
-import { createMockDatabase } from './mock';
 
-export const db = process.env.DATABASE_URL
-  ? createDatabase({ connectionString: process.env.DATABASE_URL })
-  : createMockDatabase();
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) {
+  throw new Error('DATABASE_URL is not set');
+}
 
-export const isDatabaseEnabled = !!process.env.DATABASE_URL;
+export const db = createDatabase({
+  connectionString,
+});
+
+export const isDatabaseEnabled = !!connectionString;

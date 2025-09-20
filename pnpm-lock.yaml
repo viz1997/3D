@@ -53,6 +53,9 @@ importers:
       '@next/bundle-analyzer':
         specifier: ^15.3.4
         version: 15.5.2
+      '@next/env':
+        specifier: ^15.5.3
+        version: 15.5.3
       '@openrouter/ai-sdk-provider':
         specifier: ^0.4.5
         version: 0.4.6(zod@3.25.76)
@@ -1420,6 +1423,9 @@ packages:
 
   '@next/env@15.3.0':
     resolution: {integrity: sha512-6mDmHX24nWlHOlbwUiAOmMyY7KELimmi+ed8qWcJYjqXeC+G6JzPZ3QosOAfjNwgMIzwhXBiRiCgdh8axTTdTA==}
+
+  '@next/env@15.5.3':
+    resolution: {integrity: sha512-RSEDTRqyihYXygx/OJXwvVupfr9m04+0vH8vyy0HfZ7keRto6VX9BbEk0J2PUk0VGy6YhklJUSrgForov5F9pw==}
 
   '@next/eslint-plugin-next@15.0.4':
     resolution: {integrity: sha512-rbsF17XGzHtR7SDWzWpavSfum3/UdnF8bAaisnKwP//si3KWPTedVUsflAdjyK1zW3rweBjbALfKcavFneLGvg==}
@@ -7212,6 +7218,8 @@ snapshots:
       - utf-8-validate
 
   '@next/env@15.3.0': {}
+
+  '@next/env@15.5.3': {}
 
   '@next/eslint-plugin-next@15.0.4':
     dependencies:

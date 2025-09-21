@@ -79,7 +79,7 @@ export function LanguageDetectionAlert() {
   return (
     <div
       className={cn(
-        "fixed top-16 right-4 z-50 max-w-sm w-full mx-4 sm:mx-0 sm:w-96",
+        "fixed top-16 right-0 sm:right-4 z-50 mx-4 max-w-xs sm:max-w-sm",
         "transform transition-all duration-300 ease-in-out",
         isVisible
           ? "translate-x-0 translate-y-0 opacity-100"

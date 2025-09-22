@@ -44,7 +44,7 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
 
     try {
       await authClient.signIn.magicLink({
-        email: "weijunext@gmail.com",
+        email: email,
         name: "my-name",
         callbackURL: callback.toString(),
         errorCallbackURL: "/redirect-error",

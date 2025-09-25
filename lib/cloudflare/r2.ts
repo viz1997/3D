@@ -47,7 +47,7 @@ export const serverUploadFile = async ({
       ContentType: contentType,
     }));
 
-    const url = `${process.env.R2_PUBLIC_URL}/${key}`;
+    const url = `${process.env.R2_PUBLIC_URL}/${finalKey}`;
 
     return { url, key };
   } catch (error) {

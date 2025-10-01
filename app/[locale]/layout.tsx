@@ -1,5 +1,7 @@
 import { GoogleOneTap } from "@/components/auth/GoogleOneTap";
 import { LanguageDetectionAlert } from "@/components/LanguageDetectionAlert";
+import ConsentBanner from "@/components/shared/CookieConsent/ConsentBanner";
+import ConsentGate from "@/components/shared/CookieConsent/ConsentGate";
 import { TailwindIndicator } from "@/components/TailwindIndicator";
 import BaiDuAnalytics from "@/components/tracking/BaiDuAnalytics";
 import GoogleAdsense from "@/components/tracking/GoogleAdsense";
@@ -61,6 +63,8 @@ export default async function LocaleLayout({
   params: { locale: string };
 }) {
   const { locale } = await params;
+  const COOKIE_CONSENT_ENABLED =
+    process.env.NEXT_PUBLIC_COOKIE_CONSENT_ENABLED === "true";
 
   // Ensure that the incoming `locale` is valid
   if (!hasLocale(routing.locales, locale)) {
@@ -95,17 +99,36 @@ export default async function LocaleLayout({
         <GoogleOneTap />
         <Toaster richColors />
         <TailwindIndicator />
-        {process.env.NODE_ENV === "development" ? (
-          <></>
-        ) : (
-          <>
-            {process.env.VERCEL_ENV ? <Analytics /> : <></>}
-            <BaiDuAnalytics />
-            <GoogleAnalytics />
-            <GoogleAdsense />
-            <PlausibleAnalytics />
-          </>
-        )}
+        <>
+          {COOKIE_CONSENT_ENABLED ? (
+            <>
+              {process.env.NODE_ENV === "development" ? null : (
+                <>
+                  {process.env.VERCEL_ENV ? <Analytics /> : <></>}
+                  <PlausibleAnalytics />
+                  <ConsentGate>
+                    <GoogleAnalytics />
+                    <BaiDuAnalytics />
+                    <GoogleAdsense />
+                  </ConsentGate>
+                </>
+              )}
+              <ConsentBanner />
+            </>
+          ) : (
+            <>
+              {process.env.NODE_ENV === "development" ? null : (
+                <>
+                  {process.env.VERCEL_ENV ? <Analytics /> : <></>}
+                  <PlausibleAnalytics />
+                  <GoogleAnalytics />
+                  <BaiDuAnalytics />
+                  <GoogleAdsense />
+                </>
+              )}
+            </>
+          )}
+        </>
       </body>
     </html>
   );

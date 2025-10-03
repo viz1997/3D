@@ -1,5 +1,6 @@
 import { Duration, Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
+import { headers } from 'next/headers';
 
 let redis: Redis | null = null;
 const limiters = new Map<string, Ratelimit>();
@@ -80,4 +81,36 @@ export async function checkRateLimit(identifier: string, config: RateLimitConfig
   return success;
 }
 
+/**
+ * Get client IP from Next.js headers (for server actions)
+ */
+export async function getClientIPFromHeaders(): Promise<string> {
+  const headersList = await headers();
+  const forwarded = headersList.get("x-forwarded-for");
+  const realIP = headersList.get("x-real-ip");
+  const cfIP = headersList.get("cf-connecting-ip");
+
+  if (cfIP) return cfIP;
+  if (realIP) return realIP;
+  if (forwarded) return forwarded.split(",")[0].trim();
+
+  return "unknown";
+}
+
+/**
+ * Get client IP from Request object (for API routes)
+ */
+export function getClientIPFromRequest(request: Request): string {
+  const forwarded = request.headers.get("x-forwarded-for");
+  const realIP = request.headers.get("x-real-ip");
+  const cfIP = request.headers.get("cf-connecting-ip");
+
+  if (cfIP) return cfIP;
+  if (realIP) return realIP;
+  if (forwarded) return forwarded.split(",")[0].trim();
+
+  return "unknown";
+}
+
 export { redis };
+

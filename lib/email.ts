@@ -1,9 +1,3 @@
-const DISPOSABLE_EMAIL_DOMAINS = [
-  'tempmail.com',
-  'throwawaymail.com',
-  'tempmail100.com'
-];
-
 export type EmailValidationError =
   | 'invalid_email_format'
   | 'email_part_too_long'
@@ -28,13 +22,6 @@ export function validateEmail(email: string): {
     return {
       isValid: false,
       error: 'email_part_too_long'
-    };
-  }
-
-  if (DISPOSABLE_EMAIL_DOMAINS.includes(domain.toLowerCase())) {
-    return {
-      isValid: false,
-      error: 'disposable_email_not_allowed'
     };
   }
 

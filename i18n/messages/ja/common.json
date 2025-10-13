@@ -194,6 +194,11 @@
         "icon": "Settings"
       },
       {
+        "name": "注文履歴",
+        "href": "/dashboard/my-orders",
+        "icon": "ShoppingCart"
+      },
+      {
         "name": "サブスクリプション",
         "href": "/dashboard/subscription",
         "icon": "WalletCards"

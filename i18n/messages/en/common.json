@@ -193,6 +193,11 @@
         "icon": "Settings"
       },
       {
+        "name": "My Orders",
+        "href": "/dashboard/my-orders",
+        "icon": "ShoppingCart"
+      },
+      {
         "name": "Subscription",
         "href": "/dashboard/subscription",
         "icon": "WalletCards"

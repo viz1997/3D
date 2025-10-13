@@ -193,6 +193,11 @@
         "icon": "Settings"
       },
       {
+        "name": "我的订单",
+        "href": "/dashboard/my-orders",
+        "icon": "ShoppingCart"
+      },
+      {
         "name": "管理订阅",
         "href": "/dashboard/subscription",
         "icon": "WalletCards"

@@ -108,17 +108,15 @@ export const columns: ColumnDef<OrderWithUser>[] = [
   {
     accessorKey: "status",
     header: "Status",
-    cell: ({ row }) => {
-      const status = row.original.status;
+    cell: ({ row }: any) => {
+      const status = row.original.status as string;
       let variant: "secondary" | "destructive" | "outline" = "outline";
-      if (status === "succeeded" || status === "active") {
+      if (status === "succeeded") {
         variant = "secondary";
-      } else if (
-        status === "failed" ||
-        status === "canceled" ||
-        status === "past_due"
-      ) {
+      } else if (status === "refunded") {
         variant = "destructive";
+      } else {
+        variant = "outline";
       }
       return <Badge variant={variant}>{status}</Badge>;
     },

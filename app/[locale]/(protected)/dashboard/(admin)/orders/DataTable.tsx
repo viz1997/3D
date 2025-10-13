@@ -49,16 +49,7 @@ const ORDER_TYPES = [
   "subscription_renewal",
   "refund",
 ];
-const ORDER_STATUSES = [
-  "pending",
-  "succeeded",
-  "failed",
-  "active",
-  "canceled",
-  "refunded",
-  "past_due",
-  "incomplete",
-];
+const ORDER_STATUSES = ["succeeded", "refunded"];
 
 export function OrdersDataTable<TData, TValue>({
   columns,

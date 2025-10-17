@@ -10,7 +10,7 @@ import { Turnstile } from "@marsidev/react-turnstile";
 import { Github, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface LoginFormProps {
@@ -21,7 +21,7 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
   const t = useTranslations("Login");
   const locale = useLocale();
 
-  const lastMethod = authClient.getLastUsedLoginMethod();
+  const [lastMethod, setLastMethod] = useState<string | null>(null);
 
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -32,6 +32,10 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
 
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
+
+  useEffect(() => {
+    setLastMethod(authClient.getLastUsedLoginMethod());
+  }, []);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -177,6 +181,7 @@ export default function LoginForm({ className = "" }: LoginFormProps) {
           </div>
           <Button
             disabled={
+              !email ||
               isLoading ||
               (!!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY && !captchaToken)
             }

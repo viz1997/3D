@@ -19,6 +19,13 @@ Core Libraries:
 - `createPresignedUploadUrl({ key, contentType, expiresIn? })` — Generates presigned PUT URL for client-side uploads. Returns `{ presignedUrl, publicObjectUrl }`.
 - `createPresignedDownloadUrl({ key, expiresIn? })` — Generates presigned GET URL for temporary download access.
 
+`lib/cloudflare/r2-download.ts` (Client-side utilities):
+- `downloadFileAsAdmin(key)` — Client-side helper to download file using admin presigned URL. Fetches presigned URL via `generateAdminPresignedDownloadUrl`, then triggers browser download. Falls back to opening in new tab on error.
+- `downloadFileAsUser(key)` — Client-side helper to download file using authenticated user presigned URL. Fetches presigned URL via `generateUserPresignedDownloadUrl`, then triggers browser download.
+- `downloadFileAsPublic(key)` — Client-side helper to download file using public presigned URL (rate limited). Fetches presigned URL via `generatePublicPresignedDownloadUrl`, then triggers browser download.
+- `downloadFileFromUrl(fullPath, mode)` — Convenience helper that extracts key from full URL and delegates to appropriate download method based on mode ('admin' | 'user' | 'public'). Default mode is 'user'.
+- All download helpers use toast notifications (sonner) for error feedback and automatically extract filename from key.
+
 Required env: `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_PUBLIC_URL`.
 
 Server Actions (`actions/r2-resources/index.ts`):
@@ -35,6 +42,8 @@ Server Actions (`actions/r2-resources/index.ts`):
 - Constants: `PRESIGNED_UPLOAD_EXPIRES_IN = 300` (5min), `PRESIGNED_DOWNLOAD_EXPIRES_IN = 300` (5min), `DEFAULT_PAGE_SIZE = 20`, `MAX_PAGE_SIZE = 100`.
 
 Best Practices:
+
+Uploads:
 - Do not use client-side SDK for uploads. Route all uploads through server actions or route handlers.
 - Client-originated uploads (browser/mobile): Prefer presigned URL flow so client PUTs directly to R2. Choose action based on user type:
   - Authenticated users → `generateUserPresignedUploadUrl` (auto-isolates by userId)
@@ -45,4 +54,16 @@ Best Practices:
 - Always validate contentType/size. Use `lib/validations.ts` for file constraints.
 - Never trust client-provided keys or paths. Always generate keys with `generateR2Key`.
 - Persist both `key` and `publicObjectUrl` in your DB for each uploaded file.
+
+Downloads:
+- For client-side downloads, import helpers from `lib/cloudflare/r2-download.ts`. These handle presigned URL generation, browser download triggers, and error handling automatically.
+- Choose download method based on user type:
+  - Admins → `downloadFileAsAdmin(key)` (no rate limits)
+  - Authenticated users → `downloadFileAsUser(key)` (no rate limits)
+  - Anonymous → `downloadFileAsPublic(key)` (rate limited)
+- Use `downloadFileFromUrl(fullPath, mode)` when you have a full URL and need to extract the key automatically.
+- All download methods provide user feedback via toast notifications and fallback to opening files in new tab if direct download fails.
+- For programmatic/server-side downloads, use the presigned download URL server actions directly (`generateAdminPresignedDownloadUrl`, etc.) and implement custom logic.
+
+General:
 - Ensure `next.config.mjs` `images.remotePatterns` includes `R2_PUBLIC_URL` hostname (already configured).

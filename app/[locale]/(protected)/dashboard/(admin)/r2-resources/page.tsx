@@ -1,12 +1,10 @@
 import { listR2Files } from "@/actions/r2-resources";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BLOGS_IMAGE_PATH } from "@/config/common";
+import { ADMIN_UPLOAD_IMAGE_PATH, BLOGS_IMAGE_PATH } from "@/config/common";
 import { constructMetadata } from "@/lib/metadata";
-import { Loader2 } from "lucide-react";
 import { Metadata } from "next";
 import { Locale } from "next-intl";
 import { getTranslations } from "next-intl/server";
-import { Suspense } from "react";
 import { ImagesDataTable } from "./ImagesDataTable";
 
 type Params = Promise<{ locale: string }>;
@@ -34,12 +32,18 @@ export async function generateMetadata({
 }
 
 const CATEGORIES = [
+  { name: "All", prefix: "" },
+  {
+    name: "Admin Uploads",
+    prefix: `${ADMIN_UPLOAD_IMAGE_PATH}/`,
+  },
   { name: "Blogs Images", prefix: `${BLOGS_IMAGE_PATH}/` },
   { name: "Text to Image", prefix: "text-to-images/" },
   { name: "Image to Image", prefix: "image-to-images/" },
   { name: "Image to Video", prefix: "image-to-videos/" },
 ];
-const PAGE_SIZE = 20;
+
+const PAGE_SIZE = 40;
 
 async function CategoryTable({ categoryPrefix }: { categoryPrefix: string }) {
   const initialResult = await listR2Files({
@@ -81,11 +85,11 @@ async function CategoryTable({ categoryPrefix }: { categoryPrefix: string }) {
   );
 }
 
-export default function AdminImagesPage() {
+export default function Page() {
   const defaultCategory = CATEGORIES[0].prefix;
 
   return (
-    <div className="space-y-4">
+    <div className="mt-6">
       <Tabs defaultValue={defaultCategory}>
         <TabsList>
           {CATEGORIES.map((cat) => (
@@ -97,15 +101,7 @@ export default function AdminImagesPage() {
 
         {CATEGORIES.map((cat) => (
           <TabsContent key={cat.prefix} value={cat.prefix} className="mt-0">
-            <Suspense
-              fallback={
-                <div className="flex items-center justify-center rounded-md border">
-                  <Loader2 className="w-8 h-8 animate-spin" />
-                </div>
-              }
-            >
-              <CategoryTable categoryPrefix={cat.prefix} />
-            </Suspense>
+            <CategoryTable categoryPrefix={cat.prefix} />
           </TabsContent>
         ))}
       </Tabs>

@@ -10,116 +10,85 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { downloadFileAsAdmin } from "@/lib/cloudflare/r2-download";
+import { getFileType } from "@/lib/cloudflare/r2-utils";
+import { formatBytes } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import dayjs from "dayjs";
-import { Copy, Download, MoreHorizontal, Trash2, Video } from "lucide-react";
-import Link from "next/link";
+import {
+  Check,
+  Copy,
+  Download,
+  Loader2,
+  MoreHorizontal,
+  Trash2,
+  Video,
+} from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
-
-const getFileType = (key: string): "image" | "video" | "other" => {
-  const lowerKey = key.toLowerCase();
-
-  if (lowerKey.includes("image-to-videos/")) return "video";
-
-  const parts = lowerKey.split(".");
-  if (parts.length < 2) {
-    return "other";
-  }
-
-  const extension = parts.pop();
-  if (!extension) {
-    return "other";
-  }
-
-  if (
-    extension?.includes("png") ||
-    extension?.includes("jpg") ||
-    extension?.includes("jpeg") ||
-    extension?.includes("webp") ||
-    extension?.includes("gif") ||
-    extension?.includes("icon") ||
-    extension?.includes("svg")
-  ) {
-    return "image";
-  }
-  if (
-    extension?.includes("mp4") ||
-    extension?.includes("webm") ||
-    extension?.includes("mov")
-  ) {
-    return "video";
-  }
-  return "other";
-};
-
-const formatBytes = (bytes: number, decimals = 2): string => {
-  if (bytes === 0) return "0 Bytes";
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-};
 
 interface ActionsCellProps {
   file: R2File;
-  r2PublicUrl?: string;
   onDelete: (key: string) => void;
 }
 
-const ActionsCell: React.FC<ActionsCellProps> = ({
-  file,
-  r2PublicUrl,
-  onDelete,
-}) => {
-  const handleCopy = () => {
-    navigator.clipboard.writeText(`${r2PublicUrl}/${file.key}`);
-    toast.success("Filename copied to clipboard");
+const ActionsCell: React.FC<ActionsCellProps> = ({ file, onDelete }) => {
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownload = async () => {
+    setIsDownloading(true);
+    try {
+      await downloadFileAsAdmin(file.key);
+      toast.success("Download started");
+    } catch (error: any) {
+      toast.error("Failed to download file", {
+        description: error.message || "Unknown error",
+      });
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
-          <span className="sr-only">Open menu</span>
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuItem onClick={handleCopy}>
-          <Copy className="mr-2 h-4 w-4" />
-          Copy Public URL
-        </DropdownMenuItem>
-        {r2PublicUrl ? (
-          <DropdownMenuItem asChild>
-            <Link
-              href={`${r2PublicUrl}/${file.key}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center w-full"
-              title="Download"
-              prefetch={false}
-            >
-              <Download className="mr-2 h-4 w-4" />
-              Download
-            </Link>
+    <div className="flex items-center gap-2">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuItem onClick={handleDownload} disabled={isDownloading}>
+            {isDownloading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Download className="mr-2 h-4 w-4" />
+                Download
+              </>
+            )}
           </DropdownMenuItem>
-        ) : (
-          <DropdownMenuItem disabled>
-            <Download className="mr-2 h-4 w-4 opacity-50" />
-            Download Unavailable
+          <DropdownMenuItem
+            onClick={() => onDelete(file.key)}
+            className="text-destructive focus:text-destructive focus:bg-destructive/10"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
           </DropdownMenuItem>
-        )}
-        <DropdownMenuItem
-          onClick={() => onDelete(file.key)}
-          className="text-destructive focus:text-destructive focus:bg-destructive/10"
-        >
-          <Trash2 className="mr-2 h-4 w-4" />
-          Delete
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 };
 
@@ -173,6 +142,48 @@ export const getColumns = (
     enableSorting: false,
   },
   {
+    accessorKey: "key",
+    header: "File URL",
+    cell: ({ row }) => {
+      const key = row.getValue<string>("key");
+      const [copied, setCopied] = useState(false);
+
+      const handleCopy = () => {
+        const fullUrl = `${r2PublicUrl}/${key}`;
+        navigator.clipboard.writeText(fullUrl);
+        setCopied(true);
+        toast.success("Full URL copied to clipboard", {
+          description: fullUrl,
+        });
+        setTimeout(() => setCopied(false), 2000);
+      };
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" size="sm" onClick={handleCopy}>
+                {copied ? (
+                  <>
+                    <Check className="mr-1 h-3 w-3" />
+                    Copied
+                  </>
+                ) : (
+                  <>
+                    <Copy className="ml-1 h-3 w-3" />
+                    Copy URL
+                  </>
+                )}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              {r2PublicUrl}/{key}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    },
+  },
+  {
     accessorKey: "type",
     header: "Type",
     cell: ({ row }) => getFileType(row.original.key).toUpperCase() ?? "Unknown",
@@ -193,13 +204,7 @@ export const getColumns = (
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => (
-      <ActionsCell
-        file={row.original}
-        r2PublicUrl={r2PublicUrl}
-        onDelete={onDelete}
-      />
-    ),
+    cell: ({ row }) => <ActionsCell file={row.original} onDelete={onDelete} />,
     enableSorting: false,
     enableHiding: false,
   },

@@ -44,7 +44,6 @@ export default function CreateBlogClient() {
               slug: `${originalPost.slug}`,
               status: "draft",
               isPinned: false,
-              publishedAt: null,
             };
             setInitialData(duplicatedPostData);
           } else {

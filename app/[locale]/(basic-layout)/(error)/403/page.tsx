@@ -1,8 +1,7 @@
-import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Link as I18nLink, Locale, routing } from "@/i18n/routing";
 import { constructMetadata } from "@/lib/metadata";
 import { Metadata } from "next";
-import { useTranslations } from "next-intl";
 import { getTranslations } from "next-intl/server";
 
 type Params = Promise<{ locale: string }>;
@@ -27,21 +26,26 @@ export async function generateMetadata({
   });
 }
 
-export default function ForbiddenPage() {
-  const t = useTranslations("ErrorPage.403");
+export default async function ForbiddenPage({ params }: { params: Params }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "ErrorPage.403" });
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-      <h1 className="text-4xl font-bold">{t("title")}</h1>
-      <p className="text-muted-foreground">{t("description")}</p>
-      <Button
-        asChild
-        className="highlight-bg text-white px-8 py-3 rounded-lg font-medium text-center hover:opacity-90 shadow-lg"
-      >
-        <I18nLink href={t("button.href")} title={t("button.name")}>
-          {t("button.name")}
-        </I18nLink>
-      </Button>
-    </div>
+    <Card className="flex flex-col items-center justify-center m-4 md:m-12 lg:m-24">
+      <div className="p-4 md:p-8 text-center">
+        <h1 className="text-2xl font-bold text-red-600 mb-4">{t("title")}</h1>
+        <p className="mb-6">{t("description")}</p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <I18nLink
+            href={t("button.href")}
+            title={t("button.name")}
+            className="px-4 py-2 highlight-bg text-white rounded-md w-full sm:w-auto"
+          >
+            {t("button.name")}
+          </I18nLink>
+        </div>
+      </div>
+    </Card>
   );
 }
 

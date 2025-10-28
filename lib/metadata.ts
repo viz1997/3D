@@ -16,7 +16,6 @@ type MetadataProps = {
 }
 
 export async function constructMetadata({
-  page = 'Home',
   title,
   description,
   images = [],
@@ -31,9 +30,9 @@ export async function constructMetadata({
   const pageTitle = title || t(`title`)
   const pageDescription = description || t(`description`)
 
-  const finalTitle = page === 'Home'
-    ? `${pageTitle} - ${t('tagLine')}`
-    : `${pageTitle} | ${t('title')}`
+  const finalTitle = path === '/'
+    ? `${pageTitle} - ${siteConfig.tagLine}`
+    : `${pageTitle} | ${siteConfig.name}`
 
   canonicalUrl = canonicalUrl || path
 

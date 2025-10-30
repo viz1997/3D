@@ -1,21 +1,14 @@
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { useTranslations } from "next-intl";
 
 type FAQItem = {
   question: string;
   answer: string;
-};
-
-const FAQItem = ({ faq }: { faq: FAQItem }) => {
-  return (
-    <div className="card rounded-xl p-6 shadow-sm border dark:border-gray-800">
-      <div className="flex items-center mb-3">
-        <h3 className="text-lg font-semibold">{faq.question}</h3>
-      </div>
-      <div className="text-muted-foreground">
-        <p>{faq.answer}</p>
-      </div>
-    </div>
-  );
 };
 
 export default function FAQ() {
@@ -37,11 +30,26 @@ export default function FAQ() {
           </p>
         </div>
 
-        <div className="space-y-6">
-          {faqs.map((faq) => (
-            <FAQItem key={faq.question} faq={faq} />
+        <Accordion
+          type="single"
+          collapsible
+          className="bg-card ring-muted w-full rounded-2xl border px-8 py-3 shadow-sm ring-4 dark:ring-0"
+        >
+          {faqs.map((item) => (
+            <AccordionItem
+              key={item.question}
+              value={item.question}
+              className="border-dashed"
+            >
+              <AccordionTrigger className="cursor-pointer text-base hover:no-underline">
+                {item.question}
+              </AccordionTrigger>
+              <AccordionContent>
+                <p className="text-base">{item.answer}</p>
+              </AccordionContent>
+            </AccordionItem>
           ))}
-        </div>
+        </Accordion>
       </div>
     </section>
   );

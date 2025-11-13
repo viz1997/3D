@@ -1,0 +1,243 @@
+{
+  "Hero": {
+    "badge": {
+      "label": "NEW",
+      "text": "World's First 1536³ Ultra-High Resolution AI 3D Generation",
+      "href": "/ai-3d"
+    },
+    "title": "Upload One Image, Generate Ultra-High Precision 3D Models in 3 Minutes",
+    "description": "Hitem3D supports AI-driven 3D content creation with up to 1536³ resolution, 50% higher precision than most tools. Simply upload an image to quickly generate high-precision 3D models with support for multiple format downloads.",
+    "getStarted": "Try Now",
+    "getStartedLink": "/ai-3d",
+    "viewDocs": "View API Docs",
+    "viewDocsLink": "/docs",
+    "previewText": "1536³ Ultra-High Resolution · 3-Minute Fast Generation"
+  },
+  "Features": {
+    "badge": {
+      "label": "FEATURES",
+      "text": "World-Leading AI 3D Generation Technology"
+    },
+    "title": "1536³ Ultra-High Resolution AI 3D Model Generation",
+    "description": "Hitem3D uses proprietary algorithms and technological breakthroughs to support 3D model generation with up to 1536³ resolution, with details and precision far exceeding similar tools. Helps designers without 3D modeling skills quickly transform creativity into high-precision models.",
+    "moreFeatures": {
+      "title": "Explore More Features",
+      "description": "Discover our complete feature roadmap, detailed documentation, and upcoming enhancements that will accelerate your SaaS development journey.",
+      "button": "View Full Roadmap"
+    },
+    "items": [
+      {
+        "title": "Text to 3D",
+        "description": "Simply enter a text description, and AI will automatically generate high-quality 3D models.",
+        "details": [
+          {
+            "title": "Intelligent Understanding",
+            "description": "AI deeply understands your text descriptions and accurately restores design intent."
+          },
+          {
+            "title": "Fast Generation",
+            "description": "Complete 3D model generation in minutes, greatly improving work efficiency."
+          },
+          {
+            "title": "High-Quality Output",
+            "description": "Generate fine textures and details to meet professional design needs."
+          }
+        ],
+        "images": [
+          "/images/features/template1.webp"
+        ]
+      },
+      {
+        "title": "Image to 3D - Core Feature",
+        "description": "Upload one image and generate high-precision 3D models in 3 minutes. Supports 1536³ ultra-high resolution with rich details, meeting production requirements.",
+        "details": [
+          {
+            "title": "1536³ Ultra-High Resolution",
+            "description": "50% higher precision than most tools (1024³), generating models closer to real objects."
+          },
+          {
+            "title": "3-Minute Fast Generation",
+            "description": "Complex mecha models that previously required 4-5 working days from senior modelers can now be generated in 3 minutes."
+          },
+          {
+            "title": "Single Image Generation",
+            "description": "Just upload one image, and AI will automatically reconstruct a complete 3D model without needing multi-angle images."
+          }
+        ],
+        "images": [
+          "/images/features/login.png"
+        ]
+      },
+      {
+        "title": "Multiple Format Export",
+        "description": "Support exporting to GLB, OBJ, STL, FBX, and other mainstream 3D formats.",
+        "details": [
+          {
+            "title": "Wide Compatibility",
+            "description": "Support mainstream 3D software like Blender, Maya, Unity, Unreal, etc."
+          },
+          {
+            "title": "Ready to Use",
+            "description": "Generated models can be directly used for game development, product design, and other scenarios."
+          },
+          {
+            "title": "High-Quality Output",
+            "description": "Maintain model details and texture quality to ensure professional use requirements."
+          }
+        ],
+        "images": [
+          "/images/features/database-config.webp"
+        ]
+      },
+      {
+        "title": "Smart Low-Poly Optimization",
+        "description": "Automatically optimize model polygon count, generating low-poly models suitable for real-time rendering.",
+        "details": [
+          {
+            "title": "Automatic Optimization",
+            "description": "AI automatically reduces polygon count while maintaining model appearance and improving performance."
+          },
+          {
+            "title": "Real-Time Preview",
+            "description": "Support real-time preview and interactive viewing of 3D models in the browser."
+          },
+          {
+            "title": "Performance Optimization",
+            "description": "Optimized models load faster, suitable for web and mobile applications."
+          }
+        ],
+        "images": [
+          "/images/features/payment-1.png"
+        ]
+      },
+      {
+        "title": "API Integration & Open Platform",
+        "description": "Provides an open platform and API, enabling enterprises and developers to easily integrate and convert images into high-quality 3D assets.",
+        "details": [
+          {
+            "title": "RESTful API",
+            "description": "Complete API documentation and SDK for quick integration into existing workflows."
+          },
+          {
+            "title": "Batch Processing",
+            "description": "Support batch image-to-3D conversion, suitable for large-scale production needs."
+          },
+          {
+            "title": "Multiple Format Support",
+            "description": "Support exporting to GLB, OBJ, STL, FBX, and other formats for 3D printing, game development, film production, and more."
+          }
+        ],
+        "images": [
+          "/images/features/ai-1.png"
+        ]
+      }
+    ]
+  },
+  "UseCases": {
+    "badge": {
+      "label": "USE CASES",
+      "text": "Multiple Application Scenarios"
+    },
+    "title": "AI 3D Generation for Various Scenarios",
+    "description": "Whether it's game development, product design, 3D printing, or virtual display, our AI 3D generation service can meet your needs.",
+    "cases": [
+      {
+        "title": "Game Development",
+        "description": "Quickly generate game props, character models, and scene elements, greatly shortening development cycles. Support multiple format exports, can be directly imported into game engines like Unity and Unreal.",
+        "image": "/placeholder.webp",
+        "icon": "Gamepad2"
+      },
+      {
+        "title": "Product Design",
+        "description": "Quickly transform product concepts into 3D models for design validation, client presentations, and prototyping. Support high-quality rendering and detail optimization.",
+        "image": "/placeholder.webp",
+        "icon": "Box"
+      },
+      {
+        "title": "3D Printing",
+        "description": "Generate models suitable for 3D printing with automatic topology optimization. Support STL format export, can be directly used with 3D printing equipment.",
+        "image": "/placeholder.webp",
+        "icon": "Printer"
+      },
+      {
+        "title": "Virtual Display",
+        "description": "Create 3D display content for e-commerce, real estate, education, and other industries. Support real-time preview on web, enhancing user experience.",
+        "image": "/placeholder.webp",
+        "icon": "Monitor"
+      }
+    ]
+  },
+  "Testimonials": {
+    "badge": {
+      "label": "TESTIMONIALS"
+    },
+    "title": "What Our Customers Say",
+    "description": "Don't just take our word for it"
+  },
+  "FAQ": {
+    "title": "Frequently Asked Questions",
+    "description": "Common questions about our Next.js SaaS boilerplate and how it can help you build better applications faster",
+    "items": [
+      {
+        "question": "Can I use this boilerplate as a non-technical person?",
+        "answer": "Absolutely! Nexty is specifically designed to work seamlessly with AI assistants, allowing even those with zero programming experience to develop products through AI-assisted development. Our code structure and documentation are AI-friendly, making it easier for AI to understand and modify the code. Technical teams will benefit from even greater development efficiency."
+      },
+      {
+        "question": "What makes this the best Next.js SaaS boilerplate?",
+        "answer": "Nexty is the most comprehensive Next.js SaaS starter kit available. Unlike other templates that only provide basic components, we include complete business workflows: authentication, payments, AI integration, content management, and monetization features. Everything is production-ready and battle-tested in real applications."
+      },
+      {
+        "question": "How quickly can I launch my SaaS with this boilerplate?",
+        "answer": "Your first project will take 3-5 days as you learn the boilerplate's features, but the learning curve pays off quickly. Our customers who've mastered the system now launch complete SaaS applications in just 1-2 days. The boilerplate handles all the complex infrastructure, so you can focus on what makes your product unique."
+      },
+      {
+        "question": "Is this suitable for AI-powered SaaS applications?",
+        "answer": "Absolutely! Our boilerplate includes comprehensive AI SDK integration with working examples for text generation, image creation, and video processing. It's compatible with OpenAI, Claude, Gemini, Grok, DeepSeek, and other popular AI models. Perfect for building AI tools or content generation platforms."
+      },
+      {
+        "question": "What payment methods and billing models are supported?",
+        "answer": "The boilerplate includes complete Stripe integration supporting one-time payments, subscriptions, usage-based billing, and automated renewals. You can start monetizing immediately."
+      },
+      {
+        "question": "How does the content management system work?",
+        "answer": "Our built-in CMS supports Markdown and rich text editing, multilingual content, SEO optimization, paywall protection, and AI translation. You can manage articles, pages, and premium content through an intuitive admin dashboard with role-based access control."
+      },
+      {
+        "question": "Is the boilerplate SEO-optimized?",
+        "answer": "Yes! The boilerplate includes comprehensive SEO features: automatic meta tags, structured data, XML sitemaps, OpenGraph support, and performance optimization. It's built with Next.js best practices for search engine visibility and faster loading times."
+      },
+      {
+        "question": "What kind of support do you provide?",
+        "answer": "We provide comprehensive documentation, code examples, and email support. We also have a public Discord community where you can get help from other developers and share your projects."
+      },
+      {
+        "question": "How do I manage pricing cards?",
+        "answer": "This is a key selling point of Nexty. You can manage pricing cards in the Dashboard, including adding, editing, and deleting pricing cards with AI multilingual translation support, eliminating complex multilingual file configuration."
+      }
+    ]
+  },
+  "CTA": {
+    "title": "Experience 1536³ Ultra-High Resolution 3D Generation Now",
+    "description": "Upload one image and generate high-precision 3D models in 3 minutes. No 3D modeling skills required to quickly transform creativity into production-grade models.",
+    "button": "Try Free",
+    "trustText": "Trusted by designers and developers worldwide",
+    "features": {
+      "deploy": "🚀 3-Minute Generation",
+      "production": "🔧 1536³ Resolution",
+      "updates": "💎 Multiple Formats",
+      "i18n": "🌍 API Integration"
+    }
+  },
+  "Pricing": {
+    "badge": {
+      "label": "PRICING",
+      "text": "One-Time Payment, Lifetime Updates"
+    },
+    "title": "Ship your SaaS in days, not months",
+    "description": "Using our battle-tested SaaS starter template, so you can skip boilerplate coding and focus on the features your users actually need.",
+    "annual": "Annual",
+    "monthly": "Monthly",
+    "onetime": "One-Time",
+    "saveTip": "Save 20%"
+  }
+}

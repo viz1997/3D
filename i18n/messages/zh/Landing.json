@@ -1,0 +1,243 @@
+{
+  "Hero": {
+    "badge": {
+      "label": "NEW",
+      "text": "全新 AI 3D 实时生成工作台",
+      "href": "/ai-3d"
+    },
+    "title": "Hitem3D · AI 驱动的 3D 内容生产平台",
+    "description": "从灵感捕捉、素材上传，到 3 分钟内交付 1536³ 高精度模型，Hitem3D 为创作者、设计团队与品牌提供一站式 3D 内容工作流。支持文字/图片生成、实时预览、多人协作与多格式导出，让 3D 创作像编辑图片一样简单。",
+    "getStarted": "立即体验",
+    "getStartedLink": "/ai-3d",
+    "viewDocs": "查看 API 文档",
+    "viewDocsLink": "/docs",
+    "previewText": "实时协同 · 3 分钟交付 · 1536³ 精度"
+  },
+  "Features": {
+    "badge": {
+      "label": "核心功能",
+      "text": "面向专业创作者的 3D 生产力"
+    },
+    "title": "以 AI 为核心的全流程 3D 内容生产",
+    "description": "Hitem3D 将生成式 AI、智能优化与开放生态融为一体，帮助团队在数分钟内完成从创意到可交付模型的全过程，显著缩短制作周期并提升细节表现。",
+    "moreFeatures": {
+      "title": "探索完整能力图谱",
+      "description": "查看即将上线的协作、资产管理与工作流自动化功能，了解 Hitem3D 如何持续迭代以匹配专业团队的生产需求。",
+      "button": "查看产品路线图"
+    },
+    "items": [
+      {
+        "title": "多模态生成引擎",
+        "description": "支持文字、图片、草图与视频帧等多种输入方式，智能理解设计意图，快速生成可编辑的 3D 模型草案。",
+        "details": [
+          {
+            "title": "智能理解",
+            "description": "语义模型结合行业语料，精准识别造型、材质、风格等关键信息。"
+          },
+          {
+            "title": "秒级反馈",
+            "description": "示意模型可在 30 秒内预览，完整模型最快 3 分钟交付。"
+          },
+          {
+            "title": "可控输出",
+            "description": "通过参数调节、提示词锁定和模型模板，保障风格统一与细节可控。"
+          }
+        ],
+        "images": [
+          "/images/features/template1.webp"
+        ]
+      },
+      {
+        "title": "1536³ 超精细重建",
+        "description": "基于自研重建网络和物理光照推理，呈现更真实的模型细节、纹理与法线信息。",
+        "details": [
+          {
+            "title": "1536³ 超高分辨率",
+            "description": "几何精度比传统 1024³ 工具高出 50%，细节保留更完整。"
+          },
+          {
+            "title": "3 分钟快速生成",
+            "description": "从素材上传到模型下载，全流程平均不超过 180 秒。"
+          },
+          {
+            "title": "单图重建",
+            "description": "即便只有一张参考图，也能通过 AI 自动补全背面与遮挡细节。"
+          }
+        ],
+        "images": [
+          "/images/features/login.png"
+        ]
+      },
+      {
+        "title": "一键优化与导出",
+        "description": "自动完成拓扑清理、法线统一、贴图烘焙，支持多格式与分辨率导出。",
+        "details": [
+          {
+            "title": "广泛兼容",
+            "description": "GLB、OBJ、STL、FBX、USDZ 等主流格式一键生成。"
+          },
+          {
+            "title": "即用即得",
+            "description": "提供高模、低模、贴图分层等多套交付方案，直接投入生产。"
+          },
+          {
+            "title": "质量守恒",
+            "description": "智能压缩贴图体积，同时保留关键纹理信息，满足跨平台发布。"
+          }
+        ],
+        "images": [
+          "/images/features/database-config.webp"
+        ]
+      },
+      {
+        "title": "智能低模与渲染优化",
+        "description": "面向实时渲染场景自动调优面数、骨骼与贴图，保障性能与视觉效果。",
+        "details": [
+          {
+            "title": "自动优化",
+            "description": "AI 自动识别关键区域并保留轮廓，最高可减少 70% 面数。"
+          },
+          {
+            "title": "实时预览",
+            "description": "内置 Web 预览器，可切换光照、材质并检查骨骼动画。"
+          },
+          {
+            "title": "性能优化",
+            "description": "内置 LOD 生成、贴图压缩策略，适配移动端与 WebXR 应用。"
+          }
+        ],
+        "images": [
+          "/images/features/payment-1.png"
+        ]
+      },
+      {
+        "title": "开放平台与协同生态",
+        "description": "API、SDK 与管理后台全面开放，帮助企业快速搭建专属的 3D 内容管线。",
+        "details": [
+          {
+            "title": "RESTful API",
+            "description": "覆盖上传、生成、状态查询与资产管理的全套接口。"
+          },
+          {
+            "title": "批量处理",
+            "description": "支持批量任务、队列调度与产能监控，轻松应对大规模生产。"
+          },
+          {
+            "title": "多格式支持",
+            "description": "集成权限、审阅与版本控制，让设计、市场与工程团队协同更顺畅。"
+          }
+        ],
+        "images": [
+          "/images/features/ai-1.png"
+        ]
+      }
+    ]
+  },
+  "UseCases": {
+    "badge": {
+      "label": "使用场景",
+      "text": "多场景应用"
+    },
+    "title": "适用于多种场景的 AI 3D 生成",
+    "description": "无论是游戏开发、产品设计、3D 打印还是虚拟展示，我们的 AI 3D 生成服务都能满足您的需求。",
+    "cases": [
+      {
+        "title": "游戏开发",
+        "description": "快速生成游戏道具、角色模型和场景元素，大幅缩短开发周期。支持多种格式导出，可直接导入 Unity、Unreal 等游戏引擎。",
+        "image": "/placeholder.webp",
+        "icon": "Gamepad2"
+      },
+      {
+        "title": "产品设计",
+        "description": "将产品概念快速转化为 3D 模型，用于设计验证、客户展示和原型制作。支持高质量渲染和细节优化。",
+        "image": "/placeholder.webp",
+        "icon": "Box"
+      },
+      {
+        "title": "3D 打印",
+        "description": "生成适合 3D 打印的模型，自动优化拓扑结构。支持 STL 格式导出，可直接用于 3D 打印设备。",
+        "image": "/placeholder.webp",
+        "icon": "Printer"
+      },
+      {
+        "title": "虚拟展示",
+        "description": "为电商、房地产、教育等行业创建 3D 展示内容。支持 Web 端实时预览，提升用户体验。",
+        "image": "/placeholder.webp",
+        "icon": "Monitor"
+      }
+    ]
+  },
+  "Testimonials": {
+    "badge": {
+      "label": "客户评价"
+    },
+    "title": "客户怎么说",
+    "description": "不要只听我们的，看看客户怎么说"
+  },
+  "FAQ": {
+    "title": "常见问题",
+    "description": "关于我们的 Next.js SaaS 模板以及它如何帮助您更快地构建更好应用程序的常见问题",
+    "items": [
+      {
+        "question": "非技术人员可以使用这个模板吗？",
+        "answer": "当然可以！Nexty 专门设计为与 AI 助手无缝协作，即使是零编程经验的人也能通过 AI 辅助开发来开发产品。我们的代码结构和文档对 AI 友好，使 AI 更容易理解和修改代码。技术团队将从更高的开发效率中受益更多。"
+      },
+      {
+        "question": "为什么这是最好的 Next.js SaaS 模板？",
+        "answer": "Nexty 是最全面的 Next.js SaaS 启动套件。与其他只提供基本组件的模板不同，我们包含完整的业务工作流程：身份验证、支付、AI 集成、内容管理和变现功能。一切都是生产就绪的，并在实际应用中经过实战测试。"
+      },
+      {
+        "question": "使用这个模板能多快启动我的 SaaS？",
+        "answer": "您的第一个项目在学习模板功能时需要 3-5 天，但学习曲线很快就会有回报。掌握系统的客户现在只需 1-2 天就能启动完整的 SaaS 应用程序。模板处理所有复杂的基础设施，因此您可以专注于让产品独特的部分。"
+      },
+      {
+        "question": "这适合 AI 驱动的 SaaS 应用程序吗？",
+        "answer": "绝对适合！我们的模板包含全面的 AI SDK 集成，提供文本生成、图像创建和视频处理的工作示例。它兼容 OpenAI、Claude、Gemini、Grok、DeepSeek 和其他流行的 AI 模型。非常适合构建 AI 工具或内容生成平台。"
+      },
+      {
+        "question": "支持哪些支付方式和计费模式？",
+        "answer": "模板包含完整的 Stripe 集成，支持一次性付款、订阅、基于使用量的计费和自动续订。您可以立即开始变现。"
+      },
+      {
+        "question": "内容管理系统如何工作？",
+        "answer": "我们的内置 CMS 支持 Markdown 和富文本编辑、多语言内容、SEO 优化、付费墙保护和 AI 翻译。您可以通过具有基于角色的访问控制的直观管理后台管理文章、页面和高端内容。"
+      },
+      {
+        "question": "模板是否经过 SEO 优化？",
+        "answer": "是的！模板包含全面的 SEO 功能：自动元标签、结构化数据、XML 站点地图、OpenGraph 支持和性能优化。它采用 Next.js 最佳实践构建，提高搜索引擎可见性和更快的加载时间。"
+      },
+      {
+        "question": "您提供什么样的支持？",
+        "answer": "我们提供全面的文档、代码示例和邮件支持。我们还有一个公共 Discord 社区，您可以从其他开发者那里获得帮助并分享您的项目。"
+      },
+      {
+        "question": "如何管理定价卡片？",
+        "answer": "这是 Nexty 的一个关键卖点。您可以在后台管理定价卡片，包括添加、编辑和删除定价卡片，支持 AI 多语言翻译，消除复杂的多语言文件配置。"
+      }
+    ]
+  },
+  "CTA": {
+    "title": "现在就把创意转化为可交付的 3D 资产",
+    "description": "注册 Hitem3D，体验从灵感管理到模型交付的全流程自动化。无需专业建模团队，也能在数分钟内交付生产级作品。",
+    "button": "开始免费试用",
+    "trustText": "被全球游戏、美术与品牌团队信赖",
+    "features": {
+      "deploy": "🚀 3 分钟交付",
+      "production": "🔧 1536³ 精度",
+      "updates": "💎 一键优化",
+      "i18n": "🌍 API 与协作"
+    }
+  },
+  "Pricing": {
+    "badge": {
+      "label": "定价",
+      "text": "一次付费，终生更新"
+    },
+    "title": "几天而非几个月交付您的 SaaS",
+    "description": "使用我们经过实战验证的 SaaS 启动模板，跳过样板代码编写，专注于用户真正需要的功能。",
+    "annual": "年付",
+    "monthly": "月付",
+    "onetime": "一次性",
+    "saveTip": "节省 20%"
+  }
+}

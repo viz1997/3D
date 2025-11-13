@@ -778,7 +778,7 @@ export default function Model3DViewer({
   // Don't show default model when processing
   const isDefaultModel = !modelUrl && generationStatus !== "processing";
   // Only mount heavy model when idle (keep default demo eager to enhance first impression)
-  const allowHeavyMount = isIdle;
+  const allowHeavyMount = isIdle || !!modelUrl;
 
   // Ensure component only renders on client side to avoid SSR issues
   useEffect(() => {

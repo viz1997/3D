@@ -5,8 +5,11 @@
 
 import { serverUploadFile } from "@/lib/cloudflare/r2";
 import { generateR2Key } from "@/lib/cloudflare/r2-utils";
+import { extractGeometryStats } from "@/lib/geometry/stats";
 import AdmZip from "adm-zip";
 import crypto from "crypto";
+
+type TencentHunyuanVersion = "pro" | "rapid";
 
 interface TencentHunyuan3DParams {
   apiKey: string;
@@ -16,6 +19,12 @@ interface TencentHunyuan3DParams {
   textPrompt?: string;
   images?: string[]; // Base64 encoded images
   smartLowPoly?: boolean;
+  version?: TencentHunyuanVersion;
+  outputFormat?: string;
+  faceCount?: number;
+  generateType?: "Normal" | "LowPoly" | "Geometry" | "Sketch";
+  polygonType?: "triangle" | "quadrilateral";
+  enablePBR?: boolean;
 }
 
 interface TencentHunyuan3DResponse {
@@ -26,11 +35,6 @@ interface TencentHunyuan3DResponse {
     topology: string;
   };
   jobId?: string; // JobId for async tasks
-}
-
-interface TencentHunyuan3DSubmitResponse {
-  jobId: string;
-  requestId: string;
 }
 
 /**
@@ -95,7 +99,21 @@ function generateTencentSignature(
 export async function callTencentHunyuan3DApi(
   params: TencentHunyuan3DParams
 ): Promise<TencentHunyuan3DResponse> {
-  const { apiKey, secretKey, mode, modelType, textPrompt, images, smartLowPoly } = params;
+  const {
+    apiKey,
+    secretKey,
+    mode,
+    modelType,
+    textPrompt,
+    images,
+    smartLowPoly,
+    version: versionOverride,
+    outputFormat,
+    faceCount,
+    generateType,
+    polygonType,
+    enablePBR,
+  } = params;
 
   // Tencent Cloud API endpoint for Hunyuan 3D
   // Official documentation: https://cloud.tencent.com/document/product/1804/120838
@@ -103,9 +121,11 @@ export async function callTencentHunyuan3DApi(
   const baseUrl = "https://ai3d.tencentcloudapi.com";
   const service = "ai3d";
 
+  const version: TencentHunyuanVersion = versionOverride ?? "pro";
+
   // Action name according to official documentation
   // Reference: https://cloud.tencent.com/document/product/1804/120826
-  const action = "SubmitHunyuanTo3DJob";
+  const action = version === "rapid" ? "SubmitHunyuanTo3DRapidJob" : "SubmitHunyuanTo3DProJob";
 
   const timestamp = Math.floor(Date.now() / 1000);
   const region = "ap-guangzhou"; // Default region
@@ -124,20 +144,49 @@ export async function callTencentHunyuan3DApi(
       requestPayload.Prompt = textPrompt;
     }
   } else if (images && images.length > 0) {
-    // For image-to-3d, images should be passed as array
-    if (images.length === 1) {
-      requestPayload.ImageBase64 = images[0];
-    } else {
-      requestPayload.Images = images;
-    }
     if (mode === "multi-image-to-3d") {
-      requestPayload.MultiImage = true;
+      requestPayload.MultiViewImages = images
+        .filter((img) => !!img)
+        .map((img, index) => ({
+          View: ["front", "left", "right", "back"][index] || `view_${index + 1}`,
+          ImageBase64: img,
+        }));
+    } else {
+      requestPayload.ImageBase64 = images[0];
     }
   }
 
-  // Add model type and low poly settings
-  if (smartLowPoly !== undefined) {
-    requestPayload.LowPoly = smartLowPoly;
+  const resolvedEnablePBR = enablePBR ?? (modelType === "white" ? false : true);
+
+  if (version === "rapid") {
+    if (outputFormat) {
+      requestPayload.ResultFormat = outputFormat.toUpperCase();
+    }
+    requestPayload.EnablePBR = resolvedEnablePBR;
+  } else {
+    // Pro settings
+    if (faceCount) {
+      requestPayload.FaceCount = faceCount;
+    }
+    const resolvedGenerateType = generateType
+      ? generateType
+      : modelType === "white"
+        ? "Geometry"
+        : smartLowPoly
+          ? "LowPoly"
+          : "Normal";
+    requestPayload.GenerateType = resolvedGenerateType;
+    if (smartLowPoly && !generateType) {
+      requestPayload.GenerateType = "LowPoly";
+    }
+    if (polygonType) {
+      requestPayload.PolygonType = polygonType;
+    }
+    requestPayload.EnablePBR = resolvedEnablePBR;
+  }
+
+  if (smartLowPoly && version === "rapid") {
+    requestPayload.GenerateType = "LowPoly";
   }
 
   // Convert payload to JSON string
@@ -246,10 +295,9 @@ export async function callTencentHunyuan3DApi(
     const jobId = result.Response?.JobId || result.Response?.TaskId;
     if (jobId) {
       console.log("[Tencent Hunyuan] Job created:", jobId);
-      // Return JobId immediately so frontend can show progress and poll for status
-      // Frontend should call queryJobStatus to check progress
+      const jobPrefix = version === "rapid" ? "tencentRapid" : "tencentPro";
       return {
-        jobId,
+        jobId: `${jobPrefix}:${jobId}`,
         modelUrl: "", // Will be set after polling
         modelInfo: {
           faces: 0,
@@ -286,7 +334,8 @@ export async function callTencentHunyuan3DApi(
 export async function queryTencentHunyuanJobStatus(
   apiKey: string,
   secretKey: string,
-  jobId: string
+  jobId: string,
+  version: TencentHunyuanVersion = "pro"
 ): Promise<{
   status: string;
   modelUrl?: string;
@@ -298,7 +347,7 @@ export async function queryTencentHunyuanJobStatus(
   error?: string;
 }> {
   const service = "ai3d";
-  const action = "QueryHunyuanTo3DJob";
+  const action = version === "rapid" ? "QueryHunyuanTo3DRapidJob" : "QueryHunyuanTo3DProJob";
   const baseUrl = "https://ai3d.tencentcloudapi.com";
   const region = "ap-guangzhou";
   const timestamp = Math.floor(Date.now() / 1000);
@@ -707,6 +756,9 @@ async function processTencentHunyuanResult(result: any): Promise<TencentHunyuan3
     }
   }
 
+  // Extract geometry stats before upload
+  const geometryStats = extractGeometryStats(finalModelBuffer, fileExtension);
+
   // Upload model file to R2 (using the uniqueDir generated above)
   const r2Key = `${uniqueDir}/model.${fileExtension}`;
 
@@ -720,9 +772,9 @@ async function processTencentHunyuanResult(result: any): Promise<TencentHunyuan3
 
   // Extract model info if available
   const modelInfo = {
-    faces: result.Faces || result.faces || 0,
-    vertices: result.Vertices || result.vertices || 0,
-    topology: result.Topology || result.topology || result.Type || "Unknown",
+    faces: geometryStats?.faces ?? result.Faces ?? result.faces ?? 0,
+    vertices: geometryStats?.vertices ?? result.Vertices ?? result.vertices ?? 0,
+    topology: result.Topology || result.topology || (result.Type ? String(result.Type) : fileExtension.toUpperCase()),
   };
 
   return {

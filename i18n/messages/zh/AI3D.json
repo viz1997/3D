@@ -30,5 +30,6 @@
   "insufficientCredits": "积分不足",
   "generationSuccess": "3D模型生成成功！",
   "generationError": "生成3D模型失败，请重试",
-  "generationStarted": "3D模型生成已开始"
+  "generationStarted": "3D模型生成已开始",
+  "providerTripo": "Tripo 3D-V3.0"
 }

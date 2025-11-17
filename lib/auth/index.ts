@@ -3,13 +3,15 @@ import { siteConfig } from "@/config/site";
 import MagicLinkEmail from '@/emails/magic-link-email';
 import { UserWelcomeEmail } from "@/emails/user-welcome";
 import { db } from "@/lib/db";
-import { account, session, user, verification } from "@/lib/db/schema";
+import { account, creditLogs as creditLogsSchema, session, usage as usageSchema, user, verification } from "@/lib/db/schema";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { admin, anonymous, captcha, lastLoginMethod, magicLink, oneTap } from "better-auth/plugins";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { cookies } from "next/headers";
+
+const WELCOME_CREDITS = 20;
 
 export const auth = betterAuth({
   appName: siteConfig.name,
@@ -99,6 +101,44 @@ export const auth = betterAuth({
               console.log(`Welcome email sent to ${createdUser.email}`);
             } catch (error) {
               console.error('Failed to send welcome email:', error);
+            }
+          }
+
+          // Grant welcome credits
+          if (createdUser.id && WELCOME_CREDITS > 0) {
+            try {
+              await db.transaction(async (tx) => {
+                const updatedUsage = await tx
+                  .insert(usageSchema)
+                  .values({
+                    userId: createdUser.id,
+                    oneTimeCreditsBalance: WELCOME_CREDITS,
+                  })
+                  .onConflictDoUpdate({
+                    target: usageSchema.userId,
+                    set: {
+                      oneTimeCreditsBalance: sql`${usageSchema.oneTimeCreditsBalance} + ${WELCOME_CREDITS}`,
+                    },
+                  })
+                  .returning({
+                    oneTimeBalanceAfter: usageSchema.oneTimeCreditsBalance,
+                    subscriptionBalanceAfter: usageSchema.subscriptionCreditsBalance,
+                  });
+
+                const balances = updatedUsage[0];
+
+                await tx.insert(creditLogsSchema).values({
+                  userId: createdUser.id,
+                  amount: WELCOME_CREDITS,
+                  oneTimeBalanceAfter: balances?.oneTimeBalanceAfter ?? WELCOME_CREDITS,
+                  subscriptionBalanceAfter: balances?.subscriptionBalanceAfter ?? 0,
+                  type: 'welcome_bonus',
+                  notes: 'New user registration credits',
+                });
+              });
+              console.log(`Granted ${WELCOME_CREDITS} welcome credits to user ${createdUser.id}`);
+            } catch (error) {
+              console.error('Failed to grant welcome credits:', error);
             }
           }
         },

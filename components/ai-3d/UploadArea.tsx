@@ -9,6 +9,7 @@ interface UploadAreaProps {
   onUpload?: (file: File) => void;
   size?: "small" | "medium";
   className?: string;
+  previewUrl?: string | null;
 }
 
 export function UploadArea({
@@ -17,6 +18,7 @@ export function UploadArea({
   onUpload,
   size = "medium",
   className,
+  previewUrl,
 }: UploadAreaProps) {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -40,18 +42,30 @@ export function UploadArea({
       >
         <input
           type="file"
-          className="hidden"
+          className="sr-only"
           accept="image/*"
           onChange={handleFileChange}
         />
-        <Upload
-          className={cn(
-            iconSize,
-            "text-gray-500 group-hover:text-gray-400 mb-1.5"
-          )}
-        />
-        <span className="text-gray-400 text-xs">{label}</span>
-        {required && <span className="text-red-500 text-xs ml-1">*</span>}
+        {previewUrl ? (
+          <>
+            <img src={previewUrl} alt={`${label} preview`} className="absolute inset-0 h-full w-full object-cover rounded-lg" />
+            <div className="absolute inset-0 rounded-lg bg-black/40 flex flex-col items-center justify-center text-center px-3">
+              <span className="text-white text-xs font-medium">{label}</span>
+              <span className="text-[11px] text-gray-200 mt-1">{required ? "已上传（可点击更换）" : "点击更换图片"}</span>
+            </div>
+          </>
+        ) : (
+          <>
+            <Upload
+              className={cn(
+                iconSize,
+                "text-gray-500 group-hover:text-gray-400 mb-1.5"
+              )}
+            />
+            <span className="text-gray-400 text-xs">{label}</span>
+            {required && <span className="text-red-500 text-xs ml-1">*</span>}
+          </>
+        )}
       </label>
     </div>
   );

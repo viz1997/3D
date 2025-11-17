@@ -2,7 +2,7 @@
  * Calculate credits required based on generation parameters
  */
 
-export type ModelProvider = "tripo" | "tencent";
+export type ModelProvider = "tripo" | "tencentPro" | "tencentRapid";
 export type ModelType = "white" | "standard";
 export type GenerationMode = "text-to-3d" | "image-to-3d" | "multi-image-to-3d";
 
@@ -34,6 +34,21 @@ export interface GenerationParams {
  * - Low Poly with Texture: 10 | 25
  * - High-res PBR: 10 | 10
  */
+const TENCENT_BASE_COSTS: Record<GenerationMode, Record<ModelType, number>> = {
+  "text-to-3d": {
+    white: 15,
+    standard: 20,
+  },
+  "image-to-3d": {
+    white: 15,
+    standard: 20,
+  },
+  "multi-image-to-3d": {
+    white: 25,
+    standard: 30,
+  },
+};
+
 const CREDIT_COSTS: Record<
   ModelProvider,
   Record<GenerationMode, Record<ModelType, number>>
@@ -52,30 +67,20 @@ const CREDIT_COSTS: Record<
       standard: 30,
     },
   },
-  tencent: {
-    "text-to-3d": {
-      white: 15,
-      standard: 20,
-    },
-    "image-to-3d": {
-      white: 15,
-      standard: 20,
-    },
-    "multi-image-to-3d": {
-      white: 25,
-      standard: 30,
-    },
-  },
+  tencentPro: TENCENT_BASE_COSTS,
+  tencentRapid: TENCENT_BASE_COSTS,
 };
 
 const LOW_POLY_COSTS: Record<ModelProvider, number> = {
   tripo: 10,
-  tencent: 25,
+  tencentPro: 25,
+  tencentRapid: 25,
 };
 
 const PBR_COSTS: Record<ModelProvider, number> = {
   tripo: 10,
-  tencent: 10,
+  tencentPro: 10,
+  tencentRapid: 10,
 };
 
 export function calculateCredits(params: GenerationParams): number {
@@ -105,7 +110,12 @@ export function getCreditDescription(
   }[params.mode];
   const typeText =
     params.modelType === "white" ? "White Model" : "Standard Texture";
-  const providerText = params.provider === "tripo" ? "Tripo" : "Tencent";
+  const providerText =
+    params.provider === "tripo"
+      ? "Tripo"
+      : params.provider === "tencentPro"
+        ? "Tencent Pro"
+        : "Tencent Rapid";
 
   return `${modeText} - ${typeText} (${providerText}): ${credits} credits`;
 }

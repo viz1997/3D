@@ -15,6 +15,9 @@
   "frontViewRequired": "Front view is required, others are optional",
   "selectProvider": "Select Provider",
   "tencentHunyuanPro": "Tencent Hunyuan Pro",
+  "tencentHunyuanRapid": "Tencent Hunyuan Rapid",
+  "tencentProFormatNotice": "Pro version outputs GLB only",
+  "tencentRapidFormatNotice": "Rapid version supports custom output formats",
   "modelSelection": "Model Selection",
   "standardTexture": "Standard Texture",
   "whiteModel": "White Model",
@@ -30,5 +33,7 @@
   "insufficientCredits": "Insufficient credits",
   "generationSuccess": "3D model generated successfully!",
   "generationError": "Failed to generate 3D model. Please try again.",
-  "generationStarted": "3D model generation started"
+  "generationStarted": "3D model generation started",
+  "generationSubmitting": "Submitting task, please wait...",
+  "providerTripo": "Tripo 3D-V3.0"
 }

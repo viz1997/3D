@@ -7,6 +7,7 @@ import { Canvas, useLoader } from "@react-three/fiber";
 import {
   AlertCircle,
   Box,
+  Download,
   Grid3x3,
   Info,
   Lightbulb,
@@ -1069,6 +1070,30 @@ export default function Model3DViewer({
     }
   }, []);
 
+  const handleDownloadModel = useCallback(() => {
+    if (!modelUrl) return;
+
+    const inferFilename = (url: string) => {
+      try {
+        const urlObj = new URL(url, window.location.origin);
+        const pathname = urlObj.pathname;
+        const raw = pathname.substring(pathname.lastIndexOf("/") + 1) || "ai3d-model";
+        return raw.includes(".") ? raw : `${raw}.glb`;
+      } catch {
+        const segments = url.split("/");
+        const fallback = segments[segments.length - 1] || "ai3d-model.glb";
+        return fallback.includes(".") ? fallback : `${fallback}.glb`;
+      }
+    };
+
+    const link = document.createElement("a");
+    link.href = modelUrl;
+    link.download = inferFilename(modelUrl);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, [modelUrl]);
+
   return (
     <div
       className={cn(
@@ -1321,11 +1346,11 @@ export default function Model3DViewer({
                 <pointLight position={[0, 10, 0]} intensity={0.35} />
 
                 {isDefaultModel ? (
-                  <DefaultModel
+                  <DefaultModelWithFile
                     autoRotate={isAutoRotating}
                     defaultModelUrl={defaultModelUrl}
                     onBoundsComputed={handleModelBoundsComputed}
-                    modelScaleFactor={modelScaleFactor * 1.35}
+                    modelScaleFactor={modelScaleFactor}
                   />
                 ) : modelUrl ? (
                   <ModelErrorBoundary
@@ -1556,6 +1581,18 @@ export default function Model3DViewer({
                 title="透明背景"
               >
                 <Sparkles className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="flex items-center gap-2 border-l border-[#2d3548] pl-3">
+              <Button
+                className="h-9 px-4 bg-white text-black hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleDownloadModel}
+                disabled={!modelUrl || generationStatus !== "completed"}
+                title={modelUrl ? "下载当前模型" : "生成模型后可下载"}
+              >
+                <Download className="h-4 w-4" />
+
               </Button>
             </div>
           </div>

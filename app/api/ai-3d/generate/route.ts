@@ -289,6 +289,9 @@ async function startTripoGeneration({
     payload.texture = true;
     payload.pbr = true;
     payload.texture_quality = "standard";
+  } else {
+    payload.texture = false;
+    payload.pbr = false;
   }
 
   if (taskType === "text_to_model") {

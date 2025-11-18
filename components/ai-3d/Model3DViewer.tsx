@@ -30,6 +30,15 @@ import * as THREE from "three";
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js";
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js";
 
+// Declare model-viewer as a valid JSX element
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      "model-viewer": DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement> & Record<string, any>;
+    }
+  }
+}
+
 interface Model3DViewerProps {
   modelUrl?: string;
   className?: string;
@@ -131,14 +140,6 @@ type ModelViewerElement = HTMLElement & {
   resetTurntableRotation?: () => void;
   jumpCameraToGoal?: () => void;
 };
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      "model-viewer": DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement> & Record<string, any>;
-    }
-  }
-}
 
 type ModelBoundsCallback = (center: THREE.Vector3, radius: number) => void;
 
@@ -1228,6 +1229,7 @@ export default function Model3DViewer({
           isModelViewerEngine ? (
             isModelViewerScriptLoaded ? (
               effectiveModelSrc ? (
+                // @ts-ignore - model-viewer is a valid web component
                 <model-viewer
                   key={`${retryKey}-${effectiveModelSrc}`}
                   ref={setModelViewerRef as any}
@@ -1318,8 +1320,7 @@ export default function Model3DViewer({
 
                 // Ensure reasonable color pipeline
                 // three r181 supports SRGBColorSpace on WebGLRenderer
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
+                // @ts-ignore - outputColorSpace is available in three.js r181+
                 gl.outputColorSpace = THREE.SRGBColorSpace;
                 gl.toneMapping = THREE.ACESFilmicToneMapping;
                 gl.toneMappingExposure = 1.0;

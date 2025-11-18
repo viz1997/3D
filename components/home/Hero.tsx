@@ -4,7 +4,7 @@ import Model3DViewer from "@/components/ai-3d/Model3DViewer";
 import FeatureBadge from "@/components/shared/FeatureBadge";
 import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/config/site";
-import { Cube, Download, Settings, Share2, Sparkles, Zap } from "lucide-react";
+import { Box as Cube, Download, Settings, Share2, Sparkles, Zap } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";

@@ -2,24 +2,24 @@
   "Hero": {
     "badge": {
       "label": "NEW",
-      "text": "全新 AI 3D 实时生成工作台",
+      "text": "免费 AI 3D 模型生成器 - 1536³ 超高精度",
       "href": "/ai-3d"
     },
-    "title": "Hitem3D · AI 驱动的 3D 内容生产平台",
-    "description": "从灵感捕捉、素材上传，到 3 分钟内交付 1536³ 高精度模型，Hitem3D 为创作者、设计团队与品牌提供一站式 3D 内容工作流。支持文字/图片生成、实时预览、多人协作与多格式导出，让 3D 创作像编辑图片一样简单。",
-    "getStarted": "立即体验",
+    "title": "最佳免费 AI 3D 模型生成器 | 一张图生成模型仅需 3 分钟",
+    "description": "用 Hitem3D 的免费 AI 3D 生成器，一张图 3 分钟快速生成生产级 3D 模型。1536³ 超高精度（比竞品多 50% 细节）、无需建模经验、支持 GLB/OBJ/STL/FBX 多格式导出，立即免费开始。",
+    "getStarted": "免费开始",
     "getStartedLink": "/ai-3d",
     "viewDocs": "查看 API 文档",
     "viewDocsLink": "/docs",
-    "previewText": "实时协同 · 3 分钟交付 · 1536³ 精度"
+    "previewText": "免费工具 · 3 分钟快速生成 · 1536³ 超高精度"
   },
   "Features": {
     "badge": {
       "label": "核心功能",
-      "text": "面向专业创作者的 3D 生产力"
+      "text": "为什么选择 Hitem3D 最佳免费 AI 3D 生成器"
     },
-    "title": "以 AI 为核心的全流程 3D 内容生产",
-    "description": "Hitem3D 将生成式 AI、智能优化与开放生态融为一体，帮助团队在数分钟内完成从创意到可交付模型的全过程，显著缩短制作周期并提升细节表现。",
+    "title": "专业级 AI 3D 生成 - 1536³ 精度、零学习成本",
+    "description": "Hitem3D 免费 AI 3D 模型生成器融合专有重建算法与 1536³ 超高精度。无需 3D 建模经验，图片一键生成生产级模型仅需 3 分钟。支持 GLB、OBJ、STL、FBX 等多格式导出，为游戏、产品设计、3D 打印赋能。",
     "moreFeatures": {
       "title": "探索完整能力图谱",
       "description": "查看即将上线的协作、资产管理与工作流自动化功能，了解 Hitem3D 如何持续迭代以匹配专业团队的生产需求。",
@@ -217,15 +217,15 @@
     ]
   },
   "CTA": {
-    "title": "现在就把创意转化为可交付的 3D 资产",
-    "description": "注册 Hitem3D，体验从灵感管理到模型交付的全流程自动化。无需专业建模团队，也能在数分钟内交付生产级作品。",
-    "button": "开始免费试用",
-    "trustText": "被全球游戏、美术与品牌团队信赖",
+    "title": "试试最佳免费 AI 3D 模型生成器 - 无需信用卡",
+    "description": "现在就开始生成高精度 3D 模型。Hitem3D 免费工具零建模基础也能用。上传图片，3 分钟得生产级模型，支持任意格式导出。",
+    "button": "立即免费开始",
+    "trustText": "被全球游戏引擎工作室、产品设计团队、3D 打印专业人士信赖",
     "features": {
-      "deploy": "🚀 3 分钟交付",
-      "production": "🔧 1536³ 精度",
-      "updates": "💎 一键优化",
-      "i18n": "🌍 API 与协作"
+      "deploy": "🚀 3 分钟快速交付",
+      "production": "🔧 1536³ 超高精度",
+      "updates": "💎 多格式一键导出",
+      "i18n": "🌍 企业 API 方案"
     }
   },
   "Pricing": {

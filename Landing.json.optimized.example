@@ -1,0 +1,327 @@
+{
+  "_meta": {
+    "version": "2.0",
+    "optimizationNotes": "SEO-optimized version with improved header hierarchy, keyword distribution, and schema support",
+    "lastUpdated": "2024-11-19",
+    "seoFocus": ["AI 3D model generator", "image to 3D", "text to 3D", "free 3D generation", "1536³ resolution"]
+  },
+  "Hero": {
+    "badge": {
+      "label": "POWERED BY AI",
+      "text": "1536³ Ultra-High Resolution - 50% More Detail Than Competitors",
+      "href": "/ai-3d"
+    },
+    "title": "Create Production-Ready 3D Models from Text or Images",
+    "subtitle": "The Free AI 3D Model Generator for Professionals",
+    "description": "Hitem3D is a free AI 3D model generator that transforms images and text into ultra-high resolution 3D assets in just 3 minutes. With proprietary 1536³ resolution technology - 50% higher precision than competitors - you can create production-ready 3D models without 3D modeling skills.",
+    "keyHighlights": [
+      "📸 Image-to-3D: Single image to complete 3D model",
+      "✍️ Text-to-3D: AI understands your creative vision",
+      "⚡ 3-Minute Generation: From upload to download",
+      "🎨 1536³ Resolution: 50% more geometric detail",
+      "📦 Multiple Export Formats: GLB, OBJ, STL, FBX, USDZ",
+      "🔗 Open API: Enterprise integration ready"
+    ],
+    "getStarted": "Start Creating Free",
+    "getStartedLink": "/ai-3d",
+    "viewDocs": "View API Docs",
+    "viewDocsLink": "/docs",
+    "previewText": "1536³ Ultra-High Resolution · 3-Minute Fast Generation · No Modeling Skills Required"
+  },
+  "Features": {
+    "badge": {
+      "label": "ADVANCED FEATURES",
+      "text": "Professional-Grade AI 3D Generation Tools"
+    },
+    "sectionTitle": "Advanced AI 3D Generation Features",
+    "subtitle": "Everything you need to create professional 3D assets",
+    "description": "Hitem3D combines cutting-edge AI, intelligent optimization, and an open platform to help teams transform creative vision into production-ready 3D models in minutes.",
+    "mainFeatures": [
+      {
+        "id": "image-to-3d",
+        "rank": 1,
+        "title": "Ultra-High Resolution Image-to-3D",
+        "subtitle": "1536³ Single Image 3D Reconstruction",
+        "shortDescription": "Transform any image into a detailed 3D model with industry-leading 1536³ resolution",
+        "description": "Generate complete 3D models from a single reference image with our proprietary 1536³ resolution engine. Achieve 50% higher geometric precision than traditional 1024³ tools, with automatic detail completion for hidden surfaces.",
+        "details": [
+          {
+            "title": "1536³ Ultra-High Resolution",
+            "description": "50% higher precision than industry standard 1024³ solutions. Geometric detail preservation is unmatched for professional production use."
+          },
+          {
+            "title": "3-Minute Fast Generation",
+            "description": "Complete 3D reconstruction in 180 seconds from upload to download. Zero waiting for high-quality results."
+          },
+          {
+            "title": "Single Image Reconstruction",
+            "description": "AI automatically infers hidden surfaces and details from one reference image. No multi-angle photography needed."
+          }
+        ],
+        "keywords": ["image to 3d", "3d reconstruction", "1536 resolution", "single image 3d"],
+        "images": ["/images/features/image-to-3d.webp"]
+      },
+      {
+        "id": "text-to-3d",
+        "rank": 2,
+        "title": "AI-Powered Text-to-3D Generation",
+        "subtitle": "Create 3D Models from Text Descriptions",
+        "shortDescription": "Describe your vision in text and let AI transform it into a complete 3D model",
+        "description": "Unleash creative freedom with our semantic text-to-3D engine. Describe any object or character in natural language and watch as AI generates a detailed 3D model matching your creative intent.",
+        "details": [
+          {
+            "title": "Natural Language Processing",
+            "description": "AI deeply understands your text descriptions, artistic references, and design terminology to accurately interpret your vision."
+          },
+          {
+            "title": "Rapid Creative Iteration",
+            "description": "Get preview models in 30 seconds. Iterate and refine your creative direction without the traditional 3D modeling bottleneck."
+          },
+          {
+            "title": "Professional-Grade Output",
+            "description": "Generated models feature production-ready geometry, realistic proportions, and optimized topology for immediate use."
+          }
+        ],
+        "keywords": ["text to 3d", "ai 3d generation", "text based 3d creation", "describe to 3d"],
+        "images": ["/images/features/text-to-3d.webp"]
+      },
+      {
+        "id": "export-optimization",
+        "rank": 3,
+        "title": "Multi-Format Export & Smart Optimization",
+        "subtitle": "Production-Ready Asset Delivery",
+        "shortDescription": "Export to any format with automatic optimization for your target platform",
+        "description": "Flexible export options meet every production need. Automatic topology cleanup, LOD generation, and format-specific optimization ensure models are ready for immediate deployment.",
+        "details": [
+          {
+            "title": "Wide Format Support",
+            "description": "GLB, OBJ, STL, FBX, USDZ. Choose the format that best fits your pipeline - game engines, 3D printing, web, or AR/VR."
+          },
+          {
+            "title": "Automatic Optimization",
+            "description": "AI-powered polygon reduction, normal map generation, and texture compression maintain visual fidelity while optimizing for your target platform."
+          },
+          {
+            "title": "Ready-to-Use Assets",
+            "description": "All exports include high-poly and low-poly variants, pre-baked textures, and proper material assignments. Zero post-processing needed."
+          }
+        ],
+        "keywords": ["3d export formats", "glb obj stl fbx", "low poly optimization", "3d asset export"],
+        "images": ["/images/features/export.webp"]
+      },
+      {
+        "id": "api-platform",
+        "rank": 4,
+        "title": "Open API & Enterprise Platform",
+        "subtitle": "Enterprise-Grade Integration",
+        "shortDescription": "Integrate Hitem3D into your workflow with our comprehensive API and SDK",
+        "description": "Built for enterprise teams. Our RESTful API, webhooks, and management dashboard enable seamless integration with your existing content production pipeline.",
+        "details": [
+          {
+            "title": "Complete REST API",
+            "description": "Upload, generate, query status, and retrieve assets through a simple, well-documented API. SDK available for popular languages."
+          },
+          {
+            "title": "Batch Processing",
+            "description": "Process hundreds or thousands of images automatically. Queue management, progress tracking, and error handling built-in."
+          },
+          {
+            "title": "Enterprise Collaboration",
+            "description": "Shared workspaces, role-based permissions, version control, and audit logs for team environments."
+          }
+        ],
+        "keywords": ["3d api", "batch processing api", "enterprise 3d generation", "restful api 3d"],
+        "images": ["/images/features/api.webp"]
+      }
+    ],
+    "moreFeatures": {
+      "title": "Explore Complete Feature Set",
+      "description": "Coming soon: Multi-person collaboration, Asset library, Workflow automation, and more advanced tools",
+      "button": "View Product Roadmap"
+    }
+  },
+  "HowItWorks": {
+    "title": "How to Generate 3D Models in 3 Easy Steps",
+    "subtitle": "From Image to Production-Ready Asset",
+    "description": "Hitem3D simplifies the 3D creation process for everyone - no prior modeling experience required.",
+    "steps": [
+      {
+        "stepNumber": 1,
+        "title": "Upload Your Image",
+        "description": "Select or drag-drop your reference image (JPG, PNG, WebP). No minimum quality requirements - our AI handles various reference types.",
+        "icon": "Upload",
+        "timeEstimate": "Less than 1 minute"
+      },
+      {
+        "stepNumber": 2,
+        "title": "AI Generates Your Model",
+        "description": "Our 1536³ resolution engine processes your image. Get a preview in 30 seconds, or the complete high-resolution model in just 3 minutes.",
+        "icon": "Zap",
+        "timeEstimate": "3 minutes maximum"
+      },
+      {
+        "stepNumber": 3,
+        "title": "Download & Deploy",
+        "description": "Export in your preferred format (GLB, OBJ, STL, FBX, USDZ). Models are immediately ready for game engines, 3D printing, web platforms, or any workflow.",
+        "icon": "Download",
+        "timeEstimate": "Instant"
+      }
+    ]
+  },
+  "UseCases": {
+    "badge": {
+      "label": "USE CASES",
+      "text": "Transform Your Workflow Across Every Industry"
+    },
+    "title": "AI 3D Generation for Multiple Industries",
+    "subtitle": "Professional applications from game development to e-commerce",
+    "description": "Whether it's game development, product design, 3D printing, or virtual display, Hitem3D's AI 3D model generator can meet your production needs.",
+    "cases": [
+      {
+        "id": "game-development",
+        "title": "Game Development",
+        "description": "Quickly generate game props, character models, and scene elements with high-resolution 3D assets. Support multiple format exports (FBX, OBJ, GLB) for direct import into Unity and Unreal. Significantly shorten game development cycles.",
+        "image": "/placeholder.webp",
+        "icon": "Gamepad2",
+        "keywords": ["game 3d assets", "game prop generation", "character 3d models", "game development 3d"],
+        "relatedArticle": "/blogs/game-development-3d-assets"
+      },
+      {
+        "id": "product-design",
+        "title": "Product Design",
+        "description": "Transform product concepts into high-fidelity 3D models for design validation, client presentations, and rapid prototyping. Professional-grade rendering with optimized topology ensures presentation-quality visuals.",
+        "image": "/placeholder.webp",
+        "icon": "Box",
+        "keywords": ["product 3d visualization", "design 3d models", "product prototype 3d", "product design 3d"],
+        "relatedArticle": "/blogs/product-design-3d-workflow"
+      },
+      {
+        "id": "3d-printing",
+        "title": "3D Printing",
+        "description": "Generate 3D models optimized for 3D printing with automatic topology cleanup and STL export. AI ensures printable geometry with minimal supports needed.",
+        "image": "/placeholder.webp",
+        "icon": "Printer",
+        "keywords": ["3d printing models", "stl file generation", "3d printable models", "print-ready 3d"],
+        "relatedArticle": "/blogs/3d-printing-model-optimization"
+      },
+      {
+        "id": "virtual-display",
+        "title": "Virtual Display",
+        "description": "Create interactive 3D display content for e-commerce product pages, real estate virtual tours, and educational visualizations. Real-time browser-based preview enhances user engagement.",
+        "image": "/placeholder.webp",
+        "icon": "Monitor",
+        "keywords": ["ecommerce 3d visualization", "real estate 3d tour", "web 3d display", "interactive 3d models"],
+        "relatedArticle": "/blogs/ecommerce-3d-visualization"
+      }
+    ]
+  },
+  "Testimonials": {
+    "badge": {
+      "label": "TESTIMONIALS"
+    },
+    "title": "What Industry Professionals Say",
+    "subtitle": "Real feedback from game developers, designers, and enterprises",
+    "description": "Trusted by creative professionals and enterprises worldwide",
+    "items": [
+      {
+        "quote": "Hitem3D reduced our 3D asset creation time from days to minutes. The 1536³ resolution quality is outstanding.",
+        "author": "John Chen",
+        "role": "Game Director",
+        "company": "Indie Game Studio",
+        "avatar": "/avatars/john.jpg"
+      }
+    ]
+  },
+  "FAQ": {
+    "title": "Frequently Asked Questions About AI 3D Model Generation",
+    "subtitle": "Everything you need to know about Hitem3D",
+    "description": "Common questions about Hitem3D's AI 3D generation capabilities, pricing, and integration",
+    "items": [
+      {
+        "question": "Is Hitem3D free to use?",
+        "answer": "Yes! Hitem3D offers a free tier with daily credits for image-to-3D and text-to-3D generation. No credit card required. Upgrade to paid plans for higher volume and priority processing.",
+        "category": "pricing"
+      },
+      {
+        "question": "What file formats can I export 3D models in?",
+        "answer": "Hitem3D supports multiple 3D formats: GLB (web-optimized), OBJ (universal), STL (3D printing), FBX (game engines), and USDZ (AR/iOS). Choose based on your target platform - game engines, 3D printing, web, or AR/VR applications.",
+        "category": "features"
+      },
+      {
+        "question": "How long does it take to generate a 3D model?",
+        "answer": "Preview models render in 30 seconds. Full 1536³ ultra-high resolution models complete in approximately 3 minutes from upload to download. Processing time may vary based on image complexity.",
+        "category": "performance"
+      },
+      {
+        "question": "Can I use generated models commercially?",
+        "answer": "Yes! All 3D models generated via Hitem3D are fully yours. You can use, modify, and sell them commercially. See our terms of service for complete details.",
+        "category": "licensing"
+      },
+      {
+        "question": "What's the difference between 1536³ and 1024³ resolution?",
+        "answer": "1536³ resolution provides 50% higher geometric precision with more detailed surface information and better texture quality. It's ideal for close-up views, professional rendering, and 3D printing applications.",
+        "category": "technical"
+      },
+      {
+        "question": "Do I need 3D modeling skills to use Hitem3D?",
+        "answer": "No! Hitem3D is designed for creators of all skill levels. Simply upload an image or describe your vision in text. Our AI handles all the complex 3D generation work automatically.",
+        "category": "general"
+      },
+      {
+        "question": "Can I integrate Hitem3D with my existing workflow?",
+        "answer": "Absolutely! Our comprehensive RESTful API allows seamless enterprise integration. Features include batch processing, webhooks, queue management, and detailed documentation. SDK available for popular programming languages.",
+        "category": "integration"
+      },
+      {
+        "question": "What image formats and specifications are supported?",
+        "answer": "Supported formats: JPG, PNG, WebP. Minimum recommended resolution: 512x512px, though the AI can work with various reference types. Higher quality reference images typically result in better 3D models.",
+        "category": "technical"
+      },
+      {
+        "question": "Is there a limit to how many models I can generate?",
+        "answer": "Free tier includes daily credits. Paid plans offer higher generation limits with flexible usage-based billing. Enterprise plans include unlimited generation for large-scale production needs.",
+        "category": "pricing"
+      }
+    ]
+  },
+  "CTA": {
+    "title": "Start Creating Professional 3D Models Today",
+    "subtitle": "Free AI 3D Model Generator - No Credit Card Required",
+    "description": "Transform your creative vision into production-ready 3D assets in minutes. Join thousands of game developers, designers, and enterprises using Hitem3D.",
+    "button": "Start Creating Free",
+    "buttonLink": "/ai-3d",
+    "trustText": "Trusted by game developers, designers, and enterprises worldwide",
+    "features": {
+      "deploy": "🚀 3-Minute Generation",
+      "production": "🔧 1536³ Ultra-High Resolution",
+      "updates": "💎 Multiple Export Formats",
+      "i18n": "🌍 Open API & Integration"
+    }
+  },
+  "Pricing": {
+    "badge": {
+      "label": "PRICING",
+      "text": "Flexible Plans for Every Creator"
+    },
+    "title": "Simple, Transparent Pricing",
+    "subtitle": "Start free, scale as you grow",
+    "description": "Choose the plan that fits your 3D generation needs. All plans include full access to image-to-3D and text-to-3D features.",
+    "annual": "Annual",
+    "monthly": "Monthly",
+    "onetime": "One-Time",
+    "saveTip": "Save 20%"
+  },
+  "SeoMetadata": {
+    "pageTitle": "Free AI 3D Model Generator - Create 3D Assets from Images in Minutes",
+    "metaDescription": "Create production-ready 3D models from text or images with Hitem3D's free AI 3D generator. 1536³ ultra-high resolution, 3-minute generation, no skills required. Try free today!",
+    "canonicalUrl": "https://hitem3d.com",
+    "ogImage": "/og-image.png",
+    "schemaMarkup": {
+      "softwareApplication": true,
+      "faqPage": true,
+      "howTo": true,
+      "breadcrumbList": true,
+      "organization": true
+    }
+  }
+}

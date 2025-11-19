@@ -9,12 +9,17 @@
   "uploadImage": "画像をアップロード",
   "imageFormatHint": "jpg/jpeg/png/webpをサポート、最大10MB",
   "frontView": "正面図",
+  "sideView": "側面図",
   "backView": "背面図",
+  "topView": "上面図",
   "leftView": "左側図",
   "rightView": "右側図",
   "frontViewRequired": "正面図は必須、その他は任意",
   "selectProvider": "プロバイダーを選択",
   "tencentHunyuanPro": "Tencent Hunyuan Pro",
+  "tencentHunyuanRapid": "Tencent Hunyuan Rapid",
+  "tencentProFormatNotice": "Pro版はGLBのみ出力",
+  "tencentRapidFormatNotice": "Rapid版はカスタム出力形式をサポート",
   "modelSelection": "モデル選択",
   "standardTexture": "標準テクスチャ",
   "whiteModel": "白モデル",
@@ -30,5 +35,7 @@
   "insufficientCredits": "クレジット不足",
   "generationSuccess": "3Dモデルの生成に成功しました！",
   "generationError": "3Dモデルの生成に失敗しました。もう一度お試しください",
-  "generationStarted": "3Dモデルの生成を開始しました"
+  "generationStarted": "3Dモデルの生成を開始しました",
+  "generationSubmitting": "タスクを送信中、お待ちください...",
+  "providerTripo": "Tripo 3D-V3.0"
 }

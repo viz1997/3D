@@ -250,7 +250,7 @@
       },
       {
         "question": "How long does it take to generate a 3D model with AI?",
-        "answer": "Most 3D models are generated in 3-5 minutes. Simple objects may take as little as 2 minutes, while highly detailed models might take up to 8 minutes. This is dramatically faster than traditional 3D modeling - a complex mecha model that would take a senior modeler 4-5 days can be created in just 3 minutes with our AI. You can monitor generation progress in real-time."
+        "answer": "If the model is simple, it can be generated in a few seconds; for more complex cases, it may take a few minutes depending on the complexity."
       },
       {
         "question": "What file formats can I export AI-generated 3D models to?",
@@ -275,10 +275,6 @@
       {
         "question": "What are white models and when should I use them?",
         "answer": "White models are untextured 3D meshes - pure geometry without colors or materials. They're ideal for: 1) 3D printing (where you don't need textures), 2) Manual texturing in Blender/Maya, 3) Base meshes for custom material work, 4) Clean product design references. Our white model generation includes automatic topology cleanup and ensures watertight geometry for reliable 3D printing."
-      },
-      {
-        "question": "Is there an API for integrating AI 3D generation into my application?",
-        "answer": "Yes! AI 3D Model offers a comprehensive RESTful API with SDKs for Python, JavaScript, and Node.js. Perfect for integrating AI 3D generation into game pipelines, e-commerce platforms, or custom applications. Features include batch processing, webhook notifications, and priority queues. Enterprise plans include dedicated support and custom deployment options. View our API documentation for integration guides."
       },
       {
         "question": "How accurate are AI-generated 3D models compared to manual modeling?",

@@ -80,15 +80,6 @@
           "title": "Support",
           "links": [
             {
-              "name": "Docs",
-              "href": "https://docs.nexty.dev/docs",
-              "target": "_blank"
-            },
-            {
-              "name": "Roadmap",
-              "href": "https://nexty.dev/roadmap"
-            },
-            {
               "href": "mailto:hi@nexty.dev",
               "name": "Contact Us"
             }

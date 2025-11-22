@@ -306,6 +306,11 @@
       "i18n": "🌍 API 與企業解決方案"
     }
   },
+  "ModelGallery": {
+    "title": "高保真材质合成引擎",
+    "description": "专业级纹理生成，尖端AI驱动。创建令人惊叹的PBR材质，呈现无与伦比的表面细节、无缝拼接、智能风格迁移——从概念到成品资产，只需几秒。",
+    "downloadButton": "下载模型"
+  },
   "Pricing": {
     "badge": {
       "label": "定價方案",

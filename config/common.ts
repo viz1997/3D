@@ -4,13 +4,11 @@ export const ADMIN_UPLOAD_IMAGE_PATH = "admin-uploads-images";
 
 // Home showcase models (only two entries will be displayed).
 // Replace `modelUrl` to switch the showcased models without touching components.
+// Model showcase configuration (technical parameters only)
+// Text content is managed through i18n/messages/{locale}/Landing.json -> ModelGallery
 export const TEXTURE_SHOWCASE_CARDS = [
   {
     id: "texture-showcase-1",
-    title: "",
-    subtitle: "高保真材质合成引擎",
-    description:
-      "专业级纹理生成，尖端AI驱动。创建令人惊叹的PBR材质，呈现无与伦比的表面细节、无缝拼接、智能风格迁移——从概念到成品资产，只需几秒。",
     variants: [
       {
         id: "texture-1",
@@ -23,10 +21,6 @@ export const TEXTURE_SHOWCASE_CARDS = [
   },
   {
     id: "texture-showcase-2",
-    title: "",
-    subtitle: "高保真材质合成引擎",
-    description:
-      "专业级纹理生成，尖端AI驱动。创建令人惊叹的PBR材质，呈现无与伦比的表面细节、无缝拼接、智能风格迁移——从概念到成品资产，只需几秒。",
     variants: [
       {
         id: "texture-2",

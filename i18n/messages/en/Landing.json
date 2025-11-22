@@ -292,11 +292,16 @@
     "button": "Try Free AI 3D Generator",
     "trustText": "Trusted by game studios, product designers, and 3D printing professionals in 50+ countries. SOC 2 Type II Certified. GDPR Compliant.",
     "features": {
-      "deploy": "🚀 3-Minute Generation",
+      "deploy": "🚀 Fast Generation",
       "production": "🔧 1536³ Ultra-High Resolution",
       "updates": "💎 Multiple Export Formats",
       "i18n": "🌍 API & Enterprise Solutions"
     }
+  },
+  "ModelGallery": {
+    "title": "High-Fidelity Material Synthesis Engine",
+    "description": "Professional-grade texture generation powered by cutting-edge AI. Create stunning PBR materials with unmatched surface detail, seamless tiling, and intelligent style transfer—from concept to production-ready asset in seconds.",
+    "downloadButton": "Download Model"
   },
   "Pricing": {
     "badge": {

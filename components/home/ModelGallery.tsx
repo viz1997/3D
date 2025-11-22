@@ -3,6 +3,7 @@
 import { TEXTURE_SHOWCASE_CARDS } from "@/config/common";
 import { Download, Loader2 } from "lucide-react";
 import dynamic from "next/dynamic";
+import { useTranslations } from "next-intl";
 
 const LazyModel3DViewer = dynamic(() => import("@/components/ai-3d/Model3DViewer"), {
   ssr: false,
@@ -27,6 +28,7 @@ type GalleryCardProps = {
 };
 
 const GalleryCard = ({ card, animationDelay = 0, className = "", onDownload }: GalleryCardProps) => {
+  const t = useTranslations("Landing.ModelGallery");
   const primaryVariant = card.variants[0];
 
   const handleDownload = (e: React.MouseEvent) => {
@@ -61,7 +63,7 @@ const GalleryCard = ({ card, animationDelay = 0, className = "", onDownload }: G
           onClick={handleDownload}
         >
           <Download className="w-4 h-4" />
-          下载模型
+          {t("downloadButton")}
         </button>
       </div>
     </div>
@@ -69,7 +71,7 @@ const GalleryCard = ({ card, animationDelay = 0, className = "", onDownload }: G
 };
 
 export default function ModelGallery({ cards = TEXTURE_SHOWCASE_CARDS }: { cards?: TextureCard[] }) {
-  const firstCard = cards[0];
+  const t = useTranslations("Landing.ModelGallery");
 
   const handleDownload = async (modelUrl: string, fileName: string) => {
     console.log('handleDownload called with:', { modelUrl, fileName });
@@ -116,19 +118,14 @@ export default function ModelGallery({ cards = TEXTURE_SHOWCASE_CARDS }: { cards
     <section id="gallery" className="relative px-4 pb-20">
       <div className="mx-auto max-w-7xl space-y-12">
         {/* 顶部文案 */}
-        {firstCard && (
-          <div className="flex flex-col items-center gap-4 text-center">
-            <h2 className="uppercase tracking-wider font-semibold font-mono bg-clip-text text-transparent bg-gradient-to-r from-green-400 to-green-600 text-lg">
-              {firstCard.title}
-            </h2>
-            <p className="text-balance text-2xl md:text-3xl font-semibold text-foreground">
-              {firstCard.subtitle}
-            </p>
-            <p className="text-balance text-lg text-muted-foreground max-w-4xl mx-auto">
-              {firstCard.description}
-            </p>
-          </div>
-        )}
+        <div className="flex flex-col items-center gap-4 text-center">
+          <p className="text-balance text-2xl md:text-3xl font-semibold text-foreground">
+            {t("title")}
+          </p>
+          <p className="text-balance text-lg text-muted-foreground max-w-4xl mx-auto">
+            {t("description")}
+          </p>
+        </div>
 
         {/* 模型展示 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">

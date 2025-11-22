@@ -1,9 +1,9 @@
 {
   "LanguageDetection": {
-    "title": "语言建议",
-    "description": "检测到你的浏览器语言和当前语言不一样，你随时都可切换语言。",
-    "countdown": "将在 {countdown} 秒后关闭",
-    "switchTo": "切换到"
+    "title": "語言建議",
+    "description": "檢測到您的瀏覽器語言和當前語言不一樣，您隨時都可切換語言。",
+    "countdown": "將在 {countdown} 秒後關閉",
+    "switchTo": "切換到"
   },
   "Header": {
     "links": [
@@ -13,53 +13,53 @@
       },
       {
         "id": "pricing",
-        "name": "定价",
+        "name": "定價",
         "href": "/#pricing"
       }
     ]
   },
   "Footer": {
-    "Copyright": "版权所有 © {year} {name} 保留所有权利。",
-    "About": "关于",
-    "PrivacyPolicy": "隐私政策",
-    "TermsOfService": "条款与条件",
+    "Copyright": "版權所有 © {year} {name} 保留所有權利。",
+    "About": "關於",
+    "PrivacyPolicy": "隱私政策",
+    "TermsOfService": "條款與條件",
     "RefundPolicy": "退款政策",
     "Newsletter": {
-      "title": "订阅我们的邮件",
-      "description": "获取最新的更新和教程",
+      "title": "訂閱我們的郵件",
+      "description": "獲取最新的更新和教程",
       "subscribe": {
-        "invalidEmail": "请输入有效的邮箱地址",
-        "defaultErrorMessage": "订阅失败，请稍后再试",
-        "successMessage": "订阅成功",
-        "multipleSubmissions": "你已多次提交，请明天再试再试"
+        "invalidEmail": "請輸入有效的郵箱地址",
+        "defaultErrorMessage": "訂閱失敗，請稍後再試",
+        "successMessage": "訂閱成功",
+        "multipleSubmissions": "您已多次提交，請明天再試再試"
       },
       "unsubscribe": {
-        "title": "退订邮件通知",
-        "success": "您已成功退订 Nexty 邮件通知。",
-        "emailPrefix": "邮箱：",
-        "regretMessage": "您随时可以重新订阅邮件，获取 Nexty 最新更新和教程。",
-        "errorGeneric": "处理您的退订请求时发生错误",
-        "errorNoToken": "未提供退订令牌",
-        "errorMessage": "请确保您使用了正确的退订链接。如果问题持续存在，请联系我们的客服团队获取帮助。",
-        "contactPrefix": "请发送邮件至：",
-        "contactPrefixSuccess": "如有任何问题，请随时联系我们：",
-        "backToHome": "返回主页",
-        "invalidEmail": "无效的邮箱地址",
-        "notInNewsletter": "该邮箱不在我们的订阅列表中",
-        "confirmTitle": "确认退订",
-        "confirmMessage": "您确定要退订我们的邮件通讯吗？您将不再收到有关新功能和内容的更新。",
-        "confirmButton": "确认退订",
+        "title": "退訂郵件通知",
+        "success": "您已成功退訂 Nexty 郵件通知。",
+        "emailPrefix": "郵箱：",
+        "regretMessage": "您隨時可以重新訂閱郵件，獲取 Nexty 最新更新和教程。",
+        "errorGeneric": "處理您的退訂請求時發生錯誤",
+        "errorNoToken": "未提供退訂令牌",
+        "errorMessage": "請確保您使用了正確的退訂連結。如果問題持續存在，請聯絡我們的客服團隊獲取幫助。",
+        "contactPrefix": "請發送郵件至：",
+        "contactPrefixSuccess": "如有任何問題，請隨時聯絡我們：",
+        "backToHome": "返回主頁",
+        "invalidEmail": "無效的郵箱地址",
+        "notInNewsletter": "該郵箱不在我們的訂閱列表中",
+        "confirmTitle": "确认退訂",
+        "confirmMessage": "您確定要退訂我們的郵件通讯嗎？您將不再收到有關新功能和內容的更新。",
+        "confirmButton": "确认退訂",
         "cancelButton": "取消",
-        "processing": "处理中...",
+        "processing": "處理中...",
         "retryButton": "重试",
-        "finalWarning": "此操作无法撤销。您可以随时重新订阅。",
-        "errorInvalidToken": "无效的退订链接。链接可能已损坏或过期。"
+        "finalWarning": "此操作无法撤銷。您可以隨時重新訂閱。",
+        "errorInvalidToken": "無效的退訂連結。連結可能已損壞或過期。"
       }
     },
     "Links": {
       "groups": [
         {
-          "title": "产品",
+          "title": "產品",
           "links": [
             {
               "href": "/#features",
@@ -68,25 +68,25 @@
             {
               "id": "pricing",
               "href": "/#pricing",
-              "name": "定价"
+              "name": "定價"
             },
             {
               "href": "/blogs",
-              "name": "博客"
+              "name": "部落格"
             }
           ]
         },
         {
-          "title": "支持",
+          "title": "支援",
           "links": [
             {
-              "href": "mailto:hi@nexty.dev",
-              "name": "联系我们"
+              "href": "mailto:support@ai3dmodel.app",
+              "name": "聯絡我們"
             }
           ]
         },
         {
-          "title": "语言",
+          "title": "語言",
           "links": [
             {
               "href": "/en",
@@ -95,7 +95,7 @@
             },
             {
               "href": "/zh",
-              "name": "中文",
+              "name": "繁體中文",
               "useA": true
             },
             {
@@ -110,73 +110,73 @@
   },
   "Home": {
     "title": "Nexty.dev",
-    "tagLine": "多场景 Next.js 全栈 SaaS 开发模板",
-    "description": "Nexty 是一个功能齐全的 Next.js SaaS 全栈模板，让你能够快速构建各种商业网站，无论是内容站、工具站还是集成 AI 能力的付费网站。"
+    "tagLine": "多場景 Next.js 全端 SaaS 開發模板",
+    "description": "Nexty 是一個功能齊全的 Next.js SaaS 全端模板，讓您能夠快速建構各種商業網站，無論是內容站、工具站還是整合 AI 能力的付費網站。"
   },
   "Login": {
-    "title": "欢迎回来",
-    "description": "你可以通过以下方式登录",
+    "title": "歡迎回來",
+    "description": "您可以透過以下方式登入",
     "Toast": {
       "Email": {
-        "successTitle": "邮件已发送",
-        "successDescription": "请检查你的邮箱获取登录链接。",
-        "errorTitle": "错误",
-        "errorDescription": "发送邮件失败，请重试。"
+        "successTitle": "郵件已發送",
+        "successDescription": "請檢查您的郵箱獲取登入連結。",
+        "errorTitle": "錯誤",
+        "errorDescription": "發送郵件失敗，請重试。"
       },
       "Google": {
-        "errorTitle": "错误",
-        "errorDescription": "使用 Google 登录失败，请重试。"
+        "errorTitle": "錯誤",
+        "errorDescription": "使用 Google 登入失敗，請重试。"
       },
       "Github": {
-        "errorTitle": "错误",
-        "errorDescription": "使用 GitHub 登录失败，请重试。"
+        "errorTitle": "錯誤",
+        "errorDescription": "使用 GitHub 登入失敗，請重试。"
       }
     },
     "signInMethods": {
       "or": "或者",
-      "signInWithGoogle": "使用 Google 登录",
-      "signInWithGithub": "使用 GitHub 登录",
-      "signInWithEmail": "使用邮箱登录"
+      "signInWithGoogle": "使用 Google 登入",
+      "signInWithGithub": "使用 GitHub 登入",
+      "signInWithEmail": "使用郵箱登入"
     },
     "Button": {
-      "signIn": "登录",
-      "signOut": "退出"
+      "signIn": "登入",
+      "signOut": "登出"
     },
     "UserMenus": [
       {
-        "name": "个人设置",
+        "name": "個人設定",
         "href": "/dashboard/settings",
         "icon": "Settings"
       },
       {
-        "name": "我的订单",
+        "name": "我的訂單",
         "href": "/dashboard/my-orders",
         "icon": "ShoppingCart"
       },
       {
-        "name": "管理订阅",
+        "name": "管理訂閱",
         "href": "/dashboard/subscription",
         "icon": "WalletCards"
       },
       {
-        "name": "积分明细",
+        "name": "積分明細",
         "href": "/dashboard/credit-history",
         "icon": "Coins"
       }
     ],
     "AdminMenus": [
       {
-        "name": "概览",
+        "name": "概覽",
         "href": "/dashboard/overview",
         "icon": "LayoutDashboard"
       },
       {
-        "name": "用户管理",
+        "name": "使用者管理",
         "href": "/dashboard/users",
         "icon": "Users"
       },
       {
-        "name": "订单管理",
+        "name": "訂單管理",
         "href": "/dashboard/orders",
         "icon": "ShoppingCart"
       },
@@ -186,99 +186,99 @@
         "icon": "DollarSign"
       },
       {
-        "name": "博客管理",
+        "name": "部落格管理",
         "href": "/dashboard/blogs",
         "icon": "Rss"
       },
       {
-        "name": "R2资源管理",
+        "name": "R2資源管理",
         "href": "/dashboard/r2-resources",
         "icon": "FileBox"
       }
     ]
   },
   "Blogs": {
-    "title": "博客列表",
-    "description": "分享 Next.js 生态圈和 Nexty.dev 模板动态。",
+    "title": "部落格列表",
+    "description": "分享 Next.js 生态圈和 Nexty.dev 模板動態。",
     "emptyState": {
-      "title": "暂无博客文章",
-      "description": "我们正在创作精彩内容，敬请期待！"
+      "title": "暫無部落格文章",
+      "description": "我們正在創作精彩內容，敬請期待！"
     },
-    "loadMorePostsFailed": "加载更多博客失败",
-    "loadMorePosts": "加载更多博客……",
-    "filterPostsFailed": "加载博客失败",
-    "noPostsFoundForThisTag": "暂无此标签的博客文章",
-    "reachedTheEnd": "已加载全部博客文章",
+    "loadMorePostsFailed": "載入更多部落格失敗",
+    "loadMorePosts": "載入更多部落格……",
+    "filterPostsFailed": "載入部落格失敗",
+    "noPostsFoundForThisTag": "暫無此標籤的部落格文章",
+    "reachedTheEnd": "已載入全部部落格文章",
     "BlogDetail": {
-      "featured": "精选文章",
-      "viewCount": "{count} 次阅读",
-      "accessRestricted": "访问受限",
-      "unauthorized": "此文章仅对登录用户开放",
-      "premium": "付费内容",
-      "premiumContent": "此文章仅对订阅用户开放",
-      "signIn": "登录",
-      "upgrade": "升级",
-      "backToBlogs": "返回博客列表",
+      "featured": "精選文章",
+      "viewCount": "{count} 次閱讀",
+      "accessRestricted": "訪問受限",
+      "unauthorized": "此文章僅對登入使用者開放",
+      "premium": "付費內容",
+      "premiumContent": "此文章僅對訂閱使用者開放",
+      "signIn": "登入",
+      "upgrade": "升級",
+      "backToBlogs": "返回部落格列表",
       "notFound": "文章未找到"
     }
   },
   "About": {
-    "title": "关于我们",
-    "description": "关于我们"
+    "title": "關於我們",
+    "description": "關於我們"
   },
   "AIDemo": {
     "title": "AI 能力演示",
-    "description": "本页面非公开功能，仅用于购买模板的用户学习和测试 AI 模型调用流程。在本地启动模板后，环境变量填写自己的 API Key 即可使用。AI Demo 包括单轮对话、多轮对话、文本转图像、图像转图像、文本/图像转视频的转换，通过 Demo 你可以快速理解 AI 调用流程，以加速你的AI应用构建之旅。",
-    "metaDescription": "本页面提供包括单轮对话、多轮对话、文本转图像、图像转图像、文本/图像转视频等 AI 能力调用展示。"
+    "description": "本頁面非公開功能，僅用於購買模板的使用者學習和測試 AI 模型呼叫流程。在本地啟動模板後，環境變數填寫自己的 API Key 即可使用。AI Demo 包括單輪對話、多輪對話、文字转圖像、圖像转圖像、文字/圖像转影片的轉換，透過 Demo 您可以快速理解 AI 呼叫流程，以加速您的AI應用建構之旅。",
+    "metaDescription": "本頁面提供包括單輪對話、多輪對話、文字转圖像、圖像转圖像、文字/圖像转影片等 AI 能力呼叫展示。"
   },
   "ErrorPage": {
     "403": {
-      "title": "403 - 访问被拒绝",
-      "description": "你没有权限访问此页面。",
+      "title": "403 - 訪問被拒絕",
+      "description": "您沒有權限訪問此頁面。",
       "button": {
-        "name": "返回首页",
+        "name": "返回首頁",
         "href": "/"
       }
     },
     "RedirectError": {
-      "title": "重定向错误",
-      "description": "认证过程中发生错误。",
-      "goToHome": "返回首页",
-      "goToLogin": "返回登录页面",
+      "title": "重新導向錯誤",
+      "description": "認證過程中發生錯誤。",
+      "goToHome": "返回首頁",
+      "goToLogin": "返回登入頁面",
       "invalid_params": {
-        "title": "参数错误",
-        "description": "请求缺少必要参数。"
+        "title": "參數錯誤",
+        "description": "請求缺少必要參數。"
       },
       "invalid_redirect": {
-        "title": "重定向错误",
-        "description": "重定向 URL 无效。"
+        "title": "重新導向錯誤",
+        "description": "重新導向 URL 無效。"
       },
       "token_expired": {
-        "title": "令牌过期",
-        "description": "你的验证令牌已过期。请重新登录。"
+        "title": "令牌過期",
+        "description": "您的驗證令牌已過期。請重新登入。"
       },
       "invalid_token": {
-        "title": "令牌错误",
-        "description": "提供的验证令牌无效。"
+        "title": "令牌錯誤",
+        "description": "提供的驗證令牌無效。"
       },
       "invalid_link_or_expired": {
-        "title": "链接错误",
-        "description": "邮箱验证链接无效或已过期。"
+        "title": "連結錯誤",
+        "description": "郵箱驗證連結無效或已過期。"
       },
       "server_error": {
-        "title": "服务器错误",
-        "description": "认证过程中服务器发生意外错误。"
+        "title": "伺服器錯誤",
+        "description": "認證過程中伺服器發生意外錯誤。"
       },
       "unknown": {
-        "title": "认证错误",
-        "description": "认证过程中发生未知错误。"
+        "title": "認證錯誤",
+        "description": "認證過程中發生未知錯誤。"
       }
     },
     "StripeError": {
-      "goToHome": "返回首页",
-      "goToDashboard": "返回仪表盘",
+      "goToHome": "返回首頁",
+      "goToDashboard": "返回儀表板",
       "title": "Payment Portal Error",
-      "description": "支付信息发生错误。"
+      "description": "支付資訊發生錯誤。"
     }
   }
 }

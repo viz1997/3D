@@ -8,14 +8,14 @@ const YOUTUBE_URL = ''
 const INSTAGRAM_URL = ''
 const TIKTOK_URL = ''
 const DISCORD_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL
-const EMAIL_URL = 'hi@nexty.dev'
+const EMAIL_URL = 'support@ai3dmodel.app'
 
 export const siteConfig: SiteConfig = {
-  name: "Nexty.dev",
+  name: "3D Model.app",
   url: BASE_URL,
   authors: [
     {
-      name: "nexty.dev",
+      name: "3D Model.app",
       url: BASE_URL,
     }
   ],

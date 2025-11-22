@@ -5,12 +5,12 @@ export const LOCALES = ['en', 'zh', 'ja']
 export const DEFAULT_LOCALE = 'en'
 export const LOCALE_NAMES: Record<string, string> = {
   'en': "English",
-  'zh': "中文",
+  'zh': "繁體中文",
   'ja': "日本語",
 };
 export const LOCALE_TO_HREFLANG: Record<string, string> = {
   'en': 'en-US',
-  'zh': 'zh-CN',
+  'zh': 'zh-TW',
   'ja': 'ja-JP',
 };
 

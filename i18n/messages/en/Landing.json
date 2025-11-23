@@ -32,21 +32,21 @@
     "items": [
       {
         "title": "Text to 3D Model",
-        "description": "Simply describe what you want, and our AI 3D generator transforms your words into detailed 3D assets. Export to GLB, OBJ, STL, FBX, and more.",
+        "description": "Bring your ideas to life with a simple description. Our AI-powered 3D generator transforms your words into high-quality, fully detailed 3D assets in seconds. Export seamlessly to GLB, OBJ, STL, FBX, and many other industry-standard formats.",
         "images": [
           "https://assets.ai3dmodel.app/pgc/text-to-3d.webp"
         ]
       },
       {
         "title": "Image to 3D Model",
-        "description": "Transform your 2D images, sketches, or illustrations into stunning 3D models easily. Perfect for converting product photos, concept art into stunning 3D models.",
+        "description": "Turn any 2D image, sketch, or illustration into a stunning 3D model with ease. Whether it's a product photo, concept art, or a hand-drawn design, our AI transforms it into a polished, production-ready 3D asset.",
         "images": [
           "https://assets.ai3dmodel.app/pgc/image-to-3d.webp"
         ]
       },
       {
         "title": "Multi-view Image to 3D Model",
-        "description": "Upload multiple views of your character and generate a more accurate, high-fidelity 3D model that matches your vision.",
+        "description": "Upload multiple angles of your character or object to generate a more precise, high-fidelity 3D reconstruction. Perfect for creators who want accuracy, realism, and full control over the final result.",
         "images": [
           "https://assets.ai3dmodel.app/pgc/multi-image-to-3d.webp"
         ]
@@ -143,32 +143,32 @@
       "text": "AI 3D Generation for Every Industry"
     },
     "title": "Free AI 3D Model Generator for Professional Workflows",
-    "description": "From game development to product design, our AI 3D model generator accelerates creative workflows across industries. Generate production-ready 3D assets in minutes, not days.",
+    "description": "From game development to product design, our AI 3D model generator accelerates creative workflows across industries.",
     "cta": {
       "button": "Try Free AI 3D Generator",
       "link": "/#"
     },
     "cases": [
       {
-        "title": "Game Development - AI Asset Generation",
+        "title": "Game Development",
         "description": "Create game props, character models, and environment assets in minutes using our AI 3D generator. Export optimized low-poly models directly to Unity and Unreal Engine. Reduce asset creation time by 90% while maintaining AAA quality.",
         "image": "/placeholder.webp",
         "icon": "Gamepad2"
       },
       {
-        "title": "Product Design - Rapid Prototyping",
+        "title": "Product Design",
         "description": "Transform product photos and sketches into detailed 3D models instantly. Our AI 3D generator enables rapid design iteration, client presentations, and prototyping. Export to CAD software or 3D printers for physical validation.",
         "image": "/placeholder.webp",
         "icon": "Box"
       },
       {
-        "title": "3D Printing - Ready-to-Print Models",
+        "title": "3D Printing",
         "description": "Generate 3D printable models from images or text descriptions. Our AI ensures watertight geometry and automatic mesh repair. Export STL files optimized for FDM and SLA printers. Perfect for custom figurines, prototypes, and replacement parts.",
         "image": "/placeholder.webp",
         "icon": "Printer"
       },
       {
-        "title": "E-Commerce - 3D Product Visualization",
+        "title": "E-Commerce",
         "description": "Convert product photos into interactive 3D models for e-commerce websites. Our AI 3D generator creates web-optimized models with real-time preview. Boost conversion rates with immersive 360° product views.",
         "image": "/placeholder.webp",
         "icon": "Monitor"
@@ -191,7 +191,7 @@
         "rating": 5.0
       },
       {
-        "content": "As a product manager with limited technical resources, AI 3D Model was a game-changer. We built and launched our 3D visualization feature with real-time preview in 3 days instead of 4 weeks. The documentation is exceptional.",
+        "content": "As a product manager with limited technical resources, AI 3D Model was a game-changer. We built and launched our 3D visualization feature with real-time preview in 3 days instead of 4 weeks.",
         "author": {
           "name": "Sarah Johnson",
           "position": "CTO"
@@ -227,10 +227,6 @@
       {
         "question": "Do I need 3D modeling experience to use this AI generator?",
         "answer": "Absolutely not! AI 3D Model is designed for everyone - from complete beginners to professional 3D artists. No knowledge of Blender, Maya, or other 3D software is required. Simply upload an image or describe what you want in text, and our AI handles all the complex modeling automatically. It's the easiest way to create 3D models."
-      },
-      {
-        "question": "What makes AI 3D Model a leading AI 3D model generator compared to competitors?",
-        "answer": "AI 3D Model leads the industry with 1536³ resolution (50% more detail than competitors like Meshy, Tripo, and 3D AI Studio which use 1024³). Independent benchmark tests show our models have 30% better edge definition. We offer fast generation speed (3 minutes for complex models), support both single and multi-image input, include white model generation for 3D printing, and provide smart low-poly optimization for games. Plus, we're one of the few truly free AI 3D generators with no hidden limits."
       },
       {
         "question": "How long does it take to generate a 3D model with AI?",
@@ -274,17 +270,17 @@
     "title": "Start Creating 3D Models with AI",
     "description": "Join thousands of game developers, designers, and 3D artists using AI 3D Model's AI 3D model generator. Generate production-ready models right now.",
     "button": "Try Free AI 3D Generator",
-    "trustText": "Trusted by game studios, product designers, and 3D printing professionals in 50+ countries. SOC 2 Type II Certified. GDPR Compliant.",
+    "trustText": "Trusted by game studios, product designers, and 3D printing professionals in 50+ countries.",
     "features": {
       "deploy": "🚀 Fast Generation",
-      "production": "🔧 1536³ Ultra-High Resolution",
+      "production": "🔧 Ultra-High Resolution",
       "updates": "💎 Multiple Export Formats",
-      "i18n": "🌍 API & Enterprise Solutions"
+      "i18n": "👍 Easy to Use"
     }
   },
   "ModelGallery": {
-    "title": "High-Fidelity Material Synthesis Engine",
-    "description": "Professional-grade texture generation powered by cutting-edge AI. Create stunning PBR materials with unmatched surface detail, seamless tiling, and intelligent style transfer—from concept to production-ready asset in seconds.",
+    "title": "Next-Gen AI Material Generator for 3D Assets",
+    "description": "Create professional-quality textures with advanced AI. Generate stunning PBR materials with rich details, smooth seamless tiling, and smart style transfer—turning your ideas into production-ready assets in just seconds.",
     "downloadButton": "Download"
   },
   "Pricing": {

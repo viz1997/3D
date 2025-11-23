@@ -59,7 +59,7 @@ export default function FAQ() {
                 {item.question}
               </AccordionTrigger>
               <AccordionContent>
-                <p className="text-base">{item.answer}</p>
+                <p className="text-base whitespace-pre-line">{item.answer}</p>
               </AccordionContent>
             </AccordionItem>
           ))}
